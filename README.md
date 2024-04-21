@@ -31,3 +31,15 @@ koennen Sie sich an mich wenden. Schauen Sie auch
 auf der Homepage nach:
 
 http://www.laosoft.ch
+
+
+Fan Mail
+========
+
+Dear QBasic Community! Thank you very much for all of your fan mail! I appreciate it very much.
+
+
+How to find further information about Quick Basic development?
+==============================================================
+
+If you have any questions about QBasic development in 2024, I recommend you to consult the Site of Thomas Antoni at http://www.antonis.de/.
