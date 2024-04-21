@@ -22,21 +22,12 @@ How to Code with LaOS 7
 Go to the Visual Snowflake Developer and create the UI for your apps with a few mouseclicks!
 Create the app in the Menu bar of Visual Snowflake Developer, then open your app in QuickBasic 4.5, run it and add your code at the stop events.
 
-Fanpost
-========
-
-Bitte senden Sie Fanpost an:
-
-Urs Langmeier                           Tel. +41 (0)1 861 15 70
-Obergasse 3                             Handy: +41 (0)79 512 70 67
-CH-8180 Buelach				                  Email: laos@datacomm.ch
-
 
 Support
 ========
 
 Wenn Sie Fragen oder Probleme bei der Installation haben,
-koennen Sie sich an mich wenden. (Adresse oben!) Schauen Sie auch
+koennen Sie sich an mich wenden. Schauen Sie auch
 auf der Homepage nach:
 
 http://www.laosoft.ch
