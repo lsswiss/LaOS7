@@ -1,0 +1,27 @@
+LaOS 7
+=========
+
+Die Credits
+-------------
+
+Die Windows-Bitmap Unterstützung stammt von East-Power-Soft (www.east-power-soft.de).
+
+
+Dank an:
+----------
+
+Einen besonderen Dank möchte ich an die folgenden Personen widmen:
+
+Günter Münster, für den Textviewer im Dateimanager, für das Sokoban-Spiel, für die Uhr, sowie für die gute allgemeine Zusammenarbeit.
+
+René Linder für die Grafik-Ausdruckroutinen.
+
+Alexander Gratz, für den MS-Dos Dateiöffnen-Dialog, sowie die Snowflake-GUI Tests.
+
+East-Power-Soft von www.east-power-soft.de, für die Windows-Bitmap Unterstützung.
+
+Jessica Pfändler, für das Snowflake-Demo Programm "SMS-Jessy".
+
+Thomas Antonis für die QB Monster-FAQ, die ich des öfteren beizog, um mir Rat zu holen.
+
+Der QBasic.de-Community, besonders einiger lieber Forenteilnehmer, die mir Hilfe in komplexen Situationen und Tipps gegeben haben.

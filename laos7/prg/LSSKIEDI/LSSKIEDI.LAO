@@ -1,0 +1,3112 @@
+DECLARE SUB DoWeather ()
+DECLARE SUB DoSound ()
+DECLARE SUB LoadSound ()
+DECLARE SUB DeleteStrecke (Nr!)
+DECLARE SUB StreckenWahl (showdelete%)
+DECLARE FUNCTION AnzahlGespeicherterStrecken% ()
+DECLARE FUNCTION lzweg$ (B$)
+DECLARE SUB adduserpoints (wert%)
+DECLARE SUB DrawElementsForeGround ()
+DECLARE SUB DrawElementsBackGround ()
+DECLARE SUB LoadStrecke (ch!)
+DECLARE SUB SaveStrecke ()
+DECLARE SUB Editor ()
+DECLARE SUB DrawThisElements (element%)
+DECLARE SUB CenterText (text AS STRING)
+DECLARE FUNCTION MainMenu% ()
+DECLARE SUB Einstellungen ()
+DECLARE SUB Schnee ()
+DECLARE SUB Regen ()
+DECLARE SUB StatusBar (text$)
+DECLARE SUB Frame ()
+DECLARE FUNCTION Score$ (Index!)
+DECLARE FUNCTION NameOf$ (p$, laenge%)
+DECLARE SUB ShowTopScore ()
+DECLARE SUB SaveScore (wert AS INTEGER, Name$)
+DECLARE SUB MsgBox (a!, B!, c!, d!, text AS STRING, waiting AS INTEGER)
+DECLARE SUB Center (text AS STRING, waiting%)
+DECLARE FUNCTION InputBox$ (capt$, l%)
+DECLARE FUNCTION IsTopScore% (wert%)
+DECLARE SUB Ziel ()
+DECLARE SUB SoundEffect (number AS INTEGER)
+DECLARE SUB GetDimensions ()
+DECLARE SUB LoadMusic ()
+DECLARE SUB DrawMan ()
+DECLARE SUB DrawElements ()
+DECLARE SUB ShowPicture (Bild$, Streck!)
+DECLARE SUB Main ()
+ON ERROR GOTO fehler
+DIM SHARED errorlevel AS INTEGER
+
+'fixe Einstellungen:
+CONST MaxScore = 10
+DIM SHARED HighScoreFile AS STRING
+CONST RegenWetter = 1
+CONST SchneeWetter = 2
+CONST SonnigesWetter = 3
+
+
+'benutzerdefinierte Einstellungen:
+DIM SHARED SoundOn AS INTEGER, Nacht AS INTEGER, Wetter AS INTEGER, Testen AS INTEGER
+SoundOn = 0
+Nacht = 0
+Wetter = SchneeWetter
+Testen = 0
+
+SCREEN 9
+
+DIM SHARED player(1000) AS STRING, playtime AS LONG, MusicFile AS STRING
+DIM SHARED keyb AS STRING, userpoints AS INTEGER, zieleinfahrt AS INTEGER
+DIM SHARED xplus, yplus, yweg, collision AS INTEGER, SeinPlatz AS INTEGER
+DIM SHARED LevelName AS STRING, Level  AS INTEGER, Elements(50) AS STRING
+
+'DIM fÅr Text, der fÅr eine Weile in der Statusleiste erscheinen wird:
+DIM SHARED statusbartext AS STRING, statusbartime AS SINGLE, statusbarblink AS INTEGER
+DIM SHARED NrObjekt AS INTEGER, Edited AS INTEGER
+DIM SHARED SpeedFlash AS LONG 'Pfeile machen einen Speed-Flash aus: alles wird schneller, und die Punkte die man sammelt, verdoppeln sich. Legt die Startzeit des Speedflashs fest.
+
+CONST ScreenHeight = 350
+
+'MusicFile = "jsbach.snd" 'oder auch: "walzer.snd", oder auch: "sleepy.snd"
+MusicFile = "angel.snd"
+
+TYPE MannObjekt 'der Skifahrer
+    xpos AS INTEGER
+    ypos AS INTEGER
+    status AS INTEGER 'nach links fahrend, nach rechts fahrend oder gespreizte Beine
+    left1 AS INTEGER 'Begrenzungen fÅr status 1 hier speichern...
+    right1 AS INTEGER
+    top1 AS INTEGER
+    down1 AS INTEGER
+    left2 AS INTEGER 'Begrenzungen fÅr status 2 hier speichern...
+    right2 AS INTEGER
+    top2 AS INTEGER
+    down2 AS INTEGER
+    left3 AS INTEGER 'Begrenzungen fÅr status 3 hier speichern...
+    right3 AS INTEGER
+    top3 AS INTEGER
+    down3 AS INTEGER
+    left6 AS INTEGER 'Begrenzungen fÅr status 6-20 hier speichern...
+    right6 AS INTEGER
+    top6 AS INTEGER
+    down6 AS INTEGER
+
+
+END TYPE
+
+
+TYPE ObjektTyp
+    xpos AS INTEGER
+    ypos AS INTEGER
+    filename AS STRING * 12
+    background AS INTEGER
+    left AS INTEGER 'Begrenzungen hier speichern...
+    right AS INTEGER
+    Top AS INTEGER
+    down AS INTEGER
+END TYPE
+
+DIM SHARED Objekte(1 TO 200) AS ObjektTyp, man AS MannObjekt
+DIM SHARED Obj2(1 TO 200) AS ObjektTyp
+
+'Alle verschiedenen Elementen einlesen:
+RESTORE AlleElemente
+i% = 0
+DO
+    i% = i% + 1
+    READ Elements(i%)
+LOOP UNTIL Elements(i%) = "-"
+
+Elements(i%) = ""
+
+'Standardstrecke laden:
+LoadStrecke 0
+
+
+DO
+COLOR 8, 63
+
+'Hauptprozeduren:
+    SELECT CASE MainMenu
+        CASE 1: Testen = -1
+
+                    'Sicherung der Objekte:
+                    FOR i% = 1 TO UBOUND(Objekte)
+                        Obj2(i%) = Objekte(i%)
+                    NEXT
+
+                CALL Main
+                keyb = ""
+                    'RÅcksicherung der Objekte:
+                    FOR i% = 1 TO UBOUND(Objekte)
+                        Objekte(i%) = Obj2(i%)
+                    NEXT
+
+        CASE 2: CALL ShowTopScore
+        CASE 3: CALL Einstellungen
+        CASE 4: CALL StreckenWahl(0)
+        CASE 5: Testen = 0: CALL Editor
+                keyb = ""
+    END SELECT
+LOOP UNTIL keyb = CHR$(27)
+
+
+
+readobjects:
+'filename, x, y
+Alpnach:
+DATA "lssbaum.lds", 10,300
+DATA "lssbaum.lds",600,500
+DATA "lssFLAG1.lds",200,700
+DATA "lssPaket.lds", 300,800
+DATA "lssFLAG3.lds",300,900
+DATA "lssstock.lds",350,920
+DATA "lssFLAG4.lds",210,1200
+DATA "lssbaum.lds", 50,1400
+DATA "lssFLAG2.lds",300,1500
+DATA "lssbaum.lds",450,1500
+DATA "lssbaum.lds", 10,1700
+DATA "lssbaum.lds", 10,2000
+DATA "lsshigh1.lds",210,2100
+DATA "lssbaum.lds",600,2300
+DATA "lssFLAG1.lds",200,2500
+DATA "lssFLAG3.lds",300,2700
+DATA "lssFLAG4.lds",210,2900
+DATA "lssbaum.lds", 50,3100
+DATA "lssFLAG2.lds",300,3300
+DATA "lssPaket.lds", 550,3400
+DATA "lssbaum.lds",450,3500
+DATA "lssFLAG1.lds",200,3700
+DATA "lssbaum.lds", 600,3900
+DATA "lssFLAG2.lds",500,4100
+DATA "lssFLAG3.lds",250,4300
+DATA "lssbaum.lds", 50,4500
+DATA "lssFLAG4.lds",500,4700
+DATA "lssbaum.lds",600,4900
+DATA "lssFLAG1.lds",200,5100
+DATA "lssFLAG3.lds",300,5300
+DATA "lssFLAG4.lds",210,5500
+DATA "lssbaum.lds", 10,5700
+DATA "lssbaum.lds",600,5900
+DATA "lssFLAG1.lds",200,6100
+DATA "lsshigh1.lds",210,6150
+DATA "lssFLAG3.lds",300,6300
+DATA "lssFLAG4.lds",210,6500
+DATA "lssbaum.lds", 50,6700
+DATA "lssFLAG2.lds",300,6900
+DATA "lssPaket.lds", 50,7000
+DATA "lssbaum.lds",450,7100
+DATA "lssFLAG1.lds",200,7300
+DATA "lssbaum.lds", 600,7500
+DATA "lssstock.lds",500,7600
+DATA "lssFLAG2.lds",500,7700
+DATA "lssFLAG3.lds",250,7900
+DATA "lssbaum.lds", 50,8100
+DATA "lssFLAG4.lds",500,8300
+DATA "lssbaum.lds", 50,8400
+DATA "lssFLAG2.lds",300,8500
+DATA "lssbaum.lds",450,8600
+DATA "lssFLAG1.lds",200,8700
+DATA "lssbaum.lds", 10,8750
+DATA "lssbaum.lds",600,8800
+DATA "lssFLAG1.lds",200,8850
+DATA "lssFLAG3.lds",300,8900
+DATA "lssFLAG4.lds",210,8950
+DATA "lssbaum.lds", 50,9000
+DATA "lssFLAG2.lds",300,9050
+DATA "lssHaus.lds", 320,9075
+DATA "lsshigh1.lds",450,9100
+DATA "lssbaum.lds",300,9100
+DATA "lssFLAG1.lds",200,9150
+DATA "lssFLAG2.lds",500,9200
+DATA "lssstock.lds",450,9270
+DATA "lssFLAG3.lds",250,9300
+DATA "lssbaum.lds", 50,9350
+DATA "lssFLAG4.lds",500,9400
+DATA "lssFLAG2.lds",500,9500
+DATA "lssFLAG3.lds",250,9550
+DATA "lssbaum.lds", 50,9600
+DATA "lssFLAG4.lds",500,9650
+DATA "lssFLAG1.lds",200,9700
+DATA "lssbaum.lds", 600,9750
+DATA "lssFLAG2.lds",500,9800
+DATA "lssFLAG3.lds",250,9850
+DATA "lssbaum.lds", 50,9000
+DATA "lssFLAG4.lds",500,9050
+DATA "lssbaum.lds", 10,9100
+DATA "lssbaum.lds",600,9150
+DATA "lssFLAG1.lds",200,9200
+DATA "lssFLAG3.lds",300,9250
+DATA "lssFLAG4.lds",210,9300
+DATA "lssbaum.lds", 50,9350
+DATA "lssFLAG2.lds",300,9400
+DATA "lssbaum.lds",450,9450
+DATA "lssFLAG1.lds",200,9500
+DATA "lssFLAG2.lds",500,9600
+DATA "lssFLAG3.lds",250,9650
+DATA "lssFLAG4.lds",500,9750
+DATA "lssZIEL.lds",200,10000
+DATA "-",0,0
+
+Niederalp:
+DATA "lssflag1.lds", 100,300
+
+
+RuniBerg:
+
+
+
+AlleElemente:
+DATA "LSSBAUM.LDS"
+'DATA "LSSCRASH.lds"
+DATA "LSSFLAG1.LDS"
+DATA "LSSFLAG2.LDS"
+DATA "LSSFLAG3.LDS"
+DATA "LSSFLAG4.LDS"
+DATA "LSSFLGOK.LDS"
+DATA "LSSHAUS.LDS"
+DATA "LSSHIGH1.LDS"
+'DATA "lssMAN1.lds"
+'DATA "lssMAN2.lds"
+'DATA "lssMAN3.lds"
+'DATA "LSSMANHI.LDS"
+'DATA "LSSMANWN.LDS"
+'DATA "LSSMNU1.LDS"
+DATA "LSSPAKET.LDS"
+DATA "LSSPKTOK.LDS"
+DATA "lssstock.lds"
+DATA "LSSZIEL.LDS"
+DATA "LSSEisig.LDS"
+DATA "LSSSNOWM.LDS"
+DATA "LSSPFEIL.LDS"
+DATA "LSSPFEI2.LDS"
+DATA "LSSSPEED.LDS"
+
+DATA "-"
+
+
+IF Edited THEN SaveStrecke
+
+CHAIN "c:\laos7\main.bas"
+SYSTEM
+
+
+fehler:
+errorlevel = 1
+RESUME NEXT
+
+SUB adduserpoints (wert%)
+    IF SpeedFlash > 0 THEN
+        userpoints = userpoints + (wert% * 2)
+    ELSE
+        userpoints = userpoints + wert%
+    END IF
+END SUB
+
+'berechnet die...
+FUNCTION AnzahlGespeicherterStrecken%
+
+i% = 2
+CLOSE 1
+OPEN "lssdwns.rsc" FOR INPUT AS 1
+    IF NOT EOF(1) THEN INPUT #1, a$ 'Streckenname!
+
+DO WHILE NOT EOF(1)
+    INPUT #1, a$
+    IF a$ = "-" THEN
+        i% = i% + 1
+    END IF
+LOOP
+
+AnzahlGespeicherterStrecken% = i%
+
+END FUNCTION
+
+SUB Center (text AS STRING, waiting%)
+a = CINT((80 - LEN(text)) / 2)
+B = 12
+c = a + LEN(text)
+d = 13
+MsgBox a, B, c, d, text, waiting%
+
+END SUB
+
+SUB CenterText (text AS STRING)
+   
+    s = CINT((80 - LEN(text)) / 2)
+    LOCATE , s
+    PRINT text;
+
+END SUB
+
+SUB DeleteStrecke (Nr)
+
+SCREEN 9, , 0, 0
+PCOPY 0, 1
+
+IF Nr <= 5 THEN
+    Center "Diese Strecke kann nicht gelîscht werden!", -1
+    EXIT SUB
+END IF
+
+Center "Sind Sie sicher? <Enter> Annehmen, <Escape> Verwerfen", -1
+    IF keyb = CHR$(27) THEN EXIT SUB
+
+'Strecke wird endgÅltig gelîscht:
+errorlevel = 0
+i% = 2
+CLOSE 1, 2
+
+OPEN "lssdwns.rsc" FOR INPUT AS 1
+OPEN "temp.rsc" FOR OUTPUT AS 2
+
+    IF NOT EOF(1) THEN INPUT #1, a$ 'Streckenname!
+    IF i% <> Nr THEN PRINT #2, a$
+
+DO WHILE NOT EOF(1)
+    INPUT #1, a$
+    IF a$ = "-" THEN
+        i% = i% + 1
+    END IF
+    IF i% <> Nr THEN PRINT #2, a$
+LOOP
+
+CLOSE 1, 2
+
+IF errorlevel = 0 THEN
+    KILL "lssdwns.old"
+    NAME "lssdwns.rsc" AS "lssdwns.old"
+    NAME "temp.rsc" AS "lssdwns.rsc"
+END IF
+
+END SUB
+
+'Spielt den sound ab. In jeder Leerlaufgelegenheit aufrufen!
+SUB DoSound
+  altzeit = TIMER
+  IF PLAY(1) = 0 THEN
+          playtime = playtime + 1: PLAY player(playtime)
+          IF player(playtime) = "" THEN playtime = 0
+  END IF
+END SUB
+
+SUB DoWeather
+  nz = TIMER + .03
+  SCREEN 9, , 1, 0
+  CLS
+
+  'Hintergrund-Elemente aufbauen:
+  DrawElementsBackGround
+  DrawMan 'Mann zuerst zeichnen
+  'Vordergrund-Elemente aufbauen:
+  DrawElementsForeGround
+
+  'Jetzt Wetter generieren:
+  SELECT CASE Wetter
+      CASE SchneeWetter: Schnee
+      CASE RegenWetter: Regen
+  END SELECT
+
+  'Jetzt Punkte-Leiste und Statusbar (rechts) aufbauen:
+  LINE (0, 0)-(639, 13), 0, BF
+  COLOR 1: LOCATE 1, 2: PRINT "Punktestand: " + STR$(userpoints)
+
+  'statusbartext anzeigen: (3 sekunden lang)
+  IF statusbartime <> 0 THEN
+      IF TIMER > statusbartime + 2 THEN
+          statusbartime = 0
+      ELSE
+          'jetzt anzeigen:
+          LOCATE 1, 79 - LEN(statusbartext)
+          PRINT statusbartext
+
+      END IF
+  END IF
+
+  'Punkteleisten-Linie
+  LINE (0, 14)-(639, 14), 6
+
+  'Rahmen um den Bildschirm:
+  Frame
+
+  PCOPY 1, 0
+  SCREEN 9, , 0, 0
+
+  DO
+  LOOP UNTIL TIMER >= nz 'wenn nîtig noch kurz anhalten...
+
+END SUB
+
+SUB DrawElementsBackGround
+'zeichnet die Bildschirmobjekte am bildschirm die es fÅr den momentanen
+'bildschirmausschnitt (gemÑss yweg) braucht:
+
+i% = 0
+DO
+    i% = i% + 1
+
+IF Objekte(i%).background THEN
+
+    IF RTRIM$(Objekte(i%).filename) = STRING$(12, 0) THEN EXIT DO
+        xplus = Objekte(i%).xpos
+        yplus = Objekte(i%).ypos - yweg
+
+        'ÅberprÅfe ob in aktuellem Bildausschnitt - wenn ja, zeichnen:
+        IF Objekte(i%).ypos > yweg AND Objekte(i%).ypos < yweg + ScreenHeight THEN
+            ShowPicture Objekte(i%).filename, 1
+            l1 = Objekte(i%).xpos + Objekte(i%).left
+            t1 = Objekte(i%).ypos + Objekte(i%).Top - yweg
+            r1 = Objekte(i%).xpos + Objekte(i%).right
+            d1 = Objekte(i%).ypos + Objekte(i%).down - yweg
+
+            'LINE (l1, t1)-(r1, d1), 8, B, 2115
+            'ÅberprÅft gleich auf Kollision:
+            SELECT CASE man.status
+                CASE 1, 21: l2 = man.xpos + man.left1
+                        t2 = man.ypos + man.top1
+                        r2 = man.xpos + man.right1
+                        d2 = man.ypos + man.down1
+
+                CASE 2: l2 = man.xpos + man.left2
+                        t2 = man.ypos + man.top2
+                        r2 = man.xpos + man.right2
+                        d2 = man.ypos + man.down2
+
+                CASE 3: l2 = man.xpos + man.left3
+                        t2 = man.ypos + man.top3
+                        r2 = man.xpos + man.right3
+                        d2 = man.ypos + man.down3
+                CASE 6 TO 20
+                        l2 = man.xpos + man.left6
+                        t2 = man.ypos + man.top6
+                        r2 = man.xpos + man.right6
+                        d2 = man.ypos + man.down6
+
+                END SELECT
+            'LINE (l2, t2)-(r2, d2), 8, B, 2115
+
+
+        IF r1 > l2 AND d1 > t2 THEN
+            IF l1 < r2 AND t1 < d2 THEN
+                collision = i%
+            END IF
+        END IF
+
+    END IF
+END IF
+
+    'LINE (l2, t2)-(r2, d2), 8, B, 2115
+
+LOOP UNTIL RTRIM$(Objekte(i%).filename) = "-"
+
+END SUB
+
+'zeichnet die Bildschirmobjekte am bildschirm die es fÅr den momentanen
+'bildschirmausschnitt (gemÑss yweg) braucht:
+SUB DrawElementsForeGround
+
+
+i% = 0
+DO
+    i% = i% + 1
+
+IF Objekte(i%).background = 0 THEN
+
+IF RTRIM$(Objekte(i%).filename) = STRING$(12, 0) THEN EXIT DO
+    xplus = Objekte(i%).xpos
+    yplus = Objekte(i%).ypos - yweg
+
+    'ÅberprÅfe ob in aktuellem Bildausschnitt - wenn ja, zeichnen:
+    IF Objekte(i%).ypos > yweg AND Objekte(i%).ypos < yweg + ScreenHeight THEN
+        ShowPicture Objekte(i%).filename, 1
+        l1 = Objekte(i%).xpos + Objekte(i%).left
+        t1 = Objekte(i%).ypos + Objekte(i%).Top - yweg
+        r1 = Objekte(i%).xpos + Objekte(i%).right
+        d1 = Objekte(i%).ypos + Objekte(i%).down - yweg
+
+        'LINE (l1, t1)-(r1, d1), 8, B, 2115
+        'ÅberprÅft gleich auf Kollision:
+        SELECT CASE man.status
+            CASE 1, 21: l2 = man.xpos + man.left1
+                    t2 = man.ypos + man.top1
+                    r2 = man.xpos + man.right1
+                    d2 = man.ypos + man.down1
+
+            CASE 2: l2 = man.xpos + man.left2
+                    t2 = man.ypos + man.top2
+                    r2 = man.xpos + man.right2
+                    d2 = man.ypos + man.down2
+
+            CASE 3: l2 = man.xpos + man.left3
+                    t2 = man.ypos + man.top3
+                    r2 = man.xpos + man.right3
+                    d2 = man.ypos + man.down3
+            CASE 6 TO 20
+                    l2 = man.xpos + man.left6
+                    t2 = man.ypos + man.top6
+                    r2 = man.xpos + man.right6
+                    d2 = man.ypos + man.down6
+
+            END SELECT
+        'LINE (l2, t2)-(r2, d2), 8, B, 2115
+
+
+    IF r1 > l2 AND d1 > t2 THEN
+        IF l1 < r2 AND t1 < d2 THEN
+            collision = i%
+        END IF
+    END IF
+
+    END IF
+
+    'LINE (l2, t2)-(r2, d2), 8, B, 2115
+END IF
+
+LOOP UNTIL RTRIM$(Objekte(i%).filename) = "-"
+
+END SUB
+
+SUB DrawMan
+
+xplus = man.xpos
+yplus = man.ypos
+IF Testen THEN
+
+    'status:    1 links
+    '           2 rechts
+    '           3 gespreizte Beine
+    '           4 crash
+    '           5 gewonnen (jubelnd!)
+    '           6 jump
+
+    SELECT CASE man.status
+        CASE 1
+            ShowPicture "lssMAN1.lds", 1
+        CASE 2
+            ShowPicture "lssMAN2.lds", 1
+        CASE 3
+            ShowPicture "lssMAN3.lds", 1
+        CASE 4
+            ShowPicture "lssCrash.lds", 1
+        CASE 5
+            ShowPicture "lssManWn.lds", 1
+        CASE 6 TO 20
+            yplus = yplus - 20
+            ShowPicture "lssManHi.lds", 1 'hier fliegt er wÑhrend dem jumpen
+            man.status = man.status + 1
+        CASE 21
+            man.status = 1
+            ShowPicture "lssMAN1.lds", 1
+
+        CASE 22 TO 29
+            ShowPicture "lssMan99.lds", 1 'hier rutscht er die EisflÑche herunter!
+            man.status = man.status + 1
+
+        CASE 30
+            man.status = 4 'Crash!
+            ShowPicture "lssCrash.lds", 1
+
+    END SELECT
+ELSE
+    LINE (xplus - 10, yplus - 10)-(xplus + 10, yplus + 10), 1, BF
+
+END IF
+
+END SUB
+
+SUB DrawThisElements (element%)
+'Elementenleiste:
+
+'maxelements berechnen:
+    errorlevel = 0
+    maxelements% = 1
+    DO
+        maxelements% = maxelements% + 1
+    LOOP UNTIL Elements(maxelements%) = "" OR errorlevel = 1
+    maxelements% = maxelements% - 1
+
+DO: LOOP UNTIL INKEY$ = ""
+SCREEN 9, , 1, 0
+DO
+CLS
+IF Elements(element%) = "" THEN element% = 1
+
+    a = xplus
+    B = yplus
+    xplus = 300
+    yplus = 200
+
+ShowPicture Elements(element%), 1
+
+    xplus = a
+    yplus = B
+a$ = INKEY$
+
+SELECT CASE a$
+    CASE CHR$(0) + "K": element% = element% - 1
+    CASE CHR$(32), CHR$(0) + "M": element% = element% + 1
+    CASE CHR$(13)
+            'Setze Element:
+            NrObjekt = NrObjekt + 1
+            Objekte(NrObjekt).filename = Elements(element%)
+            Objekte(NrObjekt).xpos = man.xpos
+            Objekte(NrObjekt).ypos = man.ypos + yweg
+
+END SELECT
+IF element% < 1 THEN element% = maxelements%
+COLOR 1
+
+'hier wird die Objekt-Bezeichnung eingelesen:
+SELECT CASE UCASE$(Elements(element%))
+CASE "LSSSPEED.LDS"
+    bez$ = "Speed-Flash"
+
+CASE "LSSBAUM.LDS"
+    bez$ = "Baum"
+
+CASE "LSSFLAG1.LDS"
+    bez$ = "Flagge 1"
+
+CASE "LSSFLAG2.LDS"
+    bez$ = "Flagge 2"
+
+CASE "LSSFLAG3.LDS"
+    bez$ = "Flagge 3"
+
+CASE "LSSFLAG4.LDS"
+    bez$ = "Flagge 4"
+
+CASE "LSSFLGOK.LDS"
+    bez$ = "Heruntergefahrene Flagge"
+
+CASE "LSSHAUS.LDS"
+    bez$ = "HÅtte"
+
+CASE "LSSHIGH1.LDS"
+    bez$ = "Schanze"
+
+CASE "LSSPAKET.LDS"
+    bez$ = "Paket"
+
+CASE "LSSPKTOK.LDS"
+    bez$ = "Leeres Paket"
+
+CASE "LSSSTOCK.LDS"
+    bez$ = "Ski-Stock"
+
+CASE "LSSZIEL.LDS"
+    bez$ = "Ziel"
+
+CASE "LSSEISIG.LDS"
+    bez$ = "EisflÑche"
+
+CASE "LSSSNOWM.LDS"
+    bez$ = "Schneemann"
+
+CASE "LSSPFEIL.LDS"
+    bez$ = "Pfeil links"
+
+CASE "LSSPFEI2.LDS"
+    bez$ = "Pfeil rechts"
+
+CASE ELSE
+    bez$ = Elements(element%)
+
+END SELECT
+
+
+LOCATE 23
+CenterText bez$
+
+PCOPY 1, 0
+LOOP UNTIL a$ = CHR$(13) OR a$ = CHR$(27)
+
+IF a$ = CHR$(13) THEN Edited = -1
+
+SCREEN 9, , 0, 0
+END SUB
+
+SUB Editor
+'Level-Editor!
+'Jetzt Hintergrund fÅr Wetter wÑhlen:
+
+SCREEN 9, , 0, 0
+PCOPY 1, 0
+
+IF AnzahlGespeicherterStrecken% > 14 THEN
+    Center "Es gibt bereits zuviele Strecken. Lîsche zuerst eine bestehende Strecke!", -1
+    Edited = 0
+    StreckenWahl -1
+    IF AnzahlGespeicherterStrecken% > 14 THEN EXIT SUB
+END IF
+
+Center "TastenkÅrzel: <N> Neue Strecke   <S> Strecke speichern   <BACKSPACE> ZurÅck ", -1
+
+SELECT CASE Wetter
+    CASE SchneeWetter: COLOR 8, 63
+    CASE RegenWetter: : COLOR 8, 7
+    CASE ELSE: COLOR 8, 63
+END SELECT
+
+IF Nacht THEN COLOR 8, 0
+
+'Bildausschnitt auf 0 setzen:
+yweg = 0
+
+NrObjekt = 0
+'Objekte zÑhlen:
+FOR i% = 1 TO UBOUND(Objekte)
+    IF RTRIM$(Objekte(i%).filename) = STRING$(12, 0) OR RTRIM$(Objekte(i%).filename) = "-" THEN EXIT FOR
+    NrObjekt = NrObjekt + 1
+    IF Objekte(i%).ypos > 0 THEN yweg = Objekte(i%).ypos
+NEXT
+    yweg = yweg - 200
+    IF yweg < 0 THEN yweg = 0
+
+
+startgame1:
+
+    statusbartext = "PFEIL-Tasten: Cursor Bewegen   EINGABETASTE: Objekt einfÅgen"
+    statusbartime = TIMER + 30
+
+'Punkte auf 0 setzen:
+userpoints = 0
+
+'Dimensionen zu den Objekten einlesen: (fÅr collision detection)
+GetDimensions
+
+followgame1:
+
+'Kollision auf 0 setzen:
+collision = 0
+
+'Mann-Anfangsposition und status:
+man.xpos = 300
+man.ypos = 320
+man.status = 3 'am Anfang gespreizte Beine
+
+
+
+Spielstart1:
+
+DO
+nz = TIMER + .03
+
+SCREEN 9, , 1, 0
+
+CLS
+
+'Bildschirm aufbauen:
+DrawElementsBackGround
+
+DrawMan 'Mann zuerst zeichnen
+
+DrawElementsForeGround
+
+
+'Jetzt Wetter generieren:
+SELECT CASE Wetter
+    CASE SchneeWetter: Schnee
+    CASE RegenWetter: Regen
+END SELECT
+
+'Jetzt Punkte-Leiste und Statusbar (rechts) aufbauen:
+LINE (0, 0)-(639, 13), 0, BF
+COLOR 1: LOCATE 1, 2: PRINT "Punktestand: " + STR$(userpoints)
+
+'statusbartext anzeigen: (3 sekunden lang)
+IF statusbartime <> 0 THEN
+    IF TIMER > statusbartime + 2 THEN
+        statusbartime = 0
+    ELSE
+        'jetzt anzeigen:
+        LOCATE 1, 79 - LEN(statusbartext)
+        PRINT statusbartext
+
+    END IF
+END IF
+
+'Punkteleisten-Linie
+LINE (0, 14)-(639, 14), 6
+
+'Rahmen um den Bildschirm:
+Frame
+
+
+
+PCOPY 1, 0
+SCREEN 9, , 0, 0
+
+IF man.status = 4 THEN GOTO crash1
+
+DO
+LOOP UNTIL TIMER >= nz 'wenn nîtig noch kurz anhalten...
+
+keyb = INKEY$
+WHILE INKEY$ <> "": WEND
+
+SELECT CASE keyb
+    CASE CHR$(0) + "K": man.status = 1: man.xpos = man.xpos - 10
+    CASE CHR$(0) + "M": man.status = 2: man.xpos = man.xpos + 10
+    CASE "s", "S": SaveStrecke
+    CASE "N", "n"
+            Center "Neue Strecke machen! <Enter> BestÑtigen <Escape> Abbrechen", 1
+            IF keyb = CHR$(13) THEN
+                SaveStrecke
+                ERASE Objekte
+                NrObjekt = 0
+                yweg = 0
+            END IF
+    CASE CHR$(27): EXIT SUB
+    CASE CHR$(0) + "H": yweg = yweg - 50: StatusBar "Meter: " + STR$(yweg)
+    CASE CHR$(0) + "P": yweg = yweg + 50: StatusBar "Meter: " + STR$(yweg)
+    CASE CHR$(13), CHR$(32): DrawThisElements element%
+    CASE CHR$(8) 'zurÅcksetzen letztes Element:
+                    Objekte(NrObjekt).filename = ""
+                    Objekte(NrObjekt).xpos = 0
+                    Objekte(NrObjekt).ypos = 0
+                    NrObjekt = NrObjekt - 1
+                    IF NrObjekt < 1 THEN NrObjekt = 1
+
+END SELECT
+
+'SELECT CASE man.status
+    'CASE 1: man.xpos = man.xpos - 10
+    'CASE 2: man.xpos = man.xpos + 10
+'END SELECT
+
+'yweg = yweg + 10'ein pixel runterscrollen!
+IF zieleinfahrt > 0 THEN
+    zieleinfahrt = zieleinfahrt + 1
+    nz2 = TIMER + .2
+    DO
+      DoSound
+    LOOP UNTIL TIMER >= nz2
+    IF zieleinfahrt >= 4 THEN Ziel: zieleinfahrt = 0: EXIT SUB
+END IF
+
+'no collision detection...
+
+LOOP
+
+EXIT SUB
+
+crash1:
+GOTO followgame1
+
+
+END SUB
+
+SUB Einstellungen
+ch = 1
+DIM menu(1 TO 3) AS STRING * 40, strTagesZeit AS STRING, strWetter AS STRING, strTon AS STRING
+menucounter% = UBOUND(menu)
+
+
+DO
+
+    SELECT CASE Wetter
+        CASE SchneeWetter: strWetter = "Schnee"
+        CASE RegenWetter: strWetter = "Regen"
+        CASE SonnigesWetter: strWetter = "Sonne"
+    END SELECT
+
+
+    IF Nacht THEN strTagesZeit = "Nacht" ELSE strTagesZeit = "Tag"
+
+    IF SoundOn THEN strTon = "Ein" ELSE strTon = "Aus"
+
+
+menu(1) = "Tageszeit: " + strTagesZeit
+menu(2) = "Wetter: " + strWetter
+'menu(3) = "Ton: " + strTon
+menu(3) = "ZurÅck zum Hauptmenu..."
+
+
+DO
+
+    SCREEN 9, , 1, 0
+    CLS
+    Frame
+    LOCATE 10
+    COLOR 1
+    FOR i% = 1 TO menucounter%
+            IF ch = i% THEN
+                COLOR 12
+                CenterText " " + menu(i%) + " "
+            ELSE
+                COLOR 1
+                CenterText menu(i%)
+            END IF
+        PRINT
+    NEXT
+PCOPY 1, 0
+
+'Tastatureingabe:
+keyb = ""
+DO: keyb = INKEY$: LOOP WHILE keyb = ""
+    SELECT CASE keyb
+        CASE CHR$(0) + "K": ch = ch - 1
+        CASE CHR$(0) + "M": ch = ch + 1
+        CASE CHR$(0) + "H": ch = ch - 1
+        CASE CHR$(0) + "P": ch = ch + 1
+        CASE CHR$(27): ch = 0: keyb = "": EXIT SUB
+    END SELECT
+        IF ch > menucounter% THEN ch = menucounter%
+        IF ch < 1 THEN ch = 1
+
+SCREEN 9, , 0, 0
+LOOP UNTIL keyb = CHR$(13)
+
+    SELECT CASE ch
+        CASE 2: Wetter = Wetter + 1: IF Wetter > 3 THEN Wetter = 1
+        CASE 1: Nacht = -1 - Nacht
+        'CASE 3: SoundOn = -1 - SoundOn
+        CASE 3: EXIT SUB
+    END SELECT
+LOOP
+END SUB
+
+SUB Frame
+'Rahmen um den Bildschirm:
+LINE (0, 0)-(639, 349), 12, B
+LINE (638, 1)-(638, 348), 4
+LINE (1, 348)-(638, 348), 4
+
+END SUB
+
+'liest die Dimensionen der einzelnen Objekte aus und speichert diese unter den
+'Objekteigenschaften left, top, right und down
+'wichtig fÅr collision-detection!
+SUB GetDimensions
+DIM Befehle(5) AS SINGLE
+
+
+i% = 0
+DO
+    i% = i% + 1
+
+'hier wird ÅberprÅft, ob das Objekt ein Background-Objekt ist
+'(im Hintergrund gezeichnet werden soll)
+SELECT CASE LCASE$(Objekte(i%).filename)
+    CASE "lsspfeil.lds", "lsspfei2.lds", "lssspeed.lds": Objekte(i%).background = -1
+END SELECT
+
+IF RTRIM$(Objekte(i%).filename) = STRING$(12, 0) THEN EXIT DO
+CLOSE 1: OPEN Objekte(i%).filename FOR BINARY AS 1
+
+i = 0
+DO
+
+FOR Nr = 0 TO 5
+GET 1, , Befehle(Nr)
+NEXT
+
+SELECT CASE CHR$(Befehle(0))
+CASE "d"
+    Objekte(i%).left = Befehle(1)
+    Objekte(i%).Top = Befehle(2)
+    Objekte(i%).right = Befehle(3)
+    Objekte(i%).down = Befehle(4)
+
+CASE "p"
+CASE "m"
+CASE "l"
+CASE "r"
+CASE "b"
+CASE "k"
+CASE "x"
+END SELECT
+
+LOOP WHILE Befehle(0) <> 0
+
+LOOP UNTIL RTRIM$(Objekte(i%).filename) = "-" OR RTRIM$(Objekte(i%).filename) = STRING$(12, 0)
+
+
+'Dasselbe fÅr den Mann machen:
+DO WHILE durchlauf <= 4
+durchlauf = durchlauf + 1
+    SELECT CASE durchlauf
+    CASE 1: a$ = "lssMAN1.lds"
+    CASE 2: a$ = "lssMAN2.lds"
+    CASE 3: a$ = "lssMAN3.lds"
+    CASE 4: a$ = "lssManHi.lds"
+    END SELECT
+
+CLOSE 1: OPEN a$ FOR BINARY AS 1
+
+i = 0
+DO
+
+FOR Nr = 0 TO 5
+GET 1, , Befehle(Nr)
+NEXT
+
+SELECT CASE CHR$(Befehle(0))
+CASE "d"
+    SELECT CASE durchlauf
+        CASE 1
+            man.left1 = Befehle(1)
+            man.top1 = Befehle(2)
+            man.right1 = Befehle(3)
+            man.down1 = Befehle(4)
+        CASE 2
+            man.left2 = Befehle(1)
+            man.top2 = Befehle(2)
+            man.right2 = Befehle(3)
+            man.down2 = Befehle(4)
+        CASE 3
+            man.left3 = Befehle(1)
+            man.top3 = Befehle(2)
+            man.right3 = Befehle(3)
+            man.down3 = Befehle(4)
+        CASE 4
+            man.left6 = Befehle(1)
+            man.top6 = Befehle(2)
+            man.right6 = Befehle(3)
+            man.down6 = Befehle(4)
+
+    END SELECT
+
+CASE "p"
+CASE "m"
+CASE "l"
+CASE "r"
+CASE "b"
+CASE "k"
+CASE "x"
+END SELECT
+
+LOOP WHILE Befehle(0) <> 0
+
+
+LOOP 'durchlauf
+
+END SUB
+
+FUNCTION InputBox$ (capt$, l%)
+COLOR 1
+    DO
+    Center capt$ + a$ + CHR$(219) + SPACE$(l% - LEN(a$)), 0
+
+    k$ = ""
+    DO: k$ = INKEY$: LOOP WHILE k$ = ""
+
+    IF LEN(k$) > 1 THEN k$ = ""
+
+    IF k$ = CHR$(8) AND LEN(a$) >= 1 THEN a$ = LEFT$(a$, LEN(a$) - 1): k$ = ""
+    IF k$ = CHR$(8) THEN k$ = ""
+    IF k$ = CHR$(13) OR k$ = CHR$(27) THEN keyb = k$: EXIT DO
+
+    IF LEN(a$) + 1 <= l% THEN a$ = a$ + k$
+    LOOP
+
+    InputBox$ = a$
+
+END FUNCTION
+
+FUNCTION IsTopScore% (wert%)
+f% = FREEFILE
+OPEN HighScoreFile FOR RANDOM AS f%
+
+FOR i = 1 TO MaxScore
+GET f%, , a$
+IF wert% > VAL(a$) THEN IsTopScore = -1: EXIT FOR
+NEXT
+
+CLOSE f%
+
+END FUNCTION
+
+'LÑdt die Sounddatei in der Variable MusicFile
+SUB LoadSound
+IF MusicFile <> "" THEN
+    CLOSE 1: OPEN MusicFile FOR INPUT AS 1
+
+    i = 0
+        DO: i = i + 1
+            LINE INPUT #1, player(i)
+            INPUT #1, tmp
+            INPUT #1, tmp
+        LOOP UNTIL i > 999 OR player(i) = ""
+END IF
+PLAY "L4T166MFMNMB"
+playtime = 0
+END SUB
+
+'LÑdt die Strecke mit der Åbergebenen Nummer
+'0 = fixe Strecke im Programmspeicher...
+'ch = Streckennummer
+SUB LoadStrecke (ch)
+
+IF ch = 0 THEN
+    'im Programm als DATA-Werte verfÅgbare Objekte einlesen:
+    RESTORE readobjects
+    i% = 0
+    DO
+        i% = i% + 1
+        READ Objekte(i%).filename, Objekte(i%).xpos, Objekte(i%).ypos
+    LOOP UNTIL RTRIM$(Objekte(i%).filename) = "-"
+    HighScoreFile = "lssski.hsc"
+    LevelName = "Grindelwald"
+
+ELSE
+    'sonst: Benutzerdefinierte Bahn von Festplatte laden!
+
+    i% = 1
+    chget% = 1
+    CLOSE 1
+    OPEN "lssdwns.rsc" FOR INPUT AS 1
+        IF NOT EOF(1) THEN INPUT #1, sbez$ 'Streckenname!
+
+    DO WHILE NOT EOF(1)
+        INPUT #1, a$
+        IF a$ = "-" THEN
+            chget% = chget% + 1
+            IF NOT EOF(1) THEN INPUT #1, sbez$ 'Streckenname!
+
+        ELSE
+            IF chget% = ch THEN
+                'HighScore-Filename aus dem Streckennamen generieren:
+                HighScoreFile = LEFT$(lzweg(sbez$), 8) + ".hsc"
+
+                Objekte(i%).filename = a$
+                INPUT #1, Objekte(i%).xpos
+                INPUT #1, Objekte(i%).ypos
+                i% = i% + 1
+            END IF
+        END IF
+    LOOP
+END IF
+
+END SUB
+
+FUNCTION lzweg$ (B$)
+    a$ = B$
+    FOR i = 1 TO LEN(a$)
+        z$ = MID$(a$, i, 1)
+        SELECT CASE z$
+            CASE ".", " ", ":", "+", "=", "[", "]", "*", "?", ";", ":", ",", ">", "<", "|", "›", "/", "\"
+                a$ = LEFT$(a$, i - 1) + MID$(a$, i + 1): i = i - 1
+        END SELECT
+    NEXT
+    lzweg = a$
+END FUNCTION
+
+SUB Main
+
+'31 27 15 7
+'Jetzt Hintergrund fÅr Wetter wÑhlen:
+SELECT CASE Wetter
+    CASE SchneeWetter: COLOR 8, 63
+    CASE RegenWetter: : COLOR 8, 7
+    CASE ELSE: COLOR 8, 63
+END SELECT
+
+IF Nacht THEN COLOR 8, 0
+
+
+startgame:
+IF MusicFile = "sleepy.snd" THEN
+  MusicFile = "angel.snd"
+ELSEIF MusicFile = "angel.snd" THEN
+  MusicFile = "sleepy.snd"
+END IF
+LoadSound
+
+'Warte, bis keine Noten mehr gespielt werden:
+DO: LOOP UNTIL PLAY(1) = 0
+
+SpeedFlash = 0
+
+'Bildausschnitt auf 0 setzen:
+yweg = 0
+
+'Punkte auf 0 setzen:
+userpoints = 0
+
+'Dimensionen zu den Objekten einlesen: (fÅr collision detection)
+GetDimensions
+
+
+followgame:
+
+'Kollision auf 0 setzen:
+collision = 0
+
+'Mann-Anfangsposition und status:
+man.xpos = 300
+man.ypos = 100
+man.status = 3 'am Anfang gespreizte Beine
+
+
+
+Spielstart:
+
+DO
+nz = TIMER + .03
+
+SCREEN 9, , 1, 0
+
+CLS
+
+'Hintergrund-Elemente aufbauen:
+DrawElementsBackGround
+
+DrawMan 'Mann zuerst zeichnen
+
+'Vordergrund-Elemente aufbauen:
+DrawElementsForeGround
+
+'Jetzt Wetter generieren:
+SELECT CASE Wetter
+    CASE SchneeWetter: Schnee
+    CASE RegenWetter: Regen
+END SELECT
+
+'Jetzt Punkte-Leiste und Statusbar (rechts) aufbauen:
+LINE (0, 0)-(639, 13), 0, BF
+COLOR 1: LOCATE 1, 2: PRINT "Punktestand: " + STR$(userpoints)
+
+'statusbartext anzeigen: (3 sekunden lang)
+IF statusbartime <> 0 THEN
+    IF TIMER > statusbartime + 2 THEN
+        statusbartime = 0
+    ELSE
+        'jetzt anzeigen:
+        LOCATE 1, 79 - LEN(statusbartext)
+        PRINT statusbartext
+
+    END IF
+END IF
+
+'Punkteleisten-Linie
+LINE (0, 14)-(639, 14), 6
+
+'Rahmen um den Bildschirm:
+Frame
+
+PCOPY 1, 0
+SCREEN 9, , 0, 0
+
+IF man.status = 4 THEN GOTO crash
+
+DoSound
+
+DO
+LOOP UNTIL TIMER >= nz 'wenn nîtig noch kurz anhalten...
+
+keyb = INKEY$
+WHILE INKEY$ <> "": WEND
+
+SELECT CASE keyb
+    CASE CHR$(0) + "K": IF (man.status < 22 OR man.status > 30) AND (man.status < 6 OR man.status > 20) THEN man.status = 1
+    CASE CHR$(0) + "M": IF (man.status < 22 OR man.status > 30) AND (man.status < 6 OR man.status > 20) THEN man.status = 2
+    CASE CHR$(27): EXIT SUB
+    CASE "s", "S"
+      IF MusicFile <> "" THEN
+        MusicFile = ""
+        ERASE player
+        playtime = 0
+      ELSE
+        MusicFile = "sleepy.snd"
+        LoadSound
+      END IF
+END SELECT
+
+SELECT CASE man.status
+    CASE 1: IF SpeedFlash > 0 THEN man.xpos = man.xpos - 20 ELSE man.xpos = man.xpos - 10
+    CASE 2: IF SpeedFlash > 0 THEN man.xpos = man.xpos + 20 ELSE man.xpos = man.xpos + 10
+END SELECT
+
+' einen Meter runter: (mit speed das doppelte)
+IF SpeedFlash > 0 THEN
+    yweg = yweg + 30
+    SpeedFlash = SpeedFlash + 30
+    IF SpeedFlash > 2000 THEN SpeedFlash = 0 'der Speed-Flash ist vorbei...
+ELSE
+    yweg = yweg + 10'ein pixel runterscrollen!
+END IF
+
+
+IF zieleinfahrt > 0 THEN
+    zieleinfahrt = zieleinfahrt + 1
+    nz2 = TIMER + .2
+    DO: DoSound: LOOP UNTIL TIMER >= nz2
+    IF zieleinfahrt >= 4 THEN Ziel: zieleinfahrt = 0: EXIT SUB
+END IF
+
+IF man.status >= 6 AND man.status <= 20 THEN collision = 0
+
+IF collision THEN
+    IF LCASE$(LEFT$(Objekte(collision).filename, 7)) = "lssflag" THEN
+    'flags:
+        SoundEffect 1
+        Objekte(collision).filename = "lssflgok.lds"
+        adduserpoints 1
+        collision = 0
+        StatusBar "Flagge, 1 Punkt"
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lssflgok" OR LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsspfeil" OR LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsspfei2" THEN
+        'nichts tun bei schon heruntergefahrener Flagge! oder bei den Pfeilen...
+        collision = 0
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 7)) = "lssziel" THEN
+        man.status = 5
+        IF zieleinfahrt = 0 THEN zieleinfahrt = 1
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsshigh1" THEN
+        man.status = 6
+        adduserpoints 5
+        SoundEffect 4
+        collision = 0
+        StatusBar "Juuump!!! 5 Punkte"
+
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsspktok" THEN
+    'leeres Paket (PakethÅlse):
+        Objekte(collision).ypos = Objekte(collision).ypos + 10
+        collision = 0
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsseisig" THEN
+    'EisflÑche:
+        man.status = 22
+        collision = 0
+        StatusBar "Achtung! EisflÑche!!! Schon passiert... - 20 Punkte Abzug"
+        adduserpoints -20
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lssspeed" THEN
+    'Speed-Pfeile:
+        collision = 0
+        SpeedFlash = 1
+        StatusBar "Achtung Speed-Flash! Doppelte Punkte!"
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsspaket" THEN
+    'Paket:
+        Objekte(collision).filename = "lsspktok.lds"
+        adduserpoints 20
+        SoundEffect 3
+        collision = 0
+        StatusBar "Geschenk, 20 Punkte"
+
+    ELSEIF LCASE$(LEFT$(Objekte(collision).filename, 8)) = "lsssnowm" THEN
+    'Schneemann:
+        man.status = 4 'crash-status setzen
+        Objekte(collision).filename = "lsssnowd.lds"
+        collision = 0
+        StatusBar "Dreckskerl! - 50 Punkte Abzug"
+        adduserpoints -50
+
+    ELSE
+    'andere Objekte:
+        man.status = 4 'crash-status setzen
+        adduserpoints -10
+        SoundEffect 2
+        collision = 0
+        StatusBar "Pass doch auf! - 10 Punkte Abzug"
+
+    END IF
+END IF
+
+LOOP
+
+EXIT SUB
+
+crash:
+WHILE INKEY$ <> "": WEND
+DO
+  a$ = INKEY$
+  DoSound
+  DoWeather
+LOOP UNTIL a$ = CHR$(13) OR a$ = CHR$(27) OR a$ = CHR$(32)
+yweg = yweg + 100
+GOTO followgame
+
+END SUB
+
+FUNCTION MainMenu%
+
+ch = 1
+DO
+SCREEN 9, , 1, 0
+CLS
+Frame
+
+COLOR 1
+LOCATE 3
+CenterText LevelName
+
+LOCATE 24
+COLOR 7
+CenterText "Leertaste - Leveleditor"
+
+    'Fokussierter Button:
+    SELECT CASE ch
+        CASE 1: LINE (69, 68)-(315, 173), 8, BF
+        CASE 2: LINE (336, 69)-(582, 174), 8, BF
+        CASE 3: LINE (73, 197)-(319, 302), 8, BF
+        CASE 4: LINE (337, 198)-(583, 303), 8, BF
+    END SELECT
+
+LINE (62, 62)-(308, 167), 3, BF
+LINE (-43, -139)-(-43, -139), 8
+LINE (-43, -139)-(-43, -139), 8
+LINE (254, 104)-(246, 126), 15
+LINE (246, 126)-(254, 104), 15
+LINE (254, 104)-(260, 126), 15
+LINE (260, 126)-(254, 104), 15
+LINE (254, 104)-(254, 90), 15
+LINE (254, 90)-(254, 105), 15
+CIRCLE (254, 85), 6, 15, , , .9230769
+LINE (254, 96)-(256, 102), 15
+LINE (256, 102)-(254, 105), 15
+LINE (254, 105)-(251, 101), 15
+LINE (251, 101)-(254, 95), 15
+LINE (248, 109)-(274, 149), 15
+LINE (274, 149)-(249, 110), 15
+LINE (238, 115)-(264, 155), 15
+LINE (264, 155)-(239, 116), 15
+LINE (75, 89)-(79, 79), 15
+LINE (76, 89)-(80, 79), 15
+LINE (79, 79)-(83, 89), 15
+LINE (80, 79)-(84, 89), 15
+LINE (81, 84)-(77, 84), 15
+LINE (82, 84)-(78, 84), 15
+LINE (87, 79)-(87, 89), 15
+LINE (88, 79)-(88, 89), 15
+LINE (87, 89)-(90, 89), 15
+LINE (88, 89)-(91, 89), 15
+LINE (90, 89)-(91, 88), 15
+LINE (91, 89)-(92, 88), 15
+LINE (91, 88)-(91, 85), 15
+LINE (92, 88)-(92, 85), 15
+LINE (91, 85)-(90, 84), 15
+LINE (92, 85)-(91, 84), 15
+LINE (90, 84)-(87, 84), 15
+LINE (91, 84)-(88, 84), 15
+LINE (97, 93)-(97, 82), 15
+LINE (98, 93)-(98, 82), 15
+LINE (97, 82)-(97, 80), 15
+LINE (98, 82)-(98, 80), 15
+LINE (97, 80)-(98, 79), 15
+LINE (98, 80)-(99, 79), 15
+LINE (98, 79)-(100, 79), 15
+LINE (99, 79)-(101, 79), 15
+LINE (100, 79)-(101, 80), 15
+LINE (101, 79)-(102, 80), 15
+LINE (95, 84)-(99, 84), 15
+LINE (96, 84)-(100, 84), 15
+LINE (110, 89)-(109, 88), 15
+LINE (111, 89)-(110, 88), 15
+LINE (109, 88)-(109, 85), 15
+LINE (110, 88)-(110, 85), 15
+LINE (109, 85)-(108, 84), 15
+LINE (110, 85)-(109, 84), 15
+LINE (108, 84)-(106, 84), 15
+LINE (109, 84)-(107, 84), 15
+LINE (106, 84)-(105, 85), 15
+LINE (107, 84)-(106, 85), 15
+LINE (105, 85)-(105, 88), 15
+LINE (106, 85)-(106, 88), 15
+LINE (105, 88)-(106, 89), 15
+LINE (106, 88)-(107, 89), 15
+LINE (106, 89)-(108, 89), 15
+LINE (107, 89)-(109, 89), 15
+LINE (108, 89)-(109, 88), 15
+LINE (109, 89)-(110, 88), 15
+LINE (114, 79)-(114, 89), 15
+LINE (115, 79)-(115, 89), 15
+LINE (114, 89)-(114, 85), 15
+LINE (115, 89)-(115, 85), 15
+LINE (114, 85)-(115, 84), 15
+LINE (115, 85)-(116, 84), 15
+LINE (115, 84)-(118, 84), 15
+LINE (116, 84)-(119, 84), 15
+LINE (118, 84)-(119, 85), 15
+LINE (119, 84)-(120, 85), 15
+LINE (119, 85)-(119, 89), 15
+LINE (120, 85)-(120, 89), 15
+LINE (123, 89)-(123, 84), 15
+LINE (124, 89)-(124, 84), 15
+LINE (123, 85)-(124, 84), 15
+LINE (124, 85)-(125, 84), 15
+LINE (124, 84)-(126, 84), 15
+LINE (125, 84)-(127, 84), 15
+LINE (126, 84)-(127, 85), 15
+LINE (127, 84)-(128, 85), 15
+LINE (133, 82)-(133, 88), 15
+LINE (134, 82)-(134, 88), 15
+LINE (133, 88)-(134, 89), 15
+LINE (134, 88)-(135, 89), 15
+LINE (134, 89)-(135, 89), 15
+LINE (135, 89)-(136, 89), 15
+LINE (135, 89)-(136, 88), 15
+LINE (136, 89)-(137, 88), 15
+LINE (134, 84)-(132, 84), 15
+LINE (135, 84)-(133, 84), 15
+LINE (133, 82)-(133, 81), 15
+LINE (134, 82)-(134, 81), 15
+LINE (153, 84)-(152, 83), 15
+LINE (154, 84)-(153, 83), 15
+LINE (152, 83)-(150, 83), 15
+LINE (153, 83)-(151, 83), 15
+LINE (150, 83)-(149, 84), 15
+LINE (151, 83)-(150, 84), 15
+LINE (149, 84)-(149, 85), 15
+LINE (150, 84)-(150, 85), 15
+LINE (149, 85)-(150, 86), 15
+LINE (150, 85)-(151, 86), 15
+LINE (150, 86)-(152, 86), 15
+LINE (151, 86)-(153, 86), 15
+LINE (152, 86)-(153, 87), 15
+LINE (153, 86)-(154, 87), 15
+LINE (153, 87)-(153, 88), 15
+LINE (154, 87)-(154, 88), 15
+LINE (153, 88)-(152, 89), 15
+LINE (154, 88)-(153, 89), 15
+LINE (152, 89)-(150, 89), 15
+LINE (153, 89)-(151, 89), 15
+LINE (150, 89)-(149, 88), 15
+LINE (151, 89)-(150, 88), 15
+LINE (159, 82)-(159, 88), 15
+LINE (160, 82)-(160, 88), 15
+LINE (159, 88)-(160, 89), 15
+LINE (160, 88)-(161, 89), 15
+LINE (160, 89)-(161, 89), 15
+LINE (161, 89)-(162, 89), 15
+LINE (161, 89)-(162, 88), 15
+LINE (162, 89)-(163, 88), 15
+LINE (160, 84)-(158, 84), 15
+LINE (161, 84)-(159, 84), 15
+LINE (159, 82)-(159, 81), 15
+LINE (160, 82)-(160, 81), 15
+LINE (171, 89)-(170, 88), 15
+LINE (172, 89)-(171, 88), 15
+LINE (170, 88)-(170, 85), 15
+LINE (171, 88)-(171, 85), 15
+LINE (170, 85)-(169, 84), 15
+LINE (171, 85)-(170, 84), 15
+LINE (169, 84)-(167, 84), 15
+LINE (170, 84)-(168, 84), 15
+LINE (167, 84)-(166, 85), 15
+LINE (168, 84)-(167, 85), 15
+LINE (166, 85)-(166, 88), 15
+LINE (167, 85)-(167, 88), 15
+LINE (166, 88)-(167, 89), 15
+LINE (167, 88)-(168, 89), 15
+LINE (167, 89)-(169, 89), 15
+LINE (168, 89)-(170, 89), 15
+LINE (169, 89)-(170, 88), 15
+LINE (170, 89)-(171, 88), 15
+LINE (175, 89)-(175, 84), 15
+LINE (176, 89)-(176, 84), 15
+LINE (175, 85)-(176, 84), 15
+LINE (176, 85)-(177, 84), 15
+LINE (176, 84)-(178, 84), 15
+LINE (177, 84)-(179, 84), 15
+LINE (178, 84)-(179, 85), 15
+LINE (179, 84)-(180, 85), 15
+LINE (185, 82)-(185, 88), 15
+LINE (186, 82)-(186, 88), 15
+LINE (185, 88)-(186, 89), 15
+LINE (186, 88)-(187, 89), 15
+LINE (186, 89)-(187, 89), 15
+LINE (187, 89)-(188, 89), 15
+LINE (187, 89)-(188, 88), 15
+LINE (188, 89)-(189, 88), 15
+LINE (186, 84)-(184, 84), 15
+LINE (187, 84)-(185, 84), 15
+LINE (185, 82)-(185, 81), 15
+LINE (186, 82)-(186, 81), 15
+LINE (194, 86)-(196, 86), 15
+LINE (195, 86)-(197, 86), 15
+LINE (196, 86)-(196, 85), 15
+LINE (197, 86)-(197, 85), 15
+LINE (196, 85)-(195, 84), 15
+LINE (197, 85)-(196, 84), 15
+LINE (195, 84)-(193, 84), 15
+LINE (196, 84)-(194, 84), 15
+LINE (193, 84)-(192, 85), 15
+LINE (194, 84)-(193, 85), 15
+LINE (192, 85)-(192, 88), 15
+LINE (193, 85)-(193, 88), 15
+LINE (192, 88)-(193, 89), 15
+LINE (193, 88)-(194, 89), 15
+LINE (193, 89)-(195, 89), 15
+LINE (194, 89)-(196, 89), 15
+LINE (195, 89)-(196, 88), 15
+LINE (196, 89)-(197, 88), 15
+LINE (194, 86)-(192, 86), 15
+LINE (195, 86)-(193, 86), 15
+LINE (200, 89)-(200, 84), 15
+LINE (201, 89)-(201, 84), 15
+LINE (200, 85)-(201, 84), 15
+LINE (201, 85)-(202, 84), 15
+LINE (201, 84)-(204, 84), 15
+LINE (202, 84)-(205, 84), 15
+LINE (204, 84)-(205, 85), 15
+LINE (205, 84)-(206, 85), 15
+LINE (205, 85)-(205, 89), 15
+LINE (206, 85)-(206, 89), 15
+LINE (209, 89)-(210, 89), 15
+LINE (210, 89)-(211, 89), 15
+LINE (210, 89)-(210, 88), 15
+LINE (211, 89)-(211, 88), 15
+LINE (210, 88)-(209, 88), 15
+LINE (211, 88)-(210, 88), 15
+LINE (209, 88)-(209, 89), 15
+LINE (210, 88)-(210, 89), 15
+LINE (214, 89)-(215, 89), 15
+LINE (215, 89)-(216, 89), 15
+LINE (215, 89)-(215, 88), 15
+LINE (216, 89)-(216, 88), 15
+LINE (215, 88)-(214, 88), 15
+LINE (216, 88)-(215, 88), 15
+LINE (214, 88)-(214, 89), 15
+LINE (215, 88)-(215, 89), 15
+LINE (219, 89)-(220, 89), 15
+LINE (220, 89)-(221, 89), 15
+LINE (220, 89)-(220, 88), 15
+LINE (221, 89)-(221, 88), 15
+LINE (220, 88)-(219, 88), 15
+LINE (221, 88)-(220, 88), 15
+LINE (219, 88)-(219, 89), 15
+LINE (220, 88)-(220, 89), 15
+PAINT (253, 85), 15, 15
+LINE (66, 191)-(312, 296), 5, BF
+LINE (234, 225)-(234, 225), 11
+LINE (234, 225)-(233, 224), 11
+LINE (233, 224)-(232, 224), 11
+LINE (232, 224)-(231, 223), 11
+LINE (231, 223)-(231, 222), 11
+LINE (231, 222)-(231, 219), 11
+LINE (231, 219)-(231, 218), 11
+LINE (231, 218)-(232, 217), 11
+LINE (232, 217)-(232, 216), 11
+LINE (232, 216)-(233, 215), 11
+LINE (233, 215)-(234, 215), 11
+LINE (234, 215)-(235, 215), 11
+LINE (235, 215)-(236, 215), 11
+LINE (236, 215)-(237, 215), 11
+LINE (237, 215)-(238, 215), 11
+LINE (238, 215)-(239, 215), 11
+LINE (239, 215)-(240, 216), 11
+LINE (240, 216)-(241, 217), 11
+LINE (241, 217)-(241, 216), 11
+LINE (241, 216)-(243, 215), 11
+LINE (243, 215)-(245, 214), 11
+LINE (245, 214)-(246, 213), 11
+LINE (246, 213)-(247, 212), 11
+LINE (247, 212)-(248, 212), 11
+LINE (248, 212)-(249, 212), 11
+LINE (249, 212)-(251, 212), 11
+LINE (251, 212)-(252, 212), 11
+LINE (252, 212)-(253, 212), 11
+LINE (253, 212)-(254, 213), 11
+LINE (254, 213)-(255, 213), 11
+LINE (255, 213)-(256, 213), 11
+LINE (256, 213)-(256, 214), 11
+LINE (256, 214)-(256, 215), 11
+LINE (256, 215)-(256, 216), 11
+LINE (256, 216)-(260, 216), 11
+LINE (260, 216)-(262, 216), 11
+LINE (262, 216)-(264, 216), 11
+LINE (264, 216)-(266, 216), 11
+LINE (266, 216)-(267, 216), 11
+LINE (267, 216)-(268, 216), 11
+LINE (268, 216)-(270, 216), 11
+LINE (270, 216)-(271, 216), 11
+LINE (271, 216)-(272, 217), 11
+LINE (272, 217)-(272, 218), 11
+LINE (272, 218)-(272, 219), 11
+LINE (272, 219)-(272, 220), 11
+LINE (272, 220)-(272, 221), 11
+LINE (272, 221)-(274, 222), 11
+LINE (274, 222)-(277, 223), 11
+LINE (277, 223)-(278, 224), 11
+LINE (278, 224)-(278, 225), 11
+LINE (278, 225)-(278, 226), 11
+LINE (278, 226)-(278, 227), 11
+LINE (278, 227)-(277, 228), 11
+LINE (277, 228)-(276, 228), 11
+LINE (276, 228)-(273, 229), 11
+LINE (273, 229)-(271, 230), 11
+LINE (271, 230)-(270, 231), 11
+LINE (270, 231)-(271, 232), 11
+LINE (271, 232)-(272, 233), 11
+LINE (272, 233)-(272, 234), 11
+LINE (272, 234)-(272, 236), 11
+LINE (272, 236)-(271, 239), 11
+LINE (271, 239)-(270, 241), 11
+LINE (270, 241)-(268, 241), 11
+LINE (268, 241)-(265, 242), 11
+LINE (265, 242)-(263, 242), 11
+LINE (263, 242)-(262, 242), 11
+LINE (262, 242)-(261, 241), 11
+LINE (261, 241)-(261, 242), 11
+LINE (261, 242)-(259, 244), 11
+LINE (259, 244)-(253, 247), 11
+LINE (253, 247)-(251, 248), 11
+LINE (251, 248)-(248, 246), 11
+LINE (248, 246)-(248, 245), 11
+LINE (248, 245)-(248, 244), 11
+LINE (248, 244)-(248, 243), 11
+LINE (248, 243)-(248, 242), 11
+LINE (248, 242)-(248, 241), 11
+LINE (248, 241)-(247, 241), 11
+LINE (247, 241)-(245, 243), 11
+LINE (245, 243)-(243, 243), 11
+LINE (243, 243)-(243, 244), 11
+LINE (243, 244)-(242, 244), 11
+LINE (242, 244)-(239, 243), 11
+LINE (239, 243)-(237, 243), 11
+LINE (237, 243)-(236, 242), 11
+LINE (236, 242)-(233, 241), 11
+LINE (233, 241)-(231, 240), 11
+LINE (231, 240)-(231, 239), 11
+LINE (231, 239)-(231, 237), 11
+LINE (231, 237)-(231, 236), 11
+LINE (231, 236)-(230, 236), 11
+LINE (230, 236)-(228, 236), 11
+LINE (228, 236)-(226, 236), 11
+LINE (226, 236)-(225, 236), 11
+LINE (225, 236)-(224, 235), 11
+LINE (224, 235)-(222, 234), 11
+LINE (222, 234)-(221, 233), 11
+LINE (221, 233)-(221, 232), 11
+LINE (221, 232)-(221, 231), 11
+LINE (221, 231)-(221, 230), 11
+LINE (221, 230)-(222, 229), 11
+LINE (222, 229)-(221, 228), 11
+LINE (221, 228)-(220, 226), 11
+LINE (220, 226)-(219, 225), 11
+LINE (219, 225)-(219, 224), 11
+LINE (219, 224)-(219, 223), 11
+LINE (219, 223)-(220, 222), 11
+LINE (220, 222)-(220, 221), 11
+LINE (220, 221)-(221, 220), 11
+LINE (221, 220)-(222, 219), 11
+LINE (222, 219)-(223, 219), 11
+LINE (223, 219)-(225, 219), 11
+LINE (225, 219)-(226, 219), 11
+LINE (226, 219)-(227, 220), 11
+LINE (227, 220)-(228, 221), 11
+LINE (228, 221)-(228, 222), 11
+LINE (228, 222)-(228, 223), 11
+LINE (228, 223)-(229, 223), 11
+LINE (229, 223)-(230, 223), 11
+LINE (230, 223)-(231, 223), 11
+LINE (231, 223)-(232, 223), 11
+LINE (232, 223)-(232, 224), 11
+PAINT (256, 231), 11, 11
+LINE (238, 228)-(238, 228), 3
+LINE (238, 228)-(239, 227), 3
+LINE (239, 227)-(240, 226), 3
+LINE (240, 226)-(241, 225), 3
+LINE (241, 225)-(241, 224), 3
+LINE (241, 224)-(241, 223), 3
+LINE (241, 223)-(242, 222), 3
+LINE (242, 222)-(243, 222), 3
+LINE (243, 222)-(244, 221), 3
+LINE (244, 221)-(245, 221), 3
+LINE (245, 221)-(247, 221), 3
+LINE (247, 221)-(248, 221), 3
+LINE (248, 221)-(249, 221), 3
+LINE (249, 221)-(250, 221), 3
+LINE (250, 221)-(251, 222), 3
+LINE (251, 222)-(252, 222), 3
+LINE (252, 222)-(253, 223), 3
+LINE (253, 223)-(254, 224), 3
+LINE (254, 224)-(255, 224), 3
+LINE (255, 224)-(256, 224), 3
+LINE (256, 224)-(257, 224), 3
+LINE (257, 224)-(258, 224), 3
+LINE (258, 224)-(260, 223), 3
+LINE (260, 223)-(262, 223), 3
+LINE (262, 223)-(263, 223), 3
+LINE (263, 223)-(264, 223), 3
+LINE (264, 223)-(265, 223), 3
+LINE (265, 223)-(267, 223), 3
+LINE (267, 223)-(268, 223), 3
+LINE (268, 223)-(269, 223), 3
+LINE (269, 223)-(270, 223), 3
+LINE (270, 223)-(271, 223), 3
+LINE (271, 223)-(272, 224), 3
+LINE (272, 224)-(273, 225), 3
+LINE (273, 225)-(273, 226), 3
+LINE (273, 226)-(273, 227), 3
+LINE (273, 227)-(273, 228), 3
+LINE (273, 228)-(273, 229), 3
+LINE (273, 229)-(273, 230), 3
+LINE (273, 230)-(274, 231), 3
+LINE (274, 231)-(275, 231), 3
+LINE (275, 231)-(276, 231), 3
+LINE (276, 231)-(277, 232), 3
+LINE (277, 232)-(278, 233), 3
+LINE (278, 233)-(278, 234), 3
+LINE (278, 234)-(278, 235), 3
+LINE (278, 235)-(279, 236), 3
+LINE (279, 236)-(279, 237), 3
+LINE (279, 237)-(279, 238), 3
+LINE (279, 238)-(279, 239), 3
+LINE (279, 239)-(278, 240), 3
+LINE (278, 240)-(277, 241), 3
+LINE (277, 241)-(276, 241), 3
+LINE (276, 241)-(275, 242), 3
+LINE (275, 242)-(274, 243), 3
+LINE (274, 243)-(272, 244), 3
+LINE (272, 244)-(271, 244), 3
+LINE (271, 244)-(269, 244), 3
+LINE (269, 244)-(268, 243), 3
+LINE (268, 243)-(266, 242), 3
+LINE (266, 242)-(265, 242), 3
+LINE (265, 242)-(264, 242), 3
+LINE (264, 242)-(263, 241), 3
+LINE (263, 241)-(262, 240), 3
+LINE (262, 240)-(260, 240), 3
+LINE (260, 240)-(258, 240), 3
+LINE (258, 240)-(257, 240), 3
+LINE (257, 240)-(256, 240), 3
+LINE (256, 240)-(255, 240), 3
+LINE (255, 240)-(254, 240), 3
+LINE (254, 240)-(254, 241), 3
+LINE (254, 241)-(253, 242), 3
+LINE (253, 242)-(252, 243), 3
+LINE (252, 243)-(251, 243), 3
+LINE (251, 243)-(250, 243), 3
+LINE (250, 243)-(248, 244), 3
+LINE (248, 244)-(247, 244), 3
+LINE (247, 244)-(246, 244), 3
+LINE (246, 244)-(245, 244), 3
+LINE (245, 244)-(244, 244), 3
+LINE (244, 244)-(243, 244), 3
+LINE (243, 244)-(242, 244), 3
+LINE (242, 244)-(241, 244), 3
+LINE (241, 244)-(240, 243), 3
+LINE (240, 243)-(239, 242), 3
+LINE (239, 242)-(238, 241), 3
+LINE (238, 241)-(237, 240), 3
+LINE (237, 240)-(236, 239), 3
+LINE (236, 239)-(236, 238), 3
+LINE (236, 238)-(236, 237), 3
+LINE (236, 237)-(235, 236), 3
+LINE (235, 236)-(234, 235), 3
+LINE (234, 235)-(233, 234), 3
+LINE (233, 234)-(233, 233), 3
+LINE (233, 233)-(233, 232), 3
+LINE (233, 232)-(233, 231), 3
+LINE (233, 231)-(233, 230), 3
+LINE (233, 230)-(234, 229), 3
+LINE (234, 229)-(235, 228), 3
+LINE (235, 228)-(235, 227), 3
+LINE (235, 227)-(235, 226), 3
+LINE (235, 226)-(236, 225), 3
+LINE (236, 225)-(237, 225), 3
+LINE (237, 225)-(238, 225), 3
+LINE (238, 225)-(239, 226), 3
+LINE (239, 226)-(239, 227), 3
+PAINT (249, 232), 3, 3
+LINE (223, 257)-(223, 264), 11
+LINE (219, 261)-(227, 261), 11
+LINE (220, 265)-(225, 259), 11
+LINE (219, 259)-(226, 265), 11
+LINE (243, 275)-(243, 285), 11
+LINE (240, 282)-(247, 279), 11
+LINE (242, 284)-(247, 278), 11
+LINE (240, 277)-(246, 285), 11
+LINE (268, 263)-(268, 270), 11
+LINE (265, 267)-(273, 267), 11
+LINE (271, 266)-(265, 270), 11
+LINE (266, 265)-(271, 270), 11
+LINE (274, 251)-(270, 255), 11
+LINE (265, 260)-(261, 265), 11
+LINE (255, 270)-(252, 274), 11
+LINE (240, 255)-(235, 260), 11
+LINE (228, 267)-(222, 274), 11
+LINE (254, 254)-(248, 260), 11
+LINE (243, 266)-(238, 272), 11
+LINE (235, 278)-(229, 283), 11
+LINE (222, 248)-(217, 254), 11
+LINE (229, 251)-(225, 255), 11
+LINE (216, 268)-(211, 272), 11
+LINE (218, 279)-(213, 284), 11
+LINE (78, 208)-(81, 218), 14
+LINE (79, 208)-(82, 218), 14
+LINE (81, 218)-(84, 213), 14
+LINE (82, 218)-(85, 213), 14
+LINE (86, 218)-(84, 213), 14
+LINE (87, 218)-(85, 213), 14
+LINE (86, 218)-(90, 208), 14
+LINE (87, 218)-(91, 208), 14
+LINE (96, 215)-(98, 215), 14
+LINE (97, 215)-(99, 215), 14
+LINE (98, 215)-(98, 214), 14
+LINE (99, 215)-(99, 214), 14
+LINE (98, 214)-(97, 213), 14
+LINE (99, 214)-(98, 213), 14
+LINE (97, 213)-(95, 213), 14
+LINE (98, 213)-(96, 213), 14
+LINE (95, 213)-(94, 214), 14
+LINE (96, 213)-(95, 214), 14
+LINE (94, 214)-(94, 217), 14
+LINE (95, 214)-(95, 217), 14
+LINE (94, 217)-(95, 218), 14
+LINE (95, 217)-(96, 218), 14
+LINE (95, 218)-(97, 218), 14
+LINE (96, 218)-(98, 218), 14
+LINE (97, 218)-(98, 217), 14
+LINE (98, 218)-(99, 217), 14
+LINE (96, 215)-(94, 215), 14
+LINE (97, 215)-(95, 215), 14
+LINE (104, 211)-(104, 217), 14
+LINE (105, 211)-(105, 217), 14
+LINE (104, 217)-(105, 218), 14
+LINE (105, 217)-(106, 218), 14
+LINE (105, 218)-(106, 218), 14
+LINE (106, 218)-(107, 218), 14
+LINE (106, 218)-(107, 217), 14
+LINE (107, 218)-(108, 217), 14
+LINE (105, 213)-(103, 213), 14
+LINE (106, 213)-(104, 213), 14
+LINE (104, 211)-(104, 210), 14
+LINE (105, 211)-(105, 210), 14
+LINE (113, 211)-(113, 217), 14
+LINE (114, 211)-(114, 217), 14
+LINE (113, 217)-(114, 218), 14
+LINE (114, 217)-(115, 218), 14
+LINE (114, 218)-(115, 218), 14
+LINE (115, 218)-(116, 218), 14
+LINE (115, 218)-(116, 217), 14
+LINE (116, 218)-(117, 217), 14
+LINE (114, 213)-(112, 213), 14
+LINE (115, 213)-(113, 213), 14
+LINE (113, 211)-(113, 210), 14
+LINE (114, 211)-(114, 210), 14
+LINE (122, 215)-(124, 215), 14
+LINE (123, 215)-(125, 215), 14
+LINE (124, 215)-(124, 214), 14
+LINE (125, 215)-(125, 214), 14
+LINE (124, 214)-(123, 213), 14
+LINE (125, 214)-(124, 213), 14
+LINE (123, 213)-(121, 213), 14
+LINE (124, 213)-(122, 213), 14
+LINE (121, 213)-(120, 214), 14
+LINE (122, 213)-(121, 214), 14
+LINE (120, 214)-(120, 217), 14
+LINE (121, 214)-(121, 217), 14
+LINE (120, 217)-(121, 218), 14
+LINE (121, 217)-(122, 218), 14
+LINE (121, 218)-(123, 218), 14
+LINE (122, 218)-(124, 218), 14
+LINE (123, 218)-(124, 217), 14
+LINE (124, 218)-(125, 217), 14
+LINE (122, 215)-(120, 215), 14
+LINE (123, 215)-(121, 215), 14
+LINE (128, 218)-(128, 213), 14
+LINE (129, 218)-(129, 213), 14
+LINE (128, 214)-(129, 213), 14
+LINE (129, 214)-(130, 213), 14
+LINE (129, 213)-(131, 213), 14
+LINE (130, 213)-(132, 213), 14
+LINE (131, 213)-(132, 214), 14
+LINE (132, 213)-(133, 214), 14
+LINE (144, 213)-(144, 217), 14
+LINE (145, 213)-(145, 217), 14
+LINE (144, 217)-(145, 218), 14
+LINE (145, 217)-(146, 218), 14
+LINE (145, 218)-(148, 218), 14
+LINE (146, 218)-(149, 218), 14
+LINE (148, 218)-(149, 217), 14
+LINE (149, 218)-(150, 217), 14
+LINE (149, 217)-(149, 213), 14
+LINE (150, 217)-(150, 213), 14
+LINE (149, 213)-(149, 218), 14
+LINE (150, 213)-(150, 218), 14
+LINE (153, 218)-(153, 213), 14
+LINE (154, 218)-(154, 213), 14
+LINE (153, 214)-(154, 213), 14
+LINE (154, 214)-(155, 213), 14
+LINE (154, 213)-(157, 213), 14
+LINE (155, 213)-(158, 213), 14
+LINE (157, 213)-(158, 214), 14
+LINE (158, 213)-(159, 214), 14
+LINE (158, 214)-(158, 218), 14
+LINE (159, 214)-(159, 218), 14
+LINE (167, 218)-(166, 217), 14
+LINE (168, 218)-(167, 217), 14
+LINE (166, 208)-(166, 217), 14
+LINE (167, 208)-(167, 217), 14
+LINE (166, 217)-(165, 218), 14
+LINE (167, 217)-(166, 218), 14
+LINE (165, 218)-(163, 218), 14
+LINE (166, 218)-(164, 218), 14
+LINE (163, 218)-(162, 217), 14
+LINE (164, 218)-(163, 217), 14
+LINE (162, 217)-(162, 214), 14
+LINE (163, 217)-(163, 214), 14
+LINE (162, 214)-(163, 213), 14
+LINE (163, 214)-(164, 213), 14
+LINE (163, 213)-(166, 213), 14
+LINE (164, 213)-(167, 213), 14
+LINE (83, 237)-(83, 227), 14
+LINE (84, 237)-(84, 227), 14
+LINE (79, 227)-(87, 227), 14
+LINE (80, 227)-(88, 227), 14
+LINE (96, 237)-(95, 236), 14
+LINE (97, 237)-(96, 236), 14
+LINE (95, 236)-(95, 233), 14
+LINE (96, 236)-(96, 233), 14
+LINE (95, 233)-(94, 232), 14
+LINE (96, 233)-(95, 232), 14
+LINE (94, 232)-(92, 232), 14
+LINE (95, 232)-(93, 232), 14
+LINE (92, 232)-(91, 233), 14
+LINE (93, 232)-(92, 233), 14
+LINE (91, 233)-(91, 236), 14
+LINE (92, 233)-(92, 236), 14
+LINE (91, 236)-(92, 237), 14
+LINE (92, 236)-(93, 237), 14
+LINE (92, 237)-(94, 237), 14
+LINE (93, 237)-(95, 237), 14
+LINE (94, 237)-(95, 236), 14
+LINE (95, 237)-(96, 236), 14
+LINE (100, 233)-(101, 232), 14
+LINE (101, 233)-(102, 232), 14
+LINE (101, 232)-(104, 232), 14
+LINE (102, 232)-(105, 232), 14
+LINE (104, 232)-(105, 233), 14
+LINE (105, 232)-(106, 233), 14
+LINE (105, 233)-(105, 236), 14
+LINE (106, 233)-(106, 236), 14
+LINE (105, 236)-(104, 237), 14
+LINE (106, 236)-(105, 237), 14
+LINE (104, 237)-(101, 237), 14
+LINE (105, 237)-(102, 237), 14
+LINE (101, 237)-(100, 236), 14
+LINE (102, 237)-(101, 236), 14
+LINE (100, 236)-(100, 233), 14
+LINE (101, 236)-(101, 233), 14
+LINE (105, 236)-(105, 240), 14
+LINE (106, 236)-(106, 240), 14
+LINE (105, 240)-(104, 241), 14
+LINE (106, 240)-(105, 241), 14
+LINE (104, 241)-(101, 241), 14
+LINE (105, 241)-(102, 241), 14
+LINE (101, 241)-(100, 240), 14
+LINE (102, 241)-(101, 240), 14
+LINE (111, 234)-(113, 234), 14
+LINE (112, 234)-(114, 234), 14
+LINE (113, 234)-(113, 233), 14
+LINE (114, 234)-(114, 233), 14
+LINE (113, 233)-(112, 232), 14
+LINE (114, 233)-(113, 232), 14
+LINE (112, 232)-(110, 232), 14
+LINE (113, 232)-(111, 232), 14
+LINE (110, 232)-(109, 233), 14
+LINE (111, 232)-(110, 233), 14
+LINE (109, 233)-(109, 236), 14
+LINE (110, 233)-(110, 236), 14
+LINE (109, 236)-(110, 237), 14
+LINE (110, 236)-(111, 237), 14
+LINE (110, 237)-(112, 237), 14
+LINE (111, 237)-(113, 237), 14
+LINE (112, 237)-(113, 236), 14
+LINE (113, 237)-(114, 236), 14
+LINE (111, 234)-(109, 234), 14
+LINE (112, 234)-(110, 234), 14
+LINE (121, 232)-(120, 231), 14
+LINE (122, 232)-(121, 231), 14
+LINE (120, 231)-(118, 231), 14
+LINE (121, 231)-(119, 231), 14
+LINE (118, 231)-(117, 232), 14
+LINE (119, 231)-(118, 232), 14
+LINE (117, 232)-(117, 233), 14
+LINE (118, 232)-(118, 233), 14
+LINE (117, 233)-(118, 234), 14
+LINE (118, 233)-(119, 234), 14
+LINE (118, 234)-(120, 234), 14
+LINE (119, 234)-(121, 234), 14
+LINE (120, 234)-(121, 235), 14
+LINE (121, 234)-(122, 235), 14
+LINE (121, 235)-(121, 236), 14
+LINE (122, 235)-(122, 236), 14
+LINE (121, 236)-(120, 237), 14
+LINE (122, 236)-(121, 237), 14
+LINE (120, 237)-(118, 237), 14
+LINE (121, 237)-(119, 237), 14
+LINE (118, 237)-(117, 236), 14
+LINE (119, 237)-(118, 236), 14
+LINE (130, 237)-(125, 237), 14
+LINE (131, 237)-(126, 237), 14
+LINE (125, 237)-(130, 232), 14
+LINE (126, 237)-(131, 232), 14
+LINE (130, 232)-(125, 232), 14
+LINE (131, 232)-(126, 232), 14
+LINE (126, 234)-(129, 234), 14
+LINE (127, 234)-(130, 234), 14
+LINE (136, 234)-(138, 234), 14
+LINE (137, 234)-(139, 234), 14
+LINE (138, 234)-(138, 233), 14
+LINE (139, 234)-(139, 233), 14
+LINE (138, 233)-(137, 232), 14
+LINE (139, 233)-(138, 232), 14
+LINE (137, 232)-(135, 232), 14
+LINE (138, 232)-(136, 232), 14
+LINE (135, 232)-(134, 233), 14
+LINE (136, 232)-(135, 233), 14
+LINE (134, 233)-(134, 236), 14
+LINE (135, 233)-(135, 236), 14
+LINE (134, 236)-(135, 237), 14
+LINE (135, 236)-(136, 237), 14
+LINE (135, 237)-(137, 237), 14
+LINE (136, 237)-(138, 237), 14
+LINE (137, 237)-(138, 236), 14
+LINE (138, 237)-(139, 236), 14
+LINE (136, 234)-(134, 234), 14
+LINE (137, 234)-(135, 234), 14
+LINE (142, 237)-(142, 231), 14
+LINE (143, 237)-(143, 231), 14
+LINE (142, 228)-(142, 227), 14
+LINE (143, 228)-(143, 227), 14
+LINE (148, 230)-(148, 236), 14
+LINE (149, 230)-(149, 236), 14
+LINE (148, 236)-(149, 237), 14
+LINE (149, 236)-(150, 237), 14
+LINE (149, 237)-(150, 237), 14
+LINE (150, 237)-(151, 237), 14
+LINE (150, 237)-(151, 236), 14
+LINE (151, 237)-(152, 236), 14
+LINE (149, 232)-(147, 232), 14
+LINE (150, 232)-(148, 232), 14
+LINE (148, 230)-(148, 229), 14
+LINE (149, 230)-(149, 229), 14
+LINE (155, 237)-(156, 237), 14
+LINE (156, 237)-(157, 237), 14
+LINE (156, 237)-(156, 236), 14
+LINE (157, 237)-(157, 236), 14
+LINE (156, 236)-(155, 236), 14
+LINE (157, 236)-(156, 236), 14
+LINE (155, 236)-(155, 237), 14
+LINE (156, 236)-(156, 237), 14
+LINE (160, 237)-(161, 237), 14
+LINE (161, 237)-(162, 237), 14
+LINE (161, 237)-(161, 236), 14
+LINE (162, 237)-(162, 236), 14
+LINE (161, 236)-(160, 236), 14
+LINE (162, 236)-(161, 236), 14
+LINE (160, 236)-(160, 237), 14
+LINE (161, 236)-(161, 237), 14
+LINE (165, 237)-(166, 237), 14
+LINE (166, 237)-(167, 237), 14
+LINE (166, 237)-(166, 236), 14
+LINE (167, 237)-(167, 236), 14
+LINE (166, 236)-(165, 236), 14
+LINE (167, 236)-(166, 236), 14
+LINE (165, 236)-(165, 237), 14
+LINE (166, 236)-(166, 237), 14
+LINE (329, 63)-(575, 168), 11, BF
+LINE (517, 110)-(494, 147), 8
+LINE (494, 147)-(506, 155), 8
+LINE (506, 155)-(527, 111), 8
+LINE (527, 111)-(550, 140), 8
+LINE (550, 140)-(564, 126), 8
+LINE (564, 126)-(528, 97), 8
+LINE (528, 97)-(517, 110), 8
+PAINT (503, 143), 12, 8
+CIRCLE (528, 101), 22, 7, , , 1.1
+PAINT (530, 101), 14, 7
+LINE (517, 98)-(520, 103), 1
+LINE (520, 103)-(528, 97), 1
+LINE (528, 97)-(528, 115), 1
+LINE (528, 115)-(534, 115), 1
+LINE (534, 115)-(534, 86), 1
+LINE (534, 86)-(517, 98), 1
+PAINT (531, 93), 1, 1
+LINE (342, 79)-(342, 89), 1
+LINE (343, 79)-(343, 89), 1
+LINE (342, 84)-(348, 84), 1
+LINE (343, 84)-(349, 84), 1
+LINE (348, 79)-(348, 89), 1
+LINE (349, 79)-(349, 89), 1
+LINE (352, 89)-(352, 83), 1
+LINE (353, 89)-(353, 83), 1
+LINE (352, 80)-(352, 79), 1
+LINE (353, 80)-(353, 79), 1
+LINE (356, 85)-(357, 84), 1
+LINE (357, 85)-(358, 84), 1
+LINE (357, 84)-(360, 84), 1
+LINE (358, 84)-(361, 84), 1
+LINE (360, 84)-(361, 85), 1
+LINE (361, 84)-(362, 85), 1
+LINE (361, 85)-(361, 88), 1
+LINE (362, 85)-(362, 88), 1
+LINE (361, 88)-(360, 89), 1
+LINE (362, 88)-(361, 89), 1
+LINE (360, 89)-(357, 89), 1
+LINE (361, 89)-(358, 89), 1
+LINE (357, 89)-(356, 88), 1
+LINE (358, 89)-(357, 88), 1
+LINE (356, 88)-(356, 85), 1
+LINE (357, 88)-(357, 85), 1
+LINE (361, 88)-(361, 92), 1
+LINE (362, 88)-(362, 92), 1
+LINE (361, 92)-(360, 93), 1
+LINE (362, 92)-(361, 93), 1
+LINE (360, 93)-(357, 93), 1
+LINE (361, 93)-(358, 93), 1
+LINE (357, 93)-(356, 92), 1
+LINE (358, 93)-(357, 92), 1
+LINE (365, 79)-(365, 89), 1
+LINE (366, 79)-(366, 89), 1
+LINE (365, 89)-(365, 85), 1
+LINE (366, 89)-(366, 85), 1
+LINE (365, 85)-(366, 84), 1
+LINE (366, 85)-(367, 84), 1
+LINE (366, 84)-(369, 84), 1
+LINE (367, 84)-(370, 84), 1
+LINE (369, 84)-(370, 85), 1
+LINE (370, 84)-(371, 85), 1
+LINE (370, 85)-(370, 89), 1
+LINE (371, 85)-(371, 89), 1
+LINE (374, 84)-(379, 84), 1
+LINE (375, 84)-(380, 84), 1
+LINE (388, 80)-(387, 79), 1
+LINE (389, 80)-(388, 79), 1
+LINE (387, 79)-(384, 79), 1
+LINE (388, 79)-(385, 79), 1
+LINE (384, 79)-(383, 80), 1
+LINE (385, 79)-(384, 80), 1
+LINE (383, 80)-(383, 83), 1
+LINE (384, 80)-(384, 83), 1
+LINE (383, 83)-(384, 84), 1
+LINE (384, 83)-(385, 84), 1
+LINE (384, 84)-(387, 84), 1
+LINE (385, 84)-(388, 84), 1
+LINE (387, 84)-(388, 85), 1
+LINE (388, 84)-(389, 85), 1
+LINE (388, 85)-(388, 88), 1
+LINE (389, 85)-(389, 88), 1
+LINE (388, 88)-(387, 89), 1
+LINE (389, 88)-(388, 89), 1
+LINE (387, 89)-(384, 89), 1
+LINE (388, 89)-(385, 89), 1
+LINE (384, 89)-(383, 88), 1
+LINE (385, 89)-(384, 88), 1
+LINE (396, 85)-(395, 84), 1
+LINE (397, 85)-(396, 84), 1
+LINE (395, 84)-(393, 84), 1
+LINE (396, 84)-(394, 84), 1
+LINE (393, 84)-(392, 85), 1
+LINE (394, 84)-(393, 85), 1
+LINE (392, 85)-(392, 88), 1
+LINE (393, 85)-(393, 88), 1
+LINE (392, 88)-(393, 89), 1
+LINE (393, 88)-(394, 89), 1
+LINE (393, 89)-(395, 89), 1
+LINE (394, 89)-(396, 89), 1
+LINE (395, 89)-(396, 88), 1
+LINE (396, 89)-(397, 88), 1
+LINE (400, 85)-(400, 88), 1
+LINE (401, 85)-(401, 88), 1
+LINE (400, 88)-(401, 89), 1
+LINE (401, 88)-(402, 89), 1
+LINE (401, 89)-(404, 89), 1
+LINE (402, 89)-(405, 89), 1
+LINE (404, 89)-(405, 88), 1
+LINE (405, 89)-(406, 88), 1
+LINE (405, 88)-(405, 85), 1
+LINE (406, 88)-(406, 85), 1
+LINE (405, 85)-(404, 84), 1
+LINE (406, 85)-(405, 84), 1
+LINE (404, 84)-(401, 84), 1
+LINE (405, 84)-(402, 84), 1
+LINE (401, 84)-(400, 85), 1
+LINE (402, 84)-(401, 85), 1
+LINE (409, 89)-(409, 84), 1
+LINE (410, 89)-(410, 84), 1
+LINE (409, 85)-(410, 84), 1
+LINE (410, 85)-(411, 84), 1
+LINE (410, 84)-(412, 84), 1
+LINE (411, 84)-(413, 84), 1
+LINE (412, 84)-(413, 85), 1
+LINE (413, 84)-(414, 85), 1
+LINE (419, 86)-(421, 86), 1
+LINE (420, 86)-(422, 86), 1
+LINE (421, 86)-(421, 85), 1
+LINE (422, 86)-(422, 85), 1
+LINE (421, 85)-(420, 84), 1
+LINE (422, 85)-(421, 84), 1
+LINE (420, 84)-(418, 84), 1
+LINE (421, 84)-(419, 84), 1
+LINE (418, 84)-(417, 85), 1
+LINE (419, 84)-(418, 85), 1
+LINE (417, 85)-(417, 88), 1
+LINE (418, 85)-(418, 88), 1
+LINE (417, 88)-(418, 89), 1
+LINE (418, 88)-(419, 89), 1
+LINE (418, 89)-(420, 89), 1
+LINE (419, 89)-(421, 89), 1
+LINE (420, 89)-(421, 88), 1
+LINE (421, 89)-(422, 88), 1
+LINE (419, 86)-(417, 86), 1
+LINE (420, 86)-(418, 86), 1
+LINE (429, 84)-(428, 83), 1
+LINE (430, 84)-(429, 83), 1
+LINE (428, 83)-(426, 83), 1
+LINE (429, 83)-(427, 83), 1
+LINE (426, 83)-(425, 84), 1
+LINE (427, 83)-(426, 84), 1
+LINE (425, 84)-(425, 85), 1
+LINE (426, 84)-(426, 85), 1
+LINE (425, 85)-(426, 86), 1
+LINE (426, 85)-(427, 86), 1
+LINE (426, 86)-(428, 86), 1
+LINE (427, 86)-(429, 86), 1
+LINE (428, 86)-(429, 87), 1
+LINE (429, 86)-(430, 87), 1
+LINE (429, 87)-(429, 88), 1
+LINE (430, 87)-(430, 88), 1
+LINE (429, 88)-(428, 89), 1
+LINE (430, 88)-(429, 89), 1
+LINE (428, 89)-(426, 89), 1
+LINE (429, 89)-(427, 89), 1
+LINE (426, 89)-(425, 88), 1
+LINE (427, 89)-(426, 88), 1
+LINE (330, 192)-(576, 297), 13, BF
+CIRCLE (529, 101), 22, 8, , , 1.1
+LINE (502, 208)-(566, 230), 8
+LINE (536, 220)-(545, 276), 8
+LINE (523, 277)-(539, 278), 8
+LINE (539, 278)-(549, 276), 8
+LINE (549, 276)-(557, 272), 8
+LINE (557, 272)-(561, 267), 8
+LINE (540, 251)-(544, 276), 8
+LINE (511, 255)-(497, 229), 15
+LINE (497, 229)-(486, 238), 15
+LINE (486, 238)-(479, 234), 15
+LINE (479, 234)-(452, 256), 15
+LINE (468, 256)-(483, 245), 15
+LINE (483, 245)-(489, 250), 15
+LINE (348, 211)-(347, 210), 8
+LINE (349, 211)-(348, 210), 8
+LINE (347, 210)-(344, 210), 8
+LINE (348, 210)-(345, 210), 8
+LINE (344, 210)-(343, 211), 8
+LINE (345, 210)-(344, 211), 8
+LINE (343, 211)-(343, 214), 8
+LINE (344, 211)-(344, 214), 8
+LINE (343, 214)-(344, 215), 8
+LINE (344, 214)-(345, 215), 8
+LINE (344, 215)-(347, 215), 8
+LINE (345, 215)-(348, 215), 8
+LINE (347, 215)-(348, 216), 8
+LINE (348, 215)-(349, 216), 8
+LINE (348, 216)-(348, 219), 8
+LINE (349, 216)-(349, 219), 8
+LINE (348, 219)-(347, 220), 8
+LINE (349, 219)-(348, 220), 8
+LINE (347, 220)-(344, 220), 8
+LINE (348, 220)-(345, 220), 8
+LINE (344, 220)-(343, 219), 8
+LINE (345, 220)-(344, 219), 8
+LINE (354, 213)-(354, 219), 8
+LINE (355, 213)-(355, 219), 8
+LINE (354, 219)-(355, 220), 8
+LINE (355, 219)-(356, 220), 8
+LINE (355, 220)-(356, 220), 8
+LINE (356, 220)-(357, 220), 8
+LINE (356, 220)-(357, 219), 8
+LINE (357, 220)-(358, 219), 8
+LINE (355, 215)-(353, 215), 8
+LINE (356, 215)-(354, 215), 8
+LINE (354, 213)-(354, 212), 8
+LINE (355, 213)-(355, 212), 8
+LINE (361, 220)-(361, 215), 8
+LINE (362, 220)-(362, 215), 8
+LINE (361, 216)-(362, 215), 8
+LINE (362, 216)-(363, 215), 8
+LINE (362, 215)-(364, 215), 8
+LINE (363, 215)-(365, 215), 8
+LINE (364, 215)-(365, 216), 8
+LINE (365, 215)-(366, 216), 8
+LINE (371, 217)-(373, 217), 8
+LINE (372, 217)-(374, 217), 8
+LINE (373, 217)-(373, 216), 8
+LINE (374, 217)-(374, 216), 8
+LINE (373, 216)-(372, 215), 8
+LINE (374, 216)-(373, 215), 8
+LINE (372, 215)-(370, 215), 8
+LINE (373, 215)-(371, 215), 8
+LINE (370, 215)-(369, 216), 8
+LINE (371, 215)-(370, 216), 8
+LINE (369, 216)-(369, 219), 8
+LINE (370, 216)-(370, 219), 8
+LINE (369, 219)-(370, 220), 8
+LINE (370, 219)-(371, 220), 8
+LINE (370, 220)-(372, 220), 8
+LINE (371, 220)-(373, 220), 8
+LINE (372, 220)-(373, 219), 8
+LINE (373, 220)-(374, 219), 8
+LINE (371, 217)-(369, 217), 8
+LINE (372, 217)-(370, 217), 8
+LINE (381, 216)-(380, 215), 8
+LINE (382, 216)-(381, 215), 8
+LINE (380, 215)-(378, 215), 8
+LINE (381, 215)-(379, 215), 8
+LINE (378, 215)-(377, 216), 8
+LINE (379, 215)-(378, 216), 8
+LINE (377, 216)-(377, 219), 8
+LINE (378, 216)-(378, 219), 8
+LINE (377, 219)-(378, 220), 8
+LINE (378, 219)-(379, 220), 8
+LINE (378, 220)-(380, 220), 8
+LINE (379, 220)-(381, 220), 8
+LINE (380, 220)-(381, 219), 8
+LINE (381, 220)-(382, 219), 8
+LINE (385, 210)-(385, 220), 8
+LINE (386, 210)-(386, 220), 8
+LINE (385, 216)-(389, 220), 8
+LINE (386, 216)-(390, 220), 8
+LINE (385, 216)-(389, 213), 8
+LINE (386, 216)-(390, 213), 8
+LINE (395, 217)-(397, 217), 8
+LINE (396, 217)-(398, 217), 8
+LINE (397, 217)-(397, 216), 8
+LINE (398, 217)-(398, 216), 8
+LINE (397, 216)-(396, 215), 8
+LINE (398, 216)-(397, 215), 8
+LINE (396, 215)-(394, 215), 8
+LINE (397, 215)-(395, 215), 8
+LINE (394, 215)-(393, 216), 8
+LINE (395, 215)-(394, 216), 8
+LINE (393, 216)-(393, 219), 8
+LINE (394, 216)-(394, 219), 8
+LINE (393, 219)-(394, 220), 8
+LINE (394, 219)-(395, 220), 8
+LINE (394, 220)-(396, 220), 8
+LINE (395, 220)-(397, 220), 8
+LINE (396, 220)-(397, 219), 8
+LINE (397, 220)-(398, 219), 8
+LINE (395, 217)-(393, 217), 8
+LINE (396, 217)-(394, 217), 8
+LINE (414, 220)-(413, 219), 8
+LINE (415, 220)-(414, 219), 8
+LINE (413, 219)-(413, 216), 8
+LINE (414, 219)-(414, 216), 8
+LINE (413, 216)-(412, 215), 8
+LINE (414, 216)-(413, 215), 8
+LINE (412, 215)-(410, 215), 8
+LINE (413, 215)-(411, 215), 8
+LINE (410, 215)-(409, 216), 8
+LINE (411, 215)-(410, 216), 8
+LINE (409, 216)-(409, 219), 8
+LINE (410, 216)-(410, 219), 8
+LINE (409, 219)-(410, 220), 8
+LINE (410, 219)-(411, 220), 8
+LINE (410, 220)-(412, 220), 8
+LINE (411, 220)-(413, 220), 8
+LINE (412, 220)-(413, 219), 8
+LINE (413, 220)-(414, 219), 8
+LINE (418, 215)-(418, 219), 8
+LINE (419, 215)-(419, 219), 8
+LINE (418, 219)-(419, 220), 8
+LINE (419, 219)-(420, 220), 8
+LINE (419, 220)-(422, 220), 8
+LINE (420, 220)-(423, 220), 8
+LINE (422, 220)-(423, 219), 8
+LINE (423, 220)-(424, 219), 8
+LINE (423, 219)-(423, 215), 8
+LINE (424, 219)-(424, 215), 8
+LINE (423, 215)-(423, 220), 8
+LINE (424, 215)-(424, 220), 8
+LINE (431, 215)-(430, 214), 8
+LINE (432, 215)-(431, 214), 8
+LINE (430, 214)-(428, 214), 8
+LINE (431, 214)-(429, 214), 8
+LINE (428, 214)-(427, 215), 8
+LINE (429, 214)-(428, 215), 8
+LINE (427, 215)-(427, 216), 8
+LINE (428, 215)-(428, 216), 8
+LINE (427, 216)-(428, 217), 8
+LINE (428, 216)-(429, 217), 8
+LINE (428, 217)-(430, 217), 8
+LINE (429, 217)-(431, 217), 8
+LINE (430, 217)-(431, 218), 8
+LINE (431, 217)-(432, 218), 8
+LINE (431, 218)-(431, 219), 8
+LINE (432, 218)-(432, 219), 8
+LINE (431, 219)-(430, 220), 8
+LINE (432, 219)-(431, 220), 8
+LINE (430, 220)-(428, 220), 8
+LINE (431, 220)-(429, 220), 8
+LINE (428, 220)-(427, 219), 8
+LINE (429, 220)-(428, 219), 8
+LINE (435, 215)-(436, 220), 8
+LINE (436, 215)-(437, 220), 8
+LINE (436, 220)-(437, 217), 8
+LINE (437, 220)-(438, 217), 8
+LINE (437, 217)-(438, 220), 8
+LINE (438, 217)-(439, 220), 8
+LINE (438, 220)-(439, 215), 8
+LINE (439, 220)-(440, 215), 8
+LINE (447, 220)-(446, 219), 8
+LINE (448, 220)-(447, 219), 8
+LINE (446, 219)-(446, 216), 8
+LINE (447, 219)-(447, 216), 8
+LINE (446, 216)-(445, 215), 8
+LINE (447, 216)-(446, 215), 8
+LINE (445, 215)-(442, 215), 8
+LINE (446, 215)-(443, 215), 8
+LINE (442, 215)-(441, 216), 8
+LINE (443, 215)-(442, 216), 8
+LINE (441, 216)-(441, 219), 8
+LINE (442, 216)-(442, 219), 8
+LINE (441, 219)-(442, 220), 8
+LINE (442, 219)-(443, 220), 8
+LINE (442, 220)-(445, 220), 8
+LINE (443, 220)-(446, 220), 8
+LINE (445, 220)-(446, 219), 8
+LINE (446, 220)-(447, 219), 8
+LINE (445, 212)-(445, 213), 8
+LINE (446, 212)-(446, 213), 8
+LINE (442, 213)-(442, 212), 8
+LINE (443, 213)-(443, 212), 8
+LINE (451, 210)-(451, 220), 8
+LINE (452, 210)-(452, 220), 8
+LINE (451, 220)-(451, 216), 8
+LINE (452, 220)-(452, 216), 8
+LINE (451, 216)-(452, 215), 8
+LINE (452, 216)-(453, 215), 8
+LINE (452, 215)-(455, 215), 8
+LINE (453, 215)-(456, 215), 8
+LINE (455, 215)-(456, 216), 8
+LINE (456, 215)-(457, 216), 8
+LINE (456, 216)-(456, 220), 8
+LINE (457, 216)-(457, 220), 8
+LINE (460, 210)-(460, 219), 8
+LINE (461, 210)-(461, 219), 8
+LINE (460, 219)-(461, 220), 8
+LINE (461, 219)-(462, 220), 8
+LINE (461, 220)-(462, 220), 8
+LINE (462, 220)-(463, 220), 8
+LINE (462, 220)-(463, 219), 8
+LINE (463, 220)-(464, 219), 8
+LINE (469, 217)-(471, 217), 8
+LINE (470, 217)-(472, 217), 8
+LINE (471, 217)-(471, 216), 8
+LINE (472, 217)-(472, 216), 8
+LINE (471, 216)-(470, 215), 8
+LINE (472, 216)-(471, 215), 8
+LINE (470, 215)-(468, 215), 8
+LINE (471, 215)-(469, 215), 8
+LINE (468, 215)-(467, 216), 8
+LINE (469, 215)-(468, 216), 8
+LINE (467, 216)-(467, 219), 8
+LINE (468, 216)-(468, 219), 8
+LINE (467, 219)-(468, 220), 8
+LINE (468, 219)-(469, 220), 8
+LINE (468, 220)-(470, 220), 8
+LINE (469, 220)-(471, 220), 8
+LINE (470, 220)-(471, 219), 8
+LINE (471, 220)-(472, 219), 8
+LINE (469, 217)-(467, 217), 8
+LINE (470, 217)-(468, 217), 8
+LINE (475, 220)-(475, 215), 8
+LINE (476, 220)-(476, 215), 8
+LINE (475, 216)-(476, 215), 8
+LINE (476, 216)-(477, 215), 8
+LINE (476, 215)-(479, 215), 8
+LINE (477, 215)-(480, 215), 8
+LINE (479, 215)-(480, 216), 8
+LINE (480, 215)-(481, 216), 8
+LINE (480, 216)-(480, 220), 8
+LINE (481, 216)-(481, 220), 8
+LINE (484, 220)-(485, 220), 8
+LINE (485, 220)-(486, 220), 8
+LINE (485, 220)-(485, 219), 8
+LINE (486, 220)-(486, 219), 8
+LINE (485, 219)-(484, 219), 8
+LINE (486, 219)-(485, 219), 8
+LINE (484, 219)-(484, 220), 8
+LINE (485, 219)-(485, 220), 8
+LINE (489, 220)-(490, 220), 8
+LINE (490, 220)-(491, 220), 8
+LINE (490, 220)-(490, 219), 8
+LINE (491, 220)-(491, 219), 8
+LINE (490, 219)-(489, 219), 8
+LINE (491, 219)-(490, 219), 8
+LINE (489, 219)-(489, 220), 8
+LINE (490, 219)-(490, 220), 8
+LINE (494, 220)-(495, 220), 8
+LINE (495, 220)-(496, 220), 8
+LINE (495, 220)-(495, 219), 8
+LINE (496, 220)-(496, 219), 8
+LINE (495, 219)-(494, 219), 8
+LINE (496, 219)-(495, 219), 8
+LINE (494, 219)-(494, 220), 8
+LINE (495, 219)-(495, 220), 8
+
+
+    'Fokussierter Button:
+    'SELECT CASE ch
+        'CASE 1: LINE (69 + 3, 68 + 5)-(315 - 15, 173 - 15), 15, B
+        'CASE 2: LINE (336 + 3, 69 + 5)-(582 - 15, 174 - 15), 1, B
+        'CASE 3: LINE (73 + 3, 197 + 5)-(319 - 15, 302 - 15), 14, B
+        'CASE 4: LINE (337 + 3, 198 + 5)-(583 - 15, 303 - 15), 8, B
+    'END SELECT
+
+
+PCOPY 1, 0
+
+'Tastatureingabe:
+keyb = ""
+DO: keyb = INKEY$: LOOP WHILE keyb = ""
+    SELECT CASE keyb
+        CASE CHR$(0) + "K": ch = ch - 1
+        CASE CHR$(0) + "M": ch = ch + 1
+        CASE CHR$(0) + "H": ch = ch - 2
+        CASE CHR$(0) + "P": ch = ch + 2
+        CASE CHR$(32): ch = 5: EXIT DO
+        CASE CHR$(27): ch = 0: EXIT DO
+    END SELECT
+        IF ch > 4 THEN ch = 4
+        IF ch < 1 THEN ch = 1
+
+
+SCREEN 9, , 0, 0
+LOOP UNTIL keyb = CHR$(13)
+
+MainMenu% = ch
+END FUNCTION
+
+SUB MsgBox (a, B, c, d, text AS STRING, waiting AS INTEGER)
+
+COLOR 4
+LOCATE B + 1, a + 1
+a = a * 8 - 8
+B = B * 14 - 6
+c = c * 8 + 4
+d = d * 14 + 6
+
+LINE (a, B)-(c, d), 0, BF
+LINE (a, B)-(c, d), 1, B
+LINE (a + 1, B + 1)-(c - 1, d - 1), 1, B
+LINE (c - 2, B + 2)-(c - 2, d - 2), 7
+LINE (a + 2, d - 2)-(c - 2, d - 2), 7
+PRINT text
+
+IF waiting THEN
+    WHILE INKEY$ <> "": WEND
+    DO: keyb = INKEY$: LOOP UNTIL keyb = CHR$(13) OR keyb = CHR$(27)
+END IF
+END SUB
+
+FUNCTION NameOf$ (p$, laenge%)
+'Gibt den Namen des HighScore-Strings p$ zurÅck und schneidet ihn
+'auf die angegebene laenge%
+'
+'
+B$ = MID$(p$, INSTR(1, p$, ":") + 1)
+
+a = LEN(B$)
+IF a < laenge% THEN B$ = B$ + SPACE$(laenge% - a)
+NameOf$ = LEFT$(B$, laenge%)
+
+END FUNCTION
+
+SUB Regen
+'macht Regen!
+COLOR 3
+
+STATIC status AS INTEGER, xadd AS INTEGER, nz AS SINGLE, wr AS INTEGER
+
+'IF TIMER >= nz THEN status = status + 1: nz = TIMER + .1
+IF status > 7 THEN status = 0
+DIM x AS INTEGER, y AS INTEGER
+DIM zf AS INTEGER
+zf = INT(RND * 10) + 1
+
+SELECT CASE zf
+CASE IS <= 3: xadd = xadd + 1
+CASE IS >= 6: xadd = xadd - 1
+CASE 4: wr = 200
+CASE 5: wr = 250
+END SELECT
+
+IF xadd > 20 OR xadd < -20 THEN xadd = 0
+IF wr = 0 THEN wr = 200 'Windrichtung!
+
+FOR x = 0 TO 639 + wr - xadd STEP 20
+
+status = status + 1
+IF status > 7 THEN status = 0
+    SELECT CASE status
+        CASE 0: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 30723
+        CASE 1: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 24591
+        CASE 2: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 16447
+        CASE 3: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 2016
+        CASE 4: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 504
+        CASE 5: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 126
+        CASE 6: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 32256
+        CASE 7: LINE (x + xadd, 0)-(x + xadd - wr, 349), , , 8064
+
+    END SELECT
+NEXT
+END SUB
+
+SUB SaveScore (wert AS INTEGER, Name$)
+
+f% = FREEFILE
+OPEN HighScoreFile FOR RANDOM AS f%
+
+B$ = "0:N/A"
+FOR i = 1 TO MaxScore
+GET f%, i, a$
+IF a$ = "" THEN PUT f%, i, a$
+NEXT
+
+
+FOR i = 1 TO MaxScore
+
+GET f%, i, a$
+
+IF wert > VAL(a$) THEN
+        'transportieren nach vorn:
+        FOR u = MaxScore TO i STEP -1
+                GET f%, u, a$
+                PUT f%, u + 1, a$
+        NEXT
+     
+        a$ = STR$(wert) + ":" + Name$
+        PUT f%, i, a$
+        SeinPlatz = i
+        EXIT FOR
+END IF
+
+NEXT i
+
+CLOSE f%
+
+END SUB
+
+SUB SaveStrecke
+
+    SCREEN 9, , 0, 0
+    PCOPY 0, 1
+    Center "Sie kînnen jetzt die Strecke speichern! <Enter> Annehmen, <Escape> Verwerfen", -1
+        IF keyb = CHR$(27) THEN Edited = 0: EXIT SUB
+
+2032
+    PCOPY 1, 0
+    keyb = ""
+    streckenname$ = InputBox("Wie heisst die neue Strecke? ", 45)
+        IF keyb = CHR$(27) THEN Edited = 0: EXIT SUB
+
+    IF lzweg(streckenname$) = "" THEN
+        Center "Bitte wÑhlen Sie eine andere Bezeichnung!", -1
+        GOTO 2032
+    END IF
+
+
+    CLOSE
+    OPEN "lssdwns.rsc" FOR APPEND AS 1
+    PRINT #1, streckenname$
+
+    i% = 0
+    DO
+    i% = i% + 1
+        IF RTRIM$(Objekte(i%).filename) = STRING$(12, 0) THEN
+            PRINT #1, CHR$(34) + "-" + CHR$(34) 'Schluss anfÅgen...
+
+        ELSE
+            PRINT #1, CHR$(34) + Objekte(i%).filename + CHR$(34) + ", " + STR$(Objekte(i%).xpos) + ", " + STR$(Objekte(i%).ypos)
+
+        END IF
+
+
+    LOOP UNTIL RTRIM$(Objekte(i%).filename) = "-" OR RTRIM$(Objekte(i%).filename) = STRING$(12, 0)
+
+Edited = 0
+
+END SUB
+
+SUB Schnee
+'Macht Schnee!
+FOR i% = 1 TO 30
+x = INT(RND * 639) + 1
+y = INT(RND * 349) + 1
+
+'Farbe setzen:
+    IF Nacht THEN
+        COLOR 15
+    ELSE
+    z = INT(RND * 2) + 1
+        SELECT CASE z
+            CASE 1: COLOR 7
+            CASE 2: COLOR 11
+        END SELECT
+    END IF
+
+'4 verschiedene Formen Schneeflocken:
+z = INT(RND * 5) + 1
+IF Nacht THEN z = 1
+
+SELECT CASE z
+CASE 1
+    LINE (x - 5, y)-(x + 5, y)
+    LINE (x, y - 5)-(x, y + 5)
+    LINE (x - 5, y - 5)-(x + 5, y + 5)
+    LINE (x + 5, y - 5)-(x - 5, y + 5)
+
+
+CASE 2
+    LINE (x - 3, y)-(x + 3, y)
+    LINE (x, y - 3)-(x, y + 3)
+
+CASE 3
+    LINE (x - 3, y)-(x + 3, y)
+    LINE (x, y - 3)-(x, y + 3)
+    LINE (x - 3, y - 3)-(x + 3, y + 3)
+    LINE (x + 3, y - 3)-(x - 3, y + 3)
+
+CASE 4
+    LINE (x, y)-(x - 3, y + 7)
+
+CASE 5
+    COLOR 3
+    LINE (x - 3, y)-(x + 3, y)
+    LINE (x, y - 3)-(x, y + 3)
+    COLOR 11
+    LINE (x - 5, y - 5)-(x + 5, y + 5)
+    LINE (x + 5, y - 5)-(x - 5, y + 5)
+
+END SELECT
+NEXT
+END SUB
+
+FUNCTION Score$ (Index)
+    f% = FREEFILE
+    OPEN HighScoreFile FOR RANDOM AS f%
+    GET f%, Index, a$
+    IF a$ = "" THEN a$ = "0:Noch keiner"
+    Score$ = a$
+    CLOSE f%
+END FUNCTION
+
+SUB ShowPicture (Bild$, Streck)
+IF Streck = 0 THEN Streck = 1
+
+DIM Befehle(5) AS SINGLE
+
+CLOSE 1
+IF Wetter = RegenWetter AND LCASE$(Bild$) = "lsshigh1.lds" THEN
+    OPEN "lsshigh2.lds" FOR BINARY AS 1
+ELSE
+    OPEN Bild$ FOR BINARY AS 1
+END IF
+
+DIM Bef2(5) AS SINGLE
+i = 0
+DO
+
+DoSound
+
+    IF INP(&H60) = 1 THEN EXIT SUB'Escape!
+
+FOR Nr = 0 TO 5
+GET 1, , Befehle(Nr)
+NEXT
+
+SELECT CASE CHR$(Befehle(0))
+CASE "p": PSET (Befehle(1) + xplus, Befehle(2) + yplus), Befehle(3)
+CASE "m": PAINT (Befehle(1) + xplus, Befehle(2) + yplus), Befehle(3), Befehle(4)
+CASE "l": LINE (Befehle(1) + xplus, Befehle(2) + yplus)-(Befehle(3) + xplus, Befehle(4) + yplus), Befehle(5)
+CASE "r": LINE (Befehle(1) + xplus, Befehle(2) + yplus)-(Befehle(3) + xplus, Befehle(4) + yplus), Befehle(5), B
+CASE "d": 'LINE (Befehle(1) + xplus, Befehle(2) + yplus)-(Befehle(3) + xplus, Befehle(4) + yplus), Befehle(5), B, 2115
+CASE "b": LINE (Befehle(1) + xplus, Befehle(2) + yplus)-(Befehle(3) + xplus, Befehle(4) + yplus), Befehle(5), BF
+CASE "k": CIRCLE (Befehle(1) + xplus, Befehle(2) + yplus), Befehle(3), Befehle(4), , , Befehle(5)
+CASE "x": FOR Nr = 0 TO 5
+                GET 1, , Bef2(Nr)
+          NEXT
+          CIRCLE (Befehle(1) + xplus, Befehle(2) + yplus), Befehle(3), Befehle(4), Bef2(1), Bef2(2), Befehle(5)
+
+END SELECT
+
+LOOP WHILE Befehle(0) <> 0
+
+'IF PLAY(1) < 1 THEN
+'        playtime = playtime + 1: PLAY player(playtime)
+'        IF player(playtime) = "" THEN playtime = 0
+'END IF
+
+END SUB
+
+SUB ShowTopScore
+
+CLS
+Frame
+COLOR 1
+
+LOCATE 2, 3: PRINT "Die besten 10 Abfahrten aus " + LevelName
+LOCATE 4
+
+FOR i = 1 TO MaxScore
+
+IF i = SeinPlatz THEN
+        PRINT
+        COLOR 12
+        LOCATE , 4: PRINT " " + NameOf(Score$(i), 55);
+        PRINT USING "####### Punkte"; VAL(Score$(i));
+
+ELSE
+        PRINT
+        COLOR 1
+        LOCATE , 6: PRINT NameOf(Score$(i), 55);
+        PRINT USING "####### Punkte"; VAL(Score$(i));
+
+END IF
+
+PRINT
+NEXT
+
+a$ = ""
+DO: a$ = INKEY$: LOOP WHILE a$ <> CHR$(13) AND a$ <> CHR$(27)
+SeinPlatz = 0
+
+END SUB
+
+SUB SoundEffect (number AS INTEGER)
+    IF SoundOn THEN
+        SELECT CASE number
+        CASE 1: SOUND 500, 1: SOUND 200, 1
+        CASE 2: SOUND 1000, 1: SOUND 800, 1: SOUND 700, 1: SOUND 600, 1: SOUND 550, 1: SOUND 500, 1
+        CASE 3: SOUND 1000, 1: SOUND 800, 1: SOUND 400, 1: SOUND 200, 1
+        CASE 7: PLAY  _
+"MBL8T200O1eL8O1aeaL8O2cL8O1bebL8O2dL4O2ceL4O1g#L4O2eL8O1aeaL8O2cL8O1bebL8O2dL4O2cL4O1aL2O1aP4L8O2eceL8O1aL8O2cL8O1egL4O1faL4O2dL2O2fL8O2fdfL8O1bL8O2dL8O1fL4O1eaL4O2cL2O2eL8O2eceL8O1aL8O2cL8O1eL4O1abL4O2dL2O2fL8O3dfecegfdfagegbafaL8O4fe"
+        END SELECT
+    END IF
+END SUB
+
+'bereitet die Statusbar vor:
+SUB StatusBar (text$)
+    statusbartext = text$
+    statusbartime = TIMER
+END SUB
+
+SUB StreckenWahl (showdelete%)
+
+IF Edited THEN SaveStrecke
+
+neuladen:
+ch = 1
+DIM menu(1 TO 20) AS STRING * 40, strTagesZeit AS STRING, strWetter AS STRING, strTon AS STRING
+
+
+    SELECT CASE Wetter
+        CASE SchneeWetter: strWetter = "Schnee"
+        CASE RegenWetter: strWetter = "Regen"
+        CASE SonnigesWetter: strWetter = "Sonne"
+    END SELECT
+
+
+    IF Nacht THEN strTagesZeit = "Nacht" ELSE strTagesZeit = "Tag"
+
+    IF SoundOn THEN strTon = "Ein" ELSE strTon = "Aus"
+
+
+menu(1) = "Grindelwald"
+i% = 2
+CLOSE 1
+OPEN "lssdwns.rsc" FOR INPUT AS 1
+    IF NOT EOF(1) THEN INPUT #1, a$ 'Streckenname!
+    menu(i%) = a$
+
+DO WHILE NOT EOF(1)
+    INPUT #1, a$
+    IF a$ = "-" THEN
+        i% = i% + 1
+        IF NOT EOF(1) THEN INPUT #1, a$ 'Streckenname!
+        menu(i%) = a$
+
+    ELSE
+        Objekte(i%).filename = a$
+        INPUT #1, Objekte(i%).xpos
+        INPUT #1, Objekte(i%).ypos
+    END IF
+LOOP
+
+menucounter% = i% - 1
+
+DO
+
+    SCREEN 9, , 1, 0
+    CLS
+    Frame
+    IF showdelete% THEN
+        COLOR 12
+        LOCATE 5
+        CenterText "DrÅcken Sie <Delete> um eine Strecke zu lîschen:"
+    END IF
+    LOCATE 10
+    COLOR 1
+    FOR i% = 1 TO menucounter%
+            IF ch = i% THEN
+                COLOR 12
+                CenterText " " + menu(i%) + " "
+            ELSE
+                COLOR 1
+                CenterText menu(i%)
+            END IF
+        PRINT
+    NEXT
+PCOPY 1, 0
+
+'Tastatureingabe:
+keyb = ""
+DO: keyb = INKEY$: LOOP WHILE keyb = ""
+    SELECT CASE keyb
+        CASE CHR$(0) + "K": ch = ch - 1
+        CASE CHR$(0) + "M": ch = ch + 1
+        CASE CHR$(0) + "H": ch = ch - 1
+        CASE CHR$(0) + "P": ch = ch + 1
+        CASE CHR$(0) + "S": DeleteStrecke ch
+                            IF showdelete% THEN EXIT SUB
+                            GOTO neuladen
+
+        CASE CHR$(27): ch = 0: keyb = "": EXIT SUB
+    END SELECT
+        IF ch > menucounter% THEN ch = menucounter%
+        IF ch < 1 THEN ch = 1
+
+SCREEN 9, , 0, 0
+LOOP UNTIL keyb = CHR$(13)
+
+LevelName = RTRIM$(menu(ch))
+
+'hier wird die Strecke in den Speicher geladen:
+ERASE Objekte
+
+ch = ch - 1
+
+LoadStrecke ch
+
+END SUB
+
+SUB Ziel
+SoundEffect 7
+
+    'highscore-Liste aufrufen:
+    IF IsTopScore(userpoints) THEN
+        a$ = InputBox("Wie lautet dein Name? ", 20)
+        IF a$ = "" THEN a$ = "Unbekannt"
+        SaveScore userpoints, a$
+    ELSE
+        WHILE INKEY$ <> "": WEND
+        DO: DoSound: a$ = INKEY$: LOOP UNTIL a$ <> ""
+    END IF
+
+ShowTopScore
+
+
+END SUB
+

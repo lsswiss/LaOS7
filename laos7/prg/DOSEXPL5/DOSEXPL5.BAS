@@ -1,0 +1,5354 @@
+DECLARE SUB RunDlg ()
+DECLARE FUNCTION MB2$ (Wert AS LONG)
+DECLARE SUB properties ()
+DECLARE SUB Verschieben (title$, copy AS INTEGER, canceled%)
+DECLARE FUNCTION MB$ (Wert AS LONG)
+DECLARE SUB RaiseKeyPress (iCtrl%, name$, key$)
+DECLARE SUB DateiStatus ()
+DECLARE SUB delete (filecounter%)
+DECLARE FUNCTION Laufwerkswahl$ ()
+DECLARE SUB FileCopy (txt$, source$, dest$)
+DECLARE SUB SavePicture (x%, y%, x2%, y2%, file$)
+DECLARE FUNCTION PrgSaveDialog$ (PrgStarter$)
+DECLARE SUB Shortcut (sGroup$, skey$, iCtrl%)
+DECLARE SUB FormatC ()
+DECLARE SUB ClearList (sName$)
+DECLARE FUNCTION SaveDialog$ (PrgStarter$)
+DECLARE SUB InToLaOS (file$)
+DECLARE SUB ConvertToHex (datei$, HexaDatei$)
+DECLARE SUB TxtView (datei$, Gross%)
+
+'Snowflake GUI v.0.1.2
+'Entwickelt fÅr LaOS 7
+'Dies ist OpenSource
+'Programmierer, die an diesem Code mitgearbeitet haben, schreiben sich bitte
+'hier ein, wenn mîglich mit kurzer Beschreibung der Arbeit:
+'------------------------------------------------------------
+'Urs Langmeier (Snowflake Standard-GUI)
+
+DECLARE SUB RaisePopUpMenu (iCtrl%)
+DECLARE SUB Frame (sGroup$, x1%, y1%, x2%, y2%, caption$)
+DECLARE SUB ExitBox (sGroup$, x AS INTEGER, y AS INTEGER)
+DECLARE SUB SaveScreen ()
+DECLARE SUB CLW (sGroup$)
+DECLARE SUB StatusBar (text$)
+DECLARE SUB ProgressBar (text$, Stat AS SINGLE)
+DECLARE FUNCTION exists% (FilePath$)
+DECLARE SUB TimeLock (Modus%)
+DECLARE SUB RadioButton (sGroup$, caption$, x%, y%, Value%)
+DECLARE SUB IconList (sGroup$, sName$, caption$, x%, y%, x2%, y2%, iScrollBars%)
+DECLARE SUB AddIcon (sName$, Index%, sIconFile AS STRING, sDescription AS STRING)
+DECLARE SUB zDoEvents ()
+DECLARE SUB ScrollBar (sGroup$, sName$, x%, y%, w%, h%, Min%, Max%, stp%, iCtrl%)
+DECLARE SUB zEventDblClick (iCtrl%)
+DECLARE SUB ExitFocus (sGroup$, sName$, x%, y%, x2%, y2%)
+DECLARE SUB ListAdd (sName$, Index%, text AS STRING, Value%)
+DECLARE SUB zGetMouse (B%, x%, y%)
+DECLARE SUB RaiseToolTipText (iCtrl%)
+DECLARE FUNCTION SysDate$ (d$)
+DECLARE SUB Label (x%, y%, x2%, y2%, text AS STRING, Alignment%, bgColor%)
+DECLARE SUB zToolTipText (text$)
+DECLARE SUB zEventMouseRest (iCtrl%)
+DECLARE SUB zScreenSaver ()
+DECLARE SUB zDrawThisControl (iCtrl%, MouseDown%, iRefresh%)
+DECLARE SUB RaiseScroll (iCtrl%, name$)
+DECLARE SUB zReplace (text$, find$, replce$)
+DECLARE SUB Erfassen (bestehend%, monat%)
+DECLARE FUNCTION ToMonth% ()
+DECLARE SUB Farben ()
+DECLARE SUB zSetMouseCursor (sCursor$)
+DECLARE SUB PutValue (objekt AS STRING, Wert%)
+DECLARE SUB SliderBar (sGroup$, sName$, x%, y%, w%, h%, Min%, Max%)
+DECLARE SUB Liste ()
+DECLARE SUB Suchen ()
+DECLARE SUB zEditBoxHandler (sGroup$, sName$, iCtrl%, x1%, y1%, x2%, y2%, iAnzSpalten%, iAnzZeilen%, text AS STRING, iRefresh%)
+DECLARE SUB zIconListHandler (sGroup$, iCtrl%, iRefresh%)
+DECLARE SUB zRessourceSet (sGroup$, Index%, text$, Value%)
+DECLARE SUB ListBox (sGroup$, sName$, x%, y%, x2%, y2%, WithCheckBoxes%)
+DECLARE SUB zRessourceGet (sGroup$, Index%, text$, Value%)
+DECLARE SUB zCreateControl (iCtrlType%, sGroup$, sName$, caption$, Value%, x%, y%, x2%, y2%, w%, h%, tag$, iSelfHandler%)
+DECLARE SUB zSetOrigPalette ()
+DECLARE FUNCTION MenuInt$ (items AS STRING, Trennzeichen$)
+DECLARE FUNCTION TextLen% (text AS STRING)
+DECLARE SUB GetValue (objekt AS STRING, Wert%)
+DECLARE SUB MouseClicker (sGroup$, sName$, x%, y%, x2%, y2%, sSimulateKey AS STRING, iWithShadow%)
+DECLARE FUNCTION TextHeight% (text AS STRING)
+DECLARE SUB zListboxHandler (sGroup$, iCtrl%, x%, y%, x2%, y2%, iAnzSpalten%, iAnzZeilen%, iRefreshOnly%)
+DECLARE FUNCTION TextWidth% (text AS STRING)
+DECLARE SUB zRGBPalette (slot%, r%, g%, B%)
+DECLARE SUB zShowPicture (xx%, yy%, sFileName AS STRING)
+DECLARE SUB RestoreScreen ()
+DECLARE SUB zEventMouseMove (iCtrl%, iButton%)
+DECLARE SUB SilentScreen ()
+DECLARE SUB Main ()
+DECLARE SUB zEventClick (iCtrl%, iButton%)
+DECLARE SUB zEventMouseDown (iCtrl%, iButton%)
+DECLARE FUNCTION zLauscheEvents% (sGroup$)
+DECLARE FUNCTION zSelfHandleControl% (sGroup$, iCtrlType%)
+DECLARE FUNCTION GetKey$ (sGroup$)
+DECLARE SUB PutString (objekt AS STRING, text AS STRING)
+DECLARE SUB GetString (objekt AS STRING, text AS STRING)
+DECLARE SUB zTimeEreignisHandler (nr%)
+DECLARE SUB EditBox (sGroup$, sName$, x AS INTEGER, y AS INTEGER, iAnzahlSpalten AS INTEGER, iAnzahlZeilen AS INTEGER, iMaxZeichen AS INTEGER)
+DECLARE SUB zMoveScreen (x1%, y1%, x2%, y2%, ToX%, ToY%)
+DECLARE SUB ClearControls (sGroup$)
+DECLARE SUB zGetOriginalValues (iRestore%)
+DECLARE SUB zDrawBox (x1%, y1%, x2%, y2%)
+DECLARE SUB DrawControls (sGroup$)
+DECLARE SUB Button (sGroup$, caption$, x%, y%)
+DECLARE SUB zHandleControls (sGroup$, iChanges%)
+DECLARE SUB zWriteTextXY (x%, y%, text AS STRING)
+DECLARE SUB zNextCtrl (sGroup$)
+DECLARE SUB zLastControl (sGroup$)
+DECLARE SUB Echo (text AS STRING)
+DECLARE SUB MenuBox (sGroup$, caption$)
+DECLARE SUB GetInp (sGroup$)
+DECLARE SUB Dialog (text AS STRING)
+DECLARE SUB zGUIConfiguration ()
+
+'Initialisierungen:
+'$STATIC
+DEFINT A-Z
+CLEAR , , 5000
+CLOSE
+ON ERROR GOTO errHandler
+SCREEN 9, , 0, 0
+zSetOrigPalette
+VIEW PRINT 1 TO 25
+WIDTH 80, 25
+VIEW
+
+'GUI-Konfigurationsvariablen:
+DIM SHARED zShowTimeExitBox         AS INTEGER
+
+DIM SHARED CurrentX                 AS INTEGER  'Die X-Koordinate der aktuellen Cursor-Position
+DIM SHARED CurrentY                 AS INTEGER  'Die Y-Koordinate der aktuellen Cursor-Position
+DIM SHARED choice                   AS INTEGER  'Die Wahl des Benutzers (MenuInt)
+
+'Datentypen fÅr die LaOS-GUI:
+TYPE zControlType
+    Value       AS INTEGER      'Der Wert
+    caption     AS STRING * 40  'Die Beschreibung des Controls
+    group       AS STRING * 8   'Die Steuerelement-Gruppe, zu der das Control gehîrt
+    x           AS INTEGER      'X-Position
+    y           AS INTEGER      'Y-Position
+    x2          AS INTEGER      'Position
+    y2          AS INTEGER      'Position
+    w           AS INTEGER      'Kann fÅr die Anz Zeichen (horizontal) verwendet werden
+    h           AS INTEGER      'Kann fÅr die Anz Zeichen (vertikal) verwendet werden
+    tag         AS STRING * 12  'Unterschiedliche Verwendung
+    CtrlType    AS INTEGER      'Der Control-Typ (zwingend!)
+    SelfHandler AS INTEGER      'True = Das Control handelt sich selbst! (aufwÑndige Controls)
+END TYPE
+
+TYPE zRessourceType
+    Value       AS INTEGER
+    text        AS STRING * 80  'Text
+END TYPE
+
+TYPE zMouseType
+    x           AS INTEGER
+    y           AS INTEGER
+    Cursor      AS INTEGER '0 = normal, 1 = Textcursor
+    Speed       AS INTEGER
+    Clicked     AS INTEGER '1 = linke Taste geclickt, 2 = rechte Taste
+    Down        AS INTEGER '1 = linke Taste unten, 2 = rechte Taste
+    oldx        AS INTEGER
+    oldy        AS INTEGER
+    time        AS SINGLE  'Die Zeit, zu der die letzte Bewegung gemacht wurde
+    ClickX      AS INTEGER 'Letzter Click X
+    ClickY      AS INTEGER 'Letzter Click Y
+END TYPE
+
+TYPE startype
+    x AS INTEGER
+    y AS INTEGER
+    col AS INTEGER
+    float AS SINGLE 'Grîsse
+END TYPE
+
+'Konstanten fÅr CtrlType (Steuerelement-Typen):
+'Controls mit Tabstopp:
+CONST zMenuBox = 1
+CONST zButton = 2
+CONST zRadioButton = 3
+CONST zCheckBox = 4
+CONST zListBox = 5
+CONST zEditBox = 6
+CONST zIconList = 7
+CONST zExitFocus = 8
+
+'Controltypen ohne Tabstopp sind hîher als zControlTypeCount!
+CONST zControlTypeCount = 8
+
+'Controls ohne Tabstop:
+CONST zShortcut = 96
+CONST zScrollBar = 97
+CONST zMouseClicker = 98
+CONST zSliderBar = 99
+
+'Variablen und Datenfelder fÅr die LaOS-Technlologien:
+DIM SHARED tempdir            AS STRING   'Das Verzeichnis fÅr temporÑre Dateien
+DIM SHARED laosdir            AS STRING   'Das LaOS-Heimatverzeichnis
+
+'Variablen und Datenfelder fÅr die LaOS-GUI:
+DIM SHARED Controls(1 TO 20)        AS zControlType
+DIM SHARED zStrings(1 TO 3)         AS STRING 'Collection von dynamischen Strings (fÅr Ressourcen...)
+DIM SHARED NextCtrl              AS INTEGER
+DIM SHARED keyb                     AS STRING   'Die zuletzt gedrÅckte Taste ist hier abrufbar
+DIM SHARED Focus                    AS STRING   'Das Control mit dem Fokus
+DIM SHARED Left                     AS INTEGER
+DIM SHARED Top                      AS INTEGER
+DIM SHARED Right                    AS INTEGER
+DIM SHARED Down                     AS INTEGER
+DIM SHARED TextAlignment            AS INTEGER
+DIM SHARED crlf                     AS STRING   'WagenrÅcklauf & Zeilenvorschub; geht leider nicht als Konstante
+DIM SHARED ActiveCtrl         AS INTEGER  'Die ControlNr des aktivierten Steuerelementes
+DIM SHARED zTimeEreignis(5)         AS SINGLE
+DIM SHARED zMCS                     AS STRING   'Die DRAW-Befehle fÅr den Mauscursor!
+DIM SHARED zMHG(104)                AS INTEGER  'Der Hintergrund fÅr die Maus wird gesichert
+DIM SHARED iMS(45)                  AS INTEGER  'Das Maschinenprogramm fÅr die Maus
+DIM SHARED Mouse                    AS zMouseType
+DIM SHARED zMouseDown               AS INTEGER  'Die ControlNr des Controls, auf dessem die Maus gedrÅckt wurde...
+DIM SHARED SilentScreenMode        AS INTEGER
+DIM SHARED SaveScreenMode           AS INTEGER
+DIM SHARED zSSMStop                 AS INTEGER
+DIM SHARED zDebugMode               AS INTEGER
+DIM SHARED errorlevel, DefaultCtrl
+
+'Config:
+DIM SHARED MouseOn, Dateformat, zsson
+OPEN "c:\laos7\cfg.cfg" FOR INPUT AS 1
+INPUT #1, MouseOn, Mouse.Speed, Dateformat, zsson, tempdir, laosdir
+CLOSE 1
+
+'Index der Farbwerte:
+'
+'   Hauptfarben
+'   -----------
+'   tcol        Allgemeine Textfarbe
+'   tcol2       Alternative Textfarbe (dunkler)
+'   tcol3           "           "     (heller)
+'   bcol        Hintergrundfarbe
+'   shdcol      Schattenfarbe
+'   focol       FokusFarbe
+
+'   Fensterrahmen
+'   -------------
+'   frmcol      Rahmenfarbe
+'   wincol      Fensterfarbe
+'   frmlcol     Farbe der Titellinie
+
+'   Editbox
+'   -------
+'   tbfcol      Textbox-Hintergrundfarbe
+'   tbbcol      Textbox-Rahmenfarbe
+'   tbtcol      TextBox-Textfarbe
+
+'   Listbox
+'   -------
+'   lbicol      Inaktiver Eintrag
+'   lbacol      Aktiver Eintrag
+'   lbfcol      FÅllfarbe der Listbox
+
+'   Symbole
+'   -------
+'   icbcol      Symbol-Hintergrundfarbe
+
+'   Buttons
+'   -------
+'   btfcol      Buttonfarbe
+'   btscol      Buttonschattenfarbe
+'   btrcol      Buttonrandfarbe
+'   btlcol      Buttonlinienfarbe
+'   bttcol      ButtonTextfarbe
+
+'   MenÅ
+'   ----
+'   mbcol       Menu-Hintergrundfarbe
+'   mtcol       MenÅ-Textfarbe
+
+'   Scrollbar
+'   ----------
+'   sbfcol      FÅllfarbe der Scrollbar
+'   sbbcol      Farbe der Scrollbarbuttons
+'   sbscol      Farbe des Sliderbuttons der Scrollbar (-1 = 3D)
+'   sbrcol      Farbe des Scrollbarrahmens
+
+'   Tooltiptext
+'   -------------
+'   ttfcol      FÅllfarbe des Tooltiptextes
+'   ttrcol      Rahmenfarbe des Tooltiptextes
+'   tttcol      Tooltiptextfarbe
+
+'Variablen fÅr das Farbschema:
+DIM SHARED Farbe          'lokal, aktive Farbe
+DIM SHARED InversFarbe    'lokal, aktive inverse HG-Farbe
+DIM SHARED tcol, tcol2, tcol3, focol, bcol, mfcol, mtcol, wincol, shdcol, frmcol, icfcol, btfcol, btscol, btrcol, btlcol, bttcol, lbicol, lbacol, tbfcol, tbtcol, sbbcol, sbfcol, sbscol, sbrcol, ttfcol, ttrcol, tttcol, frmlcol, lbfcol, tbbcol, lbtcol _
+, stcol, sfcol
+
+'Farbschema laden und setzen:
+errorlevel = 0
+OPEN laosdir + "colors.cfg" FOR INPUT AS 1
+INPUT #1, a$, tcol, tcol2, tcol3, focol, bcol, mfcol, mtcol, wincol, shdcol, frmcol, icfcol, btfcol, btscol, btrcol, btlcol, bttcol, lbicol, lbacol, tbfcol, tbtcol, sbbcol, sbfcol, sbscol, sbrcol, ttfcol, ttrcol, tttcol, frmlcol, lbfcol, tbbcol,  _
+lbtcol, stcol, sfcol
+CLOSE 1
+
+'Allgemeine Konstanten:
+CONST True = -1
+CONST False = 0
+
+CONST AlignLeft = 1
+CONST AlignCenter = 2
+CONST AlignRight = 3
+
+CONST PunkteLinie = 21845
+
+CONST AutoVal = -32768      'Ermîglicht das automatische umschalten von RessourceneintrÑgen
+CONST RscFile = 255         'Dateinummer fÅr die Ressourcen-Auslagerungsdatei
+
+crlf = CHR$(13) + CHR$(10)  'Zeilenvorschub & WagenrÅcklauf
+
+1 'Initialisierung mit vorhandenen Variablen:
+'lokale Farben:
+MouseOn = True
+
+Farbe = tcol
+COLOR Farbe, bcol
+
+TextAlignment = AlignLeft
+NextCtrl = 1
+
+Mouse.x = 319
+Mouse.y = 174
+zSetMouseCursor "mouse"
+
+zTimeEreignis(1) = 1
+zTimeEreignis(0) = zsson
+
+'LaOS XT Initialization
+'///////////////////////
+
+'Filesystem:
+TYPE zFileType
+    relpos AS INTEGER
+    id AS INTEGER
+    docint AS INTEGER
+    caption AS STRING * 40
+    SysType AS STRING * 1
+    Created AS STRING * 10
+    time AS STRING * 5
+    Attrib AS STRING * 1
+    info AS STRING * 256
+    PrgStarter AS STRING * 40
+    icon AS STRING * 12
+END TYPE
+
+'GUI Configuration
+'********************
+'Hier kannst du Einstellungen vornehmen, welche das Verhalten der  LaOS-GUI
+'beeinflussen:
+
+zDebugMode = True
+'True = Es wird der Speicherplatz in der Statusbar angezeigt
+
+zShowTimeExitBox = True
+'True = Zeigt die Uhr und Exitbox im Hauptfenster an.
+
+Programm:
+'********************
+'Schreibe hier dein Programm!
+'Am besten schreibst du dein Programm in der Sub ->Main.
+'und wenn du globale Variablen brauchst kannst du sie hier deklarieren.
+
+zDebugMode = False
+'MouseOn = False
+
+DIM SHARED ScrolledPage AS INTEGER, ScrolledLine
+DIM SHARED CurCol AS INTEGER
+DIM SHARED path AS STRING
+DIM SHARED file$
+DIM SHARED copy$
+DIM SHARED copyfile$
+DIM SHARED ctlFiles, ctlfolders
+DIM SHARED markfile AS STRING
+DIM SHARED iShortCut AS INTEGER
+DIM SHARED topkey AS STRING
+
+Main
+ 
+f = FREEFILE
+OPEN tempdir + "path.tmp" FOR OUTPUT AS f
+PRINT #f, path
+CLOSE f
+
+'Beenden:
+CLEAR
+CHAIN "c:\laos7\run.bas"
+
+errHandler:
+    errorlevel = ERR
+RESUME NEXT
+
+zMouseData:
+DATA 55,8b,ec,56,57,8b,76,0c,8b,04,8b,76,0a,8b,1c,8b,76,08,8b,0c
+DATA 8b,76,06,8b,14,cd,21,8b,76,0c,89,04,8b,76,0a,89,1c,8b,76,08,89,0c
+DATA 8b,76,06,89,14,5f,5e,5d,ca,08,00,-
+
+zColors:
+DATA 0,0,0,0,0,42,0,42,0,0,42,42,42,0,0,42,0,42,21,21,21,42,42,42,0,0,0,21,21,63,21,63,21,21,63,63,63,21,21,63,21,63,63,63,21,63,63,63
+
+'FÅgt ein Symbol zu einer Symbolliste hinzu. (Mit ->IconList erstellt man die
+'Symbolliste)
+'sName$ = Der Name der Symbolliste
+'Index = Der Index des Eintrages (erforderlich: muss grîsser als 0 sein!)
+'        Wichtig: Es dÅrfen keine LÅcken in der Indexfolge entstehen!
+'sIconFile = Der Dateiname des Symbols
+'sDescription = Die Beschreibung des Symbols
+SUB AddIcon (sName$, Index, sIconFile AS STRING, sDescription AS STRING)
+    DIM sFile AS STRING * 12
+
+    sFile = sIconFile
+    IF LEN(sFile) < LEN(sIconFile) THEN
+        Dialog "Fehler in AddIcon: Falsche Angabe des File (" + sFile + ")"
+        EXIT SUB
+    END IF
+
+    zRessourceSet sName$, Index, sFile + sDescription, 0
+
+END SUB
+
+'Erstellt ein Button-Steuerelement
+'sGroup$ = Die Steuerelementgruppe
+'Caption$ = Die Caption
+'x, y = Die Koordinaten
+SUB Button (sGroup$, caption$, x, y)
+    IF x = 0 THEN
+        x = Controls(NextCtrl - 1).x2 + 5
+    END IF
+    IF y = 0 THEN
+        y = Controls(NextCtrl - 1).y
+    END IF
+    zCreateControl zButton, sGroup$, "", caption$, 0, x, y, x + TextLen(caption$) + 8, y + 21, 0, 0, "", False
+END SUB
+
+'Erstellt ein Checkbox-Steuerelement
+'sGroup$ = Die Steuerelementegruppe
+'Caption$ = Die Caption
+'x, y = Die Koordinaten
+'value = Der Wert (True oder False)
+SUB CheckBox (sGroup$, caption$, x, y, Value)
+    zCreateControl zCheckBox, sGroup$, "", caption$, Value, x, y, x + TextLen(caption$) + 32, y + 18, 0, 0, "", False
+END SUB
+
+'Entfernt Steuerelemente aus dem Speicher
+'sGroup$ = Die Steuerelementegruppe ("" = alle)
+SUB ClearControls (sGroup$)
+SHARED zoldsgroup AS STRING * 8
+    Mouse.Clicked = False
+    CLOSE RscFile
+    IF sGroup$ = "" THEN
+        ERASE Controls
+        ERASE zStrings
+        KILL tempdir + "*.rs~"
+        NextCtrl = 1
+        DefaultCtrl = 0
+        zoldsgroup = ""
+    ELSE
+        IF RTRIM$(Controls(DefaultCtrl).group) = sGroup$ THEN DefaultCtrl = 0
+        DIM rsc AS zRessourceType
+        ideleted = 0
+        FOR i% = 1 TO UBOUND(Controls)
+            IF Controls(i%).CtrlType = 0 THEN EXIT FOR
+            IF RTRIM$(Controls(i%).group) = sGroup$ THEN
+                Controls(i%).CtrlType = 0
+                Controls(i%).SelfHandler = 0
+                ideleted = ideleted + 1
+
+                'Strings des Objektes lîschen:
+                FOR s% = 1 TO UBOUND(zStrings)
+                    IF RTRIM$(LEFT$(zStrings(s%), 8)) = RTRIM$(RTRIM$(Controls(i%).caption)) THEN
+                        zStrings(s%) = ""
+                    END IF
+                NEXT
+
+                'Ressourcen des Objektes lîschen: (falls vorhanden...)
+                KILL tempdir + RTRIM$(Controls(i%).caption) + ".rs~"
+                IF RTRIM$(zoldsgroup) = RTRIM$(Controls(i%).caption) THEN zoldsgroup = ""
+            END IF
+        NEXT
+        NextCtrl = NextCtrl - ideleted
+        'von hinten beginnend alle leeren EintrÑge rausnehmen:
+        FOR i% = 1 TO UBOUND(Controls)
+          IF Controls(i%).CtrlType = 0 THEN
+            iChanges = 0
+            FOR z% = i% + 1 TO UBOUND(Controls)
+              IF Controls(z%).CtrlType > 0 THEN iChanges = -1
+              SWAP Controls(z%), Controls(z% - 1)
+            NEXT
+            IF NOT iChanges THEN EXIT SUB
+            i% = i% - 1
+          END IF
+        NEXT
+        EXIT SUB
+    END IF
+END SUB
+
+'Lîscht die EintrÑge einer beliebigen Liste (Symbolliste, Listbox, Ressource)
+'sName$ = Der Name der Liste
+SUB ClearList (sName$)
+  CLOSE RscFile
+  KILL tempdir + sName$ + ".rs~"
+END SUB
+
+'Lîscht den Bildschirm und zeichnet auf Wunsch die Exitbox und Uhr.
+'Setzen Sie die Variable zShowTimeExitBox auf False (0), um die Zeit und
+'ExitBox nicht anzuzeigen.
+'sGroup$ = Die Steuerelementgruppe, zu dem die ExitBox gehîrt.
+SUB CLW (sGroup$)
+    SilentScreen
+    CLS
+    LINE (0, 0)-(639, 349), wincol, B
+    LINE (1, 1)-(638, 348), frmcol, B
+    COLOR tcol, bcol
+    zSetOrigPalette
+    Left = 2
+    Top = 2
+    Right = 637
+    Down = 347
+    CurrentX = 2
+    CurrentY = 2
+    IF zShowTimeExitBox THEN
+        ExitBox sGroup$, 619, 4
+        Farbe = tcol
+        zWriteTextXY 575, 4, LEFT$(TIME$, 5)
+        LINE (573, 4)-STEP(43, 13), btrcol, B
+    END IF
+    DrawControls sGroup$
+    RestoreScreen
+END SUB
+
+SUB ConvertToHex (datei$, HexaDatei$)
+'
+'GÅnter MÅnster 1989 - 2003
+'Das Baujahr 18.11.1989 - Revision im 2003
+
+DIM DatLength AS LONG
+
+CLOSE #1, 2
+OPEN datei$ FOR BINARY AS #1
+ProgressBar "Bitte warten Sie, wÑhrend der Hex-Code generiert wird...", 0
+DatLength = LOF(1)
+OPEN HexaDatei$ FOR OUTPUT AS #2
+Hexa = 16
+Bandbreite = 3 * Hexa
+Zeicheneingabe = 22
+DO UNTIL LOC(1) = LOF(1) OR INKEY$ = CHR$(27)
+'Status RIGHT$(LTRIM$(STR$(FIX(LOC(1) / LOF(1) * 100))) + "%", 4)
+ProgressBar "", LOC(1) / LOF(1)
+IF LOF(1) - LOC(1) < Hexa THEN Zeicheneingabe = LOF(1) - LOC(1) ELSE Zeicheneingabe = Hexa
+a$ = SPACE$(Zeicheneingabe): GET #1, , a$
+cassette$ = ""
+FOR a = 1 TO Zeicheneingabe
+cassette$ = cassette$ + RIGHT$("00" + HEX$(ASC(MID$(a$, a, 1))), 2) + " "
+NEXT a
+IF LEN(cassette$) < Bandbreite THEN
+    cassette$ = cassette$ + SPACE$(Bandbreite - LEN(cassette$))
+    cassette$ = cassette$ + "≥ "
+ELSE
+    cassette$ = cassette$ + "≥ "
+    cassette$ = cassette$ + SPACE$(3 * (Hexa - Zeicheneingabe))
+END IF
+FOR a = 1 TO Zeicheneingabe
+C$ = MID$(a$, a, 1)
+IF ASC(C$) >= 32 THEN
+cassette$ = cassette$ + C$
+ELSE
+cassette$ = cassette$ + "."
+END IF
+NEXT a
+PRINT #2, cassette$ + SPACE$(Hexa - Zeicheneingabe)
+LOOP
+CLOSE #2
+
+END SUB
+
+SUB DateiStatus
+  IF ActiveCtrl = ctlFiles THEN
+    DIM datei AS STRING * 12
+    GetString "files", datei
+    IF RTRIM$(datei) <> "" THEN
+      errorlevel = 0
+      f = FREEFILE
+      OPEN datei FOR INPUT AS f
+      IF errorlevel THEN
+        StatusBar "Datei " + datei + " (nicht zugreifbar)"
+      ELSE
+        StatusBar "Datei " + datei + " - " + MB(LOF(f))
+      END IF
+      CLOSE f
+    END IF
+  END IF
+END SUB
+
+SUB delete (filecounter)
+SaveScreen
+'Frame "del", 170, 90, 440, 200, "Lîschen"
+'Button "del", "    Ja    ", 190, 170
+'DefaultCtrl = NextCtrl
+'ActiveCtrl = NextCtrl
+'Button "del", "   Nein   ", 290, 170
+'Farbe = tcol
+'Left = 180: Right = 440: Top = 120: Down = 170
+'CurrentX = 180: CurrentY = 120
+'Echo "Sind Sie sicher, dass Sie die ausgewÑhlten" + STR$(filecounter) + " Datei(en) lîschen mîchten?"
+
+IF filecounter = 0 THEN
+  Dialog "Bitte kreuzen Sie erst die Dateien an!"
+  EXIT SUB
+END IF
+
+Frame "del", 280, 60, 560, 300, "Dateien lîschen"
+ListBox "del", "List1", 290, 120, 537, 240, False
+
+Button "del", "    Ja    ", 290, 270
+DefaultCtrl = NextCtrl
+ActiveCtrl = NextCtrl
+Button "del", "   Nein   ", 385, 270
+Farbe = tcol
+Left = 290: Right = 550: Top = 90: Down = 120
+CurrentX = 290: CurrentY = 90
+IF filecounter = 1 THEN
+  Echo "Folgende ausgewÑhlte Datei wird gelîscht:"
+ELSE
+  Echo "Folgende" + STR$(filecounter) + " ausgewÑhlten Dateien werden gelîscht:"
+END IF
+zWriteTextXY 290, 250, "Mîchten Sie fortfahren?"
+
+'Liste mit den ausgewÑhlten Dateien fÅllen:
+ClearList "List1"
+f = FREEFILE
+OPEN tempdir + "checked.txt" FOR INPUT AS f
+errorlevel = 0
+i = 0
+DO WHILE NOT EOF(f)
+  i = i + 1
+  LINE INPUT #f, a$
+  IF errorlevel THEN EXIT DO
+  IF a$ <> "" THEN
+    ListAdd "List1", i, a$, 0
+  END IF
+  errorlevel = 0
+LOOP
+CLOSE f
+
+DrawControls "del"
+DO
+  GetInp "del"
+
+  SELECT CASE Focus
+  CASE "Ja"
+      'Write here Code for a Click on this Button
+      f = FREEFILE
+      OPEN tempdir + "checked.txt" FOR INPUT AS f
+      errorlevel = 0
+      DO WHILE NOT EOF(f)
+        LINE INPUT #f, a$
+        IF errorlevel THEN EXIT DO
+        IF a$ <> "" THEN
+          StatusBar "Lîschen... (" + a$ + ")"
+          KILL a$
+          filecounter = 0
+        END IF
+        errorlevel = 0
+      LOOP
+      CLOSE f
+      EXIT DO
+  CASE "Nein"
+      'Write here Code for a Click on this Button
+      EXIT DO
+  CASE "esc"
+      'Write here Code for Cancel this Dialog:
+      EXIT DO
+  END SELECT
+LOOP UNTIL keyb = "esc"
+ClearControls "del"
+RestoreScreen
+END SUB
+
+SUB delete2
+Frame "del", 280, 60, 560, 300, "Dateien lîschen"
+ListBox "del", "List1", 290, 120, 537, 240, False
+
+Button "del", "    Ja    ", 290, 270
+DefaultCtrl = NextCtrl
+ActiveCtrl = NextCtrl
+Button "del", "   Nein   ", 385, 270
+Farbe = tcol
+Left = 290: Right = 550: Top = 90: Down = 120
+CurrentX = 290: CurrentY = 90
+Echo "Folgende x Datei(en) werden gelîscht:"
+TextAlignment = AlignLeft
+zWriteTextXY 290, 250, "Mîchten Sie fortfahren?"
+
+'Sample to fill a List:
+ClearList "List1"
+ListAdd "List1", 1, "Listitem1", 0
+ListAdd "List1", 2, "Listitem2", 0
+ListAdd "List1", 3, "Listitem3", 0
+
+DrawControls "del"
+DO
+  GetInp "del"
+
+  SELECT CASE Focus
+  CASE "List1"
+      'Write here Code for a Double-Click on this ListBox
+      STOP
+  CASE "Ja"
+      'Write here Code for a Click on this Button
+      STOP
+  CASE "Nein"
+      'Write here Code for a Click on this Button
+      STOP
+  CASE "esc"
+      'Write here Code for Cancel this Dialog:
+      EXIT DO
+  END SELECT
+LOOP UNTIL keyb = "esc"
+
+ClearControls "del"
+END SUB
+
+'Gibt eine Meldung auf dem Bildschirm aus, den der Benutzer mit OK bestÑtigen
+'muss.
+'text = Der auszugebende Text.
+SUB Dialog (text AS STRING)
+  zGetOriginalValues False
+  TextAlignment = AlignCenter
+  Left = 7
+  Right = 632
+  h = TextHeight(text) + 14 + 30
+  w = TextWidth(text) + 16
+  l = 630 / 2 - w / 2
+  t = 350 / 2 - h / 2
+  IF w < 120 THEN
+      l = l - ((120 - w) / 2)
+      w = 120
+  END IF
+  x1 = 5 + l
+  y1 = t - 2
+  x2 = 5 + l + w
+  y2 = t + h
+  SaveScreen
+  VIEW
+  Frame "", x1, y1, x2 - 1, y2 - 1, ""
+  Echo text
+  x1 = x1 + ((x2 - x1) - TextLen("    OK     ") - 8) / 2
+  Button "MsgBox", "    OK     ", x1, y2 - 30
+  DrawControls "MsgBox"
+  GetInp "MsgBox"
+  x1 = l
+  y1 = t - 2
+  x2 = l + w
+  y2 = t + h
+  zGetOriginalValues True
+  ClearControls "MsgBox"
+  RestoreScreen
+END SUB
+
+'Zeichnet die Controls
+'sGroup$ = Die Steuerelementgruppe ("" = alle)
+SUB DrawControls (sGroup$)
+    FOR i% = 1 TO UBOUND(Controls)
+        IF RTRIM$(Controls(i%).group) = sGroup$ OR sGroup$ = "" THEN
+            zDrawThisControl i%, False, True
+        END IF
+    NEXT
+END SUB
+
+'Gibt ein Text auf dem Bildschirm aus. BerÅcksichtigt dabei die Bereichs-
+'begrenzungen Left, Top, Right und Down, die zuvor durch einen Rahmen (Frame)
+'gesetzt wurden.
+SUB Echo (text AS STRING)
+text = RTRIM$(text)
+
+DIM linie AS STRING, txt AS STRING
+x = CurrentX
+y = CurrentY
+txt = text
+panewidth = Right - Left
+leftpane = x
+
+DO
+    'holt die nÑchste Zeile:
+    aw = 0
+    DO
+        w = INSTR(aw + 1, txt, " ")
+        cr = INSTR(aw + 1, txt, crlf) 'Zeilenvorschub & WagenrÅcklauf?
+
+        IF w = 0 THEN w = LEN(txt)
+
+        IF cr > 0 THEN   'Zeilenvorschub & WagenrÅcklauf!
+            IF NOT (TextLen(LEFT$(txt, cr - 1)) > panewidth) THEN
+                'muss nicht vorher bereits umgebrochen werden?
+                linie = LEFT$(txt, cr - 1)
+                txt = MID$(txt, cr + 2)
+                EXIT DO
+            END IF
+        END IF
+       
+        IF TextLen(LEFT$(txt, w)) > panewidth OR w = LEN(txt) THEN
+            IF aw = 0 THEN aw = LEN(txt)
+            'IF INSTR(txt, "den Kalender!") = 1 THEN STOP
+            IF w = LEN(txt) AND TextLen(LEFT$(txt, w)) < panewidth THEN aw = LEN(txt)
+            IF aw = LEN(txt) AND TextLen(LEFT$(txt, w)) > panewidth THEN aw = FIX(panewidth / 8)
+            linie = LEFT$(txt, aw)
+            txt = MID$(txt, aw + 1)
+            EXIT DO
+        ELSE
+            aw = w
+        END IF
+    LOOP UNTIL LEN(txt) = 0
+  
+    SELECT CASE TextAlignment
+        CASE AlignLeft
+            'nothing to do!
+        CASE AlignRight
+            x = Right - TextLen(linie)
+        CASE AlignCenter
+            x = Left + ((panewidth - TextLen(linie)) / 2)
+    END SELECT
+
+    IF y + 14 <= Down THEN
+        zWriteTextXY x, y, linie
+        x = leftpane
+        y = y + 14
+    ELSE
+        'Platz reicht nicht!
+        EXIT DO
+    END IF
+
+LOOP UNTIL LEN(txt) = 0
+CurrentX = x
+CurrentY = y
+END SUB
+
+'Erstellt ein Editbox-Steuerelement
+'sGroup$ = die Steuerelementgruppe
+'sName$ = Der Name der Editbox
+'x,y = Die Koordinaten
+'iAnzahlSpalten = Anzahl Spalten
+'iAnzahlZeilen = Anzahl Zeilen
+'iMaxZeichen = Maximale Anzahl einzugebender Zeichen (0=hîchstmîgliches)
+SUB EditBox (sGroup$, sName$, x AS INTEGER, y AS INTEGER, iAnzahlSpalten AS INTEGER, iAnzahlZeilen AS INTEGER, iMaxZeichen AS INTEGER)
+    zCreateControl zEditBox, sGroup$, sName$, "", 1, x, y, x + (iAnzahlSpalten * 8) + 5, y + (iAnzahlZeilen * 14) + 2, iAnzahlSpalten, iAnzahlZeilen, MKI$(iMaxZeichen), True
+END SUB
+
+'PrÅft, ob eine MSDOS-Datei existiert.
+'Gibt TRUE zurÅck, falls die Datei existiert, andernfalls FALSE.
+FUNCTION exists% (FilePath$)
+  f = FREEFILE
+  errorlevel = 0
+  exists% = True
+  OPEN FilePath$ FOR INPUT AS f
+  CLOSE f
+  IF errorlevel THEN exists% = False
+END FUNCTION
+
+'Erstellt eine Exit-Box
+'sGroup$ = Die Steuerelement-Gruppe
+'sName$ = Der Name der Exit-Box
+'x,y = Die Position
+SUB ExitBox (sGroup$, x AS INTEGER, y AS INTEGER)
+    IF x = 0 THEN x = Right - 17
+    IF y = 0 THEN y = Top + 2
+    i = NextCtrl
+    MouseClicker sGroup$, "exit", x, y, x + 15, y + 13, "esc", False
+    zDrawThisControl i, 0, -1
+END SUB
+
+'Erstellt ein Exit-Fokus Objekt.
+'Sobald dieses Objekt den Fokus erhÑlt oder auf dieses Objekt geklickt wurde,
+'wird GetKey beendet und die Steuerung dem Programmablauf Åbergeben...
+'Das Objekt ist unsichtbar! Nicht geeignet fÅr GetInp!
+SUB ExitFocus (sGroup$, sName$, x, y, x2, y2)
+    IF x = 0 AND y = 0 AND x2 = 0 AND y2 = 0 THEN
+        x2 = 639
+        y2 = 349
+    END IF
+    zCreateControl zExitFocus, sGroup$, sName$, "", 0, x, y, x2, y2, 0, 0, "", False
+END SUB
+
+SUB FileCopy (txt$, source$, dest$)
+
+IF source$ = dest$ THEN EXIT SUB
+
+errorlevel = 0
+ProgressBar txt$, 0
+
+f% = FREEFILE
+OPEN source$ FOR BINARY AS f%
+ whole = LOF(f%) \ 500
+ part = LOF(f%) MOD 500
+ buffer$ = STRING$(500, 0)
+ start& = 1
+
+f2% = FREEFILE
+errorlevel = 0
+OPEN dest$ FOR BINARY AS f2%: CLOSE f2%: KILL dest$ 'stellt sicher, dass Dest$ leer ist.
+IF errorlevel = 55 THEN
+  'Datei bereits geîffnet!
+  errorlevel = 0
+  EXIT SUB
+END IF
+OPEN dest$ FOR BINARY AS f2%
+
+FOR x = 1 TO whole
+  GET f%, start&, buffer$
+  PUT f2%, start&, buffer$
+  start& = start& + 500
+  ProgressBar "", LOF(f2%) / LOF(f%)
+  IF errorlevel THEN
+    Dialog "Beim Kopieren der Datei ist ein Fehler aufgetreten. Vielleicht ist zuwenig Speicherplatz verfÅgbar, oder der DatentrÑger ist schreibgeschÅtzt."
+    EXIT FOR
+  END IF
+NEXT x
+
+buffer$ = STRING$(part, 0)
+GET f%, start&, buffer$
+PUT f2%, start&, buffer$
+
+ProgressBar "", 1
+
+CLOSE f%, f2%
+
+END SUB
+
+SUB FormatC
+
+'1. formatieren:
+f = FREEFILE
+DIM zfile AS zFileType
+KILL laosdir + "files.bnk"
+OPEN laosdir + "files.bnk" FOR BINARY AS f LEN = LEN(zFileType)
+'Der neue Ordner '\' wird erstellt:
+zfile.id = 1
+zfile.relpos = 1
+zfile.caption = "Hauptverzeichnis"
+zfile.SysType = "D"
+zfile.Created = DATE$
+zfile.time = TIME$
+PUT f, 1, zfile
+CLOSE f
+
+END SUB
+
+'Erstellt einen Bereichsrahmen (Register). Der Textbereich wird auf diesen
+'Rahmen eingeschrÑnkt.
+'sGroup$ - Die Steuerelementgruppe, zu welcher der Rahmen gehîren wird...
+'x1, y1, x2, y2 - Die Koordinaten des Fensters
+'Caption$ - Die Bezeichnung des Rahmens
+'Tipp: Sie kînnen die ersten vier Parameter auf 0 setzen, um ein Register
+'      fÅr den ganzen Bildschirm zu machen.
+SUB Frame (sGroup$, x1, y1, x2, y2, caption$)
+    IF x1 = 0 AND y1 = 0 AND x2 = 0 AND y2 = 0 THEN
+      'ganzbildschirm-Rahmen:
+      CLW sGroup$
+    ELSE
+      LINE (x1, y1)-(x2, y2), wincol, B
+      LINE (x1 + 1, y1 + 1)-(x2 - 1, y2 - 1), frmcol, B
+      LINE (x1 + 2, y1 + 2)-(x2 - 2, y2 - 2), 0, BF
+      Left = x1 + 2
+      Top = y1 + 2
+      Right = x2 - 2
+      Down = y2 - 2
+      IF LEN(sGroup$) > 0 THEN ExitBox sGroup$, 0, 0
+    END IF
+    CurrentX = Left + 2
+    CurrentY = Top + 2
+    IF LEN(caption$) > 0 THEN
+      LINE (Left, Top + 18)-(Right, Top + 18), frmlcol
+      Echo caption$
+      Top = Top + 19
+      CurrentY = Top + 2
+    END IF
+END SUB
+
+'Wartet auf Benutzereingaben unter berÅcksichtigung der LaOS-Steuerelemente
+'Group = Die Steuerelement-Gruppe, welche explizit gehandelt werden soll
+'        (Nur Steuerelemente die zu dieser Gruppe gehîren, sind dann
+'         aktivierbar)
+'        "" = alle Steuerelemente
+SUB GetInp (sGroup$)
+
+WHILE INKEY$ <> "": WEND
+Mouse.ClickX = 0
+
+zGetInpInit:
+'Ist ein Control der Gruppe markiert? - Wenn nein, das erste gefundene aktivieren!
+IF Controls(ActiveCtrl).CtrlType = 0 OR (RTRIM$(Controls(ActiveCtrl).group) <> sGroup$ AND sGroup$ <> "") THEN
+'IF ActiveCtrl = 0 OR RTRIM$(Controls(ActiveCtrl).Group) <> sGroup$ THEN
+    'kein Control ist aktiv - das erste gefundene wird aktiviert!
+    FOR i% = 1 TO UBOUND(Controls)
+        IF (sGroup$ = "" OR RTRIM$(Controls(i%).group) = sGroup$) AND Controls(i%).CtrlType <= zControlTypeCount THEN
+            ActiveCtrl = i%
+            zDrawThisControl i%, False, 0
+            EXIT FOR
+        END IF
+    NEXT
+END IF
+
+Mouse.Down = 0
+Mouse.Clicked = 0
+
+DO
+zGetInpStartLoop:
+
+    'Ist Fokus auf Exitfocus? - wenn ja, GetInp verlassen...
+    IF Controls(ActiveCtrl).CtrlType = zExitFocus THEN EXIT DO
+
+    'aufwÑndige Controls: werden hier seperat gehandelt:
+    IF NOT zSelfHandleControl(sGroup$, Controls(ActiveCtrl).CtrlType) THEN
+        keyb = GetKey(sGroup$)
+    END IF
+
+    SELECT CASE keyb
+    CASE "alt"
+      iOld = ActiveCtrl
+      'markiert das erste gefundene Menu-Control:
+      FOR i% = 1 TO UBOUND(Controls)
+          IF Controls(i%).CtrlType = zMenuBox THEN
+              IF sGroup$ = "" OR sGroup$ = RTRIM$(Controls(i%).group) THEN
+                  zDrawThisControl iOld, False, 0
+                  ActiveCtrl = i%
+                  zDrawThisControl i%, False, 0
+                  keyb = ""
+                  EXIT FOR
+              END IF
+          END IF
+      NEXT
+    CASE "left", "up"
+        zLastControl sGroup$
+    CASE "right", "down"
+        zNextCtrl sGroup$
+    CASE "tab"
+        GOTO zGetInpInit
+    CASE "esc"
+        EXIT DO
+    CASE "enter"
+        k = 0
+        IF DefaultCtrl > 0 THEN
+            IF Controls(ActiveCtrl).CtrlType = zEditBox AND (RTRIM$(Controls(DefaultCtrl).group) = sGroup$ OR sGroup$ = "") THEN k = 1: ActiveCtrl = DefaultCtrl
+        END IF
+        IF Controls(ActiveCtrl).CtrlType = zButton OR k THEN
+            zDrawThisControl ActiveCtrl, True, 0
+            DO: k = INP(&H60): a$ = INKEY$: LOOP UNTIL k <> 28 AND k <> 224
+            zDrawThisControl ActiveCtrl, False, 0
+            WHILE INKEY$ <> "": WEND
+            IF k <> 156 AND Mouse.Clicked = 0 THEN GOTO zGetInpStartLoop
+        END IF
+
+        zHandleControls sGroup$, iChanges
+
+        IF NOT iChanges THEN EXIT DO
+
+    CASE ELSE
+      FOR i = 1 TO UBOUND(Controls)
+        IF LCASE$(LEFT$(LTRIM$(Controls(i).caption), LEN(keyb))) = LCASE$(keyb) AND RTRIM$(Controls(i).group) = sGroup$ THEN
+          iOld = ActiveCtrl
+          ActiveCtrl = i
+          t = 0
+          IF Controls(i).CtrlType = zShortcut THEN
+            t = Controls(i).Value
+            IF t > 0 THEN
+              ActiveCtrl = t
+              i = t
+              t = -1
+            END IF
+          END IF
+          zDrawThisControl i, 0, 0
+          zDrawThisControl iOld, 0, 0
+          IF t THEN EXIT DO
+        END IF
+      NEXT
+    END SELECT
+LOOP UNTIL keyb = "esc"
+
+    Focus = LTRIM$(RTRIM$(Controls(ActiveCtrl).caption))
+    COLOR tcol
+
+END SUB
+
+'Wartet auf eine Tastatureingabe, sowie lîst MouseEvents aus, falls
+'auf ein Steuerelement geklickt wurde...
+'sGroup$ = Die Steuerelement-Gruppe, fÅr welche Events ausgelesen werden sollen
+'         ("" = alle)
+FUNCTION GetKey$ (sGroup$)
+
+DIM EreignisTime(UBOUND(zTimeEreignis)) AS SINGLE
+
+FOR i% = 0 TO UBOUND(zTimeEreignis)
+    EreignisTime(i%) = TIMER + zTimeEreignis(i%)
+NEXT
+
+IF Mouse.x + 14 > 639 THEN x2 = Mouse.x + (639 - Mouse.x) ELSE x2 = Mouse.x + 14
+IF Mouse.y + 24 > 349 THEN y2 = Mouse.y + (349 - Mouse.y) ELSE y2 = Mouse.y + 24
+
+GET (Mouse.x, Mouse.y)-(x2, y2), zMHG
+
+keyb = ""
+Mouse.Down = 0
+Mouse.Clicked = 0
+Mouse.Cursor = -Mouse.Cursor
+Mouse.time = TIMER
+
+'WHILE INKEY$ <> "": WEND
+
+DO
+    DO
+        a$ = INKEY$
+        IF LEN(a$) = 0 THEN k = INP(&H60)
+        x = Mouse.x
+        y = Mouse.y
+
+        IF zLauscheEvents(sGroup$) THEN
+            IF keyb = "" THEN
+                IF Controls(ActiveCtrl).SelfHandler THEN
+                    'Selfhandler-Control:
+                    a$ = "event"
+                    EXIT DO
+                ELSE
+                    'Nur-Klick-Control:
+                    a$ = CHR$(13)
+                END IF
+            ELSEIF keyb = "nofocus" THEN
+                keyb = ""
+            ELSE
+                a$ = keyb
+            END IF
+            EXIT DO
+        END IF
+        IF y <> Mouse.y THEN
+            'Screensaver-Zeit wegen Bewegung
+            'zurÅcksetzen:
+            EreignisTime(0) = TIMER + zTimeEreignis(0)
+        END IF
+        FOR i% = 0 TO UBOUND(zTimeEreignis)
+            IF TIMER >= EreignisTime(i%) AND zTimeEreignis(i%) > 0 THEN
+                zTimeEreignisHandler i%
+                EreignisTime(i%) = TIMER + zTimeEreignis(i%)
+            END IF
+        NEXT
+
+        SELECT CASE k
+        CASE 56: a$ = "alt"
+              WHILE k < 128
+                k = INP(&H60)
+              WEND
+              IF k <> 184 THEN a$ = ""
+        END SELECT
+
+    LOOP WHILE a$ = ""
+
+    IF LEN(a$) > 0 THEN
+        SELECT CASE ASC(a$)
+        CASE 6
+          'Ctrl+F
+          topkey = "ctrl+f"
+          a$ = "enter"
+       
+        CASE 12
+          'Ctrl+L
+          topkey = "ctrl+l"
+          a$ = "enter"
+       
+        CASE 1  'ctrl+a
+          IF ActiveCtrl = ctlFiles THEN
+            i = 0
+            DO
+              i = i + 1
+              zRessourceGet "files", i, text$, Value
+              IF Value = 0 THEN
+                zRessourceSet "files", i, text$, True
+              END IF
+            LOOP UNTIL text$ = ""
+          END IF
+        'CASE 32: a$ = "space"
+        CASE 27: a$ = "esc"
+        CASE 13: a$ = "enter"
+        CASE 9: a$ = "tab"
+        CASE 8: a$ = "backspace"
+        CASE 17: a$ = "ctrl-q"
+          CHAIN "c:\laos7\run.bas"
+        CASE 10: Mouse.Clicked = 2
+                IF MouseOn = 0 THEN
+                    Mouse.x = CurrentX + 10
+                    Mouse.y = CurrentY + 10
+                END IF
+        END SELECT
+    END IF
+LOOP WHILE LEN(a$) = 0
+
+IF LEN(a$) = 2 THEN
+    SELECT CASE ASC(MID$(a$, 2, 1))
+        CASE 30
+          'alt-a
+          IF exists("a:\nul") THEN SHELL "a:" ELSE Dialog "Laufwerk A nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 48
+          IF exists("b:\nul") THEN SHELL "b:" ELSE Dialog "Laufwerk B nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 46
+          IF exists("c:\nul") THEN SHELL "c:" ELSE Dialog "Laufwerk C nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 32
+          IF exists("d:\nul") THEN SHELL "d:" ELSE Dialog "Laufwerk D nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 18
+          IF exists("e:\nul") THEN SHELL "e:" ELSE Dialog "Laufwerk E nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 33
+          IF exists("f:\nul") THEN SHELL "f:" ELSE Dialog "Laufwerk F nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 34
+          IF exists("g:\nul") THEN SHELL "g:" ELSE Dialog "Laufwerk G nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 35
+          IF exists("h:\nul") THEN SHELL "h:" ELSE Dialog "Laufwerk H nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 23
+          IF exists("i:\nul") THEN SHELL "i:" ELSE Dialog "Laufwerk I nicht bereit!"
+          a$ = "enter"
+          iShortCut = True
+        CASE 134 'F12: Bildschirminhalt speichern
+          SavePicture 0, 0, 639, 349, tempdir + "zwa.abm"
+          a$ = ""
+        CASE 15: a$ = "shift-tab"
+        CASE 77: a$ = "right"
+        CASE 75: a$ = "left"
+        CASE 72: a$ = "up"
+        CASE 80: a$ = "down"
+        CASE 82: a$ = "insert"
+        CASE 83: a$ = "delete"
+        CASE 71: a$ = "home"
+        CASE 79: a$ = "end"
+        CASE 73: a$ = "pageup"
+        CASE 81: a$ = "pagedown"
+        CASE 115: a$ = "ctrl-left"
+        CASE 116: a$ = "ctrl-right"
+        CASE 119: a$ = "ctrl-home"
+        CASE 117: a$ = "ctrl-end"
+        CASE ELSE
+            a$ = STR$(ASC(MID$(a$, 2, 1)))
+    END SELECT
+END IF
+
+IF ASC(a$) < 32 THEN a$ = LTRIM$(STR$(ASC(a$)))
+
+GetKey = a$
+keyb = a$
+k = INP(&H60)
+
+IF MouseOn THEN PUT (Mouse.oldx, Mouse.oldy), zMHG, PSET
+ERASE zMHG
+
+RaiseKeyPress ActiveCtrl, LTRIM$(RTRIM$(Controls(ActiveCtrl).caption)), a$
+
+SELECT CASE a$
+CASE "shift-tab"
+    'nÑchster Typ aktivieren:
+    iOld = ActiveCtrl
+    FOR i% = ActiveCtrl - 1 TO 1 STEP -1
+        IF (sGroup$ = "" OR RTRIM$(Controls(i%).group) = sGroup$) AND Controls(i%).CtrlType <= zControlTypeCount THEN
+          ActiveCtrl = i%
+          IF NOT Controls(i%).SelfHandler THEN
+              zDrawThisControl i%, False, 0
+          END IF
+          IF NOT Controls(iOld).SelfHandler THEN zDrawThisControl iOld, False, 0
+          EXIT FOR
+        END IF
+    NEXT
+    keyb = "tab"
+    GetKey = "tab"
+CASE "tab"
+    'wechselt vom einen Control-Typen zum andern!
+    ' - oder, falls ein Selfhandler - zum nÑchsten Control dieses Typs:
+    'aktives deaktivieren:
+    iOld = ActiveCtrl
+    ActiveCtrl = 0
+    IF Controls(iOld).SelfHandler THEN
+        'nÑchstes aktivieren:
+        FOR i% = iOld + 1 TO UBOUND(Controls)
+            IF sGroup$ = "" OR RTRIM$(Controls(i%).group) = sGroup$ THEN
+                IF Controls(i%).CtrlType = Controls(iOld).CtrlType THEN
+                    ActiveCtrl = i%
+                    IF NOT Controls(i%).SelfHandler THEN
+                        zDrawThisControl i%, False, 0
+                    END IF
+                    EXIT FUNCTION
+                END IF
+            END IF
+        NEXT
+    ELSE zDrawThisControl iOld, False, 0
+    END IF
+    'nÑchster Typ aktivieren:
+    FOR i% = iOld + 1 TO UBOUND(Controls)
+        IF sGroup$ = "" OR RTRIM$(Controls(i%).group) = sGroup$ THEN
+            IF Controls(i%).CtrlType <> Controls(iOld).CtrlType AND Controls(i%).CtrlType <= zControlTypeCount THEN
+                IF DefaultCtrl > 0 THEN
+                  IF Controls(i%).CtrlType = Controls(DefaultCtrl).CtrlType THEN i% = DefaultCtrl
+                END IF
+                ActiveCtrl = i%
+                IF NOT Controls(i%).SelfHandler THEN
+                    zDrawThisControl i%, False, 0
+                END IF
+                EXIT FOR
+            END IF
+        END IF
+    NEXT
+
+END SELECT
+
+END FUNCTION
+
+'Liest einen String eines beliebigen Objektes aus (siehe auch ->PutString)
+'
+'objekt = Der Name des Objektes, dessen String herausgelesen werden soll
+'Text = RÅckgabewert: Der String des Objektes
+SUB GetString (objekt AS STRING, text AS STRING)
+
+    FOR i% = 1 TO UBOUND(zStrings)
+        IF RTRIM$(LEFT$(zStrings(i%), 8)) = RTRIM$(objekt) THEN
+            'Objekt gefunden -> diesen String zurÅckgeben!
+            text = MID$(zStrings(i%), 9)
+            EXIT SUB
+        END IF
+    NEXT
+
+    FOR i% = 1 TO UBOUND(Controls)
+      IF RTRIM$(Controls(i%).caption) = objekt THEN
+        'Control gefunden -> diesen String aus Ressource
+        'zurÅckgeben!
+        zRessourceGet objekt, Controls(i%).Value, text, 0
+      END IF
+    NEXT
+
+END SUB
+
+'Liest den Wert eines beliebigen Steuerelementes aus (siehe auch ->PutValue)
+'objekt = Der Name des Objektes, dessen Wert herausgelesen werden soll
+'Wert = RÅckgabewert: Der Wert des Steuerelementes
+SUB GetValue (objekt AS STRING, Wert)
+
+    FOR i% = 1 TO UBOUND(Controls)
+        IF RTRIM$(Controls(i%).caption) = RTRIM$(objekt) THEN
+            'Objekt gefunden -> diesen Wert zurÅckgeben!
+            Wert = Controls(i%).Value
+            EXIT SUB
+        END IF
+    NEXT
+
+END SUB
+
+'Erstellt ein Symbollisten-Steuerelement
+'Die Symbole werden mit AddIcon hinzugefÅgt.
+'sGroup$ = Die Steuerelemente-Gruppe
+'sName$ = Der Name der Symbolliste
+'Caption$ = Die öberschrift der Symbolleiste
+'x,y,x2,y2 = Die Position des Rahmens, innerhalb dessen sich die Symbole befinden
+'            werden.
+'iScrollBars = True: Die Symbolliste wird mit Scrollbars und Rahmen angezeigt.
+SUB IconList (sGroup$, sName$, caption$, x, y, x2, y2, iScrollBars)
+    tag$ = SPACE$(8)
+    MID$(tag$, 3, 2) = MKI$(NextCtrl + 1)
+    zCreateControl zIconList, sGroup$, sName$, "", 0, x, y, x2, y2, 0, 0, tag$, True
+    IF iScrollBars THEN
+        Frame sGroup$, x - 10, y - 10, x2 + 5, y2 + 2, caption$
+        ScrollBar sGroup$, "", x2 + 5, y - 10, 0, y2 - y + 12, 1, 0, 1, NextCtrl - 1
+    END IF
+END SUB
+
+SUB InToLaOS (file$)
+  SaveScreen
+
+  file$ = PrgSaveDialog(file$)
+  
+  RestoreScreen
+ 
+  EXIT SUB
+
+END SUB
+
+'Erstellt ein Text-Label
+'x,y,x2,y2 = Der Bereich, innerhalb dessen der Text ausgegeben wird.
+'Text = Der auszugebende Text
+'Alignment = Ausrichtung des Textes (0 = links, 1 = Mitte, 2 = rechts)
+'bgColor = Die bcol
+SUB Label (x, y, x2, y2, text AS STRING, Alignment, bgColor)
+    zGetOriginalValues False
+        TextAlignment = Alignment
+        InversFarbe = bgColor
+        Left = x
+        Top = y
+        Right = x2
+        Down = y2
+        CurrentY = y
+        CurrentX = x + 2
+        Echo text
+    zGetOriginalValues True
+END SUB
+
+FUNCTION Laufwerkswahl$
+lwnochmals:
+  ListBox "drives", "drives", 90, 110, 150, 190, 0
+  f = FREEFILE
+  OPEN laosdir + "nodrives.txt" FOR INPUT AS f
+  IF NOT EOF(f) THEN LINE INPUT #f, NoDrives$
+  CLOSE f
+  i = 0
+  TimeLock 1
+  'SaveScreen
+  'ProgressBar "Laufwerk suchen...", 0
+  FOR ch = 65 TO 90
+    IF INSTR(LCASE$(NoDrives$), LCASE$(CHR$(ch))) = 0 THEN
+      IF exists(CHR$(ch) + ":\nul") THEN
+        i = i + 1
+        ListAdd "drives", i, CHR$(ch) + ":\", 0
+      END IF
+      TimeLock INT(RND * 2)
+      'ProgressBar "", ch - 64 / 25
+    END IF
+  NEXT
+  'RestoreScreen
+  Frame "drives", 80, 80, 500, 200, "Laufwerksbezeichnung:"
+  DrawControls "drives"
+  GetInp "drives"
+  IF keyb = "enter" THEN
+    GetValue "drives", ch
+    zRessourceGet "drives", ch, a$, 0
+    IF NOT exists(a$ + "nul") THEN
+      Dialog "Laufwerk nicht bereit!"
+      GOTO lwnochmals
+    ELSE
+      SHELL LEFT$(a$, 2)
+      Laufwerkswahl$ = LEFT$(a$, 2) + "\"
+    END IF
+  ELSE
+    Laufwerkswahl$ = ""
+  END IF
+  ClearControls "drives"
+END FUNCTION
+
+'FÅllt eine zuvor erstellte ListBox mit dem Text und dem Standardwert
+'sName$ = Der Name der Listbox, der beim Erstellen der Listbox angegeben wurde
+'Index = Der Index des Eintrages (erforderlich: muss grîsser als 0 sein!)
+'        Wichtig: Es dÅrfen keine LÅcken in der Indexfolge entstehen!
+'text = Der Text
+'value = Der Wert (True oder False)
+SUB ListAdd (sName$, Index, text AS STRING, Value)
+    zRessourceSet sName$, Index, text, Value
+END SUB
+
+'Erstellt ein Listbox-Steuerelement
+'Die Liste muss anschliessend mit ListAdd gefÅllt werden.
+'Mit ListDeleteItem kînnen ListeneintrÑge entfernt werden.
+'Group = Die Steuerelementegruppe
+'sName$ = Der Name der Listbox (wird fÅr ListAdd und ListDeleteItem verwendet)
+'x, y, x2, y2 = Die Koordinaten der Listbox
+'WithCheckBoxes = True = Die Listbox wird mit Checkboxen angezeigt
+SUB ListBox (sGroup$, sName$, x, y, x2, y2, WithCheckBoxes)
+    'Es wird gerundet auf die Texthîhe:
+    IF (y2 - (y + 4)) MOD 14 > 7 THEN
+        y2 = y2 + (14 - ((y2 - y - 4) MOD 14))
+    ELSEIF (y2 - (y + 4)) MOD 14 <= 7 THEN
+        y2 = y2 - ((y2 - y - 4) MOD 14)
+    END IF
+    tag$ = SPACE$(8)
+    IF WithCheckBoxes THEN MID$(tag$, 2, 1) = "C"
+    MID$(tag$, 3, 2) = MKI$(NextCtrl + 1)
+    zCreateControl zListBox, sGroup$, sName$, "", 1, x, y, x2, y2 - 1, FIX((x2 - x - 4) / 8), FIX((y2 - y - 4) / 14), tag$, True
+    IF sName$ <> "MenuInt" THEN
+        ScrollBar sGroup$, "", x2 + 1, y, 0, y2 - y - 1, 1, 0, FIX((y2 - y - 4) / 14), NextCtrl - 1
+    END IF
+END SUB
+
+SUB Main
+  DIM Filter AS STRING
+  f = FREEFILE
+  OPEN "filter.ini" FOR INPUT AS f
+  LINE INPUT #f, Filter
+  CLOSE f
+  f = FREEFILE
+  OPEN tempdir + "path.tmp" FOR INPUT AS f
+  LINE INPUT #f, path
+  IF path = "" THEN path = "c:"
+  IF RIGHT$(path, 1) = "\" THEN path = LEFT$(path, LEN(path) - 1)
+  IF NOT exists(path + "\nul") THEN path = "c:"
+  IF LEN(path) = 2 THEN path = path + "\"
+  SHELL LEFT$(path, 2)
+  CHDIR path
+  CLOSE
+  TimeLock 1
+  GOTO 20
+10  'Dateien neu laden
+  TimeLock 1
+  SHELL "cd >" + tempdir + "path.tmp"
+  f = FREEFILE
+  OPEN tempdir + "path.tmp" FOR INPUT AS f
+  LINE INPUT #f, path
+  CLOSE
+20
+  IF Filter = "" THEN Filter = "*.*"
+  SilentScreen
+  TimeLock 0
+  ClearControls ""
+  CLW ""
+  MenuBox "main", "Datei"
+  MenuBox "main", "Auswahl"
+  CurrentX = 7
+  CurrentY = 23
+  Echo "Pfad:"
+  ctlPath = NextCtrl
+  EditBox "main", "pfad", 53, 20, 50, 1, 255
+  PutString "pfad", path
+  CurrentX = 490
+  CurrentY = 23
+  Echo "Filter:"
+  EditBox "main", "filter", 550, 20, 8, 1, 12
+  PutString "filter", Filter
+  ctlfolders = NextCtrl
+  ListBox "main", "folders", 7, 40, 180, 320, 0
+  ctlFiles = NextCtrl
+  ListBox "main", "files", 200, 40, 620, 320, True
+  DrawControls "main"
+  IF NOT exists("nul") THEN RestoreScreen: Dialog "Nicht bereit beim Lesen von Laufwerk " + UCASE$(LEFT$(path, 1)): GOTO chooseLaufwerk
+  SHELL "dir *.* /a:d /b >" + tempdir + "files.tmp"
+  CLOSE f
+  OPEN tempdir + "files.tmp" FOR INPUT AS f
+  IF LEN(path) < 4 THEN
+    i = 0
+  ELSE
+    ListAdd "folders", 1, "..", 0
+    i = 1
+  END IF
+  WHILE NOT EOF(f)
+    i = i + 1
+    LINE INPUT #f, a$
+    ListAdd "folders", i, a$, 0
+  WEND
+  CLOSE f
+  DrawControls "main"
+  SHELL "dir " + Filter + " /a:-d /b >" + tempdir + "files.tmp"
+  OPEN tempdir + "files.tmp" FOR INPUT AS f
+  i = 0
+  WHILE NOT EOF(f)
+    i = i + 1
+    LINE INPUT #f, a$
+    IF markfile = a$ THEN Controls(ctlFiles).Value = i
+    ListAdd "files", i, a$, 0
+  WEND
+  CLOSE f
+  IF LEN(markfile) > 0 THEN
+    markfile = ""
+    ActiveCtrl = ctlFiles
+  ELSE
+    ActiveCtrl = ctlfolders
+  END IF
+  IF Filter <> "*.*" AND Filter <> "" THEN a$ = " (Filter: " + Filter + ")" ELSE a$ = ""
+  IF i > 1 THEN
+    StatusBar STR$(i) + " Dateien angezeigt." + a$
+  ELSEIF i = 1 THEN
+    StatusBar "1 Datei angezeigt." + a$
+  ELSE
+    IF a$ = "" THEN
+      StatusBar "Keine Dateien im Verzeichnis."
+    ELSE
+      StatusBar "Keine Dateien angezeigt."
+    END IF
+  END IF
+  RestoreScreen
+66  'Ansicht aktualisieren
+  DrawControls ""
+77  'Eingabe-Schleife
+  GetInp ""
+  IF topkey <> "" AND keyb = "enter" THEN
+    a$ = topkey
+    topkey = ""
+    SELECT CASE a$
+    CASE "ctrl+f"
+      GOTO dlgsuchen
+    CASE "ctrl+l"
+      GOTO chooseLaufwerk
+    END SELECT
+  ELSE
+    topkey = ""
+  END IF
+  IF keyb = "esc" THEN
+    IF Focus = "Auswahl" OR Focus = "Datei" THEN
+      ActiveCtrl = ctlFiles
+      GOTO 66
+    ELSE
+      Focus = "exit"
+    END IF
+  END IF
+  IF keyb = "enter" AND iShortCut THEN iShortCut = 0: GOTO 10
+  SELECT CASE Focus
+  CASE "exit"
+    f = FREEFILE
+    OPEN tempdir + "filter.ini" FOR OUTPUT AS f
+    PRINT #f, Filter
+    CLOSE f
+    EXIT SUB
+
+  CASE "folders"
+    'zRessourceGet "folders", Controls(ctlfolders).Value, a$, 0
+    GetString "folders", a$
+    IF a$ = ".." THEN
+      '..: Eine Ebene nach oben
+      SHELL "cd.."
+    ELSE
+      'anderes:
+      SHELL "cd " + a$
+    END IF
+    GOTO 10
+  CASE "files"
+    'Datei anzeigen je nach Typ:
+    'GewÑhlte Datei wird aus der Liste ausgelesen:
+    zRessourceGet "files", Controls(ctlFiles).Value, file$, 0
+    markfile = file$
+    IF file$ = "" THEN 77
+
+    Typ$ = LCASE$(RIGHT$(file$, 4))
+    SELECT CASE Typ$
+    CASE ".lds"
+      z = NextCtrl
+      CLW "ever"
+      Controls(z).group = "pict"
+      MenuBox "pict", "Datei"
+      zShowPicture 320, 175, file$
+      ScrollBar "pict", "hpict", 2, 334, 621, 0, 1, 3200, 10, 0
+      ScrollBar "pict", "vpict", 624, 22, 0, 311, 1, 3200, 10, 0
+      PutValue "hpict", 1280
+      PutValue "vpict", 1425
+997
+      LINE (0, 0)-(639, 349), wincol, B
+      LINE (1, 1)-(638, 348), frmcol, B
+      DrawControls "pict"
+      GetInp "pict"
+      SELECT CASE Focus
+      CASE "Datei"
+        SELECT CASE MenuInt("Standardposition,Mitte,-,Schliessen", ",")
+        CASE "Standardposition"
+          PutValue "vpict", 1425
+          PutValue "hpict", 1280
+          RaiseScroll 0, "vpict"
+          GOTO 997
+        CASE "Mitte"
+          PutValue "vpict", 1600
+          PutValue "hpict", 1600
+          RaiseScroll 0, "vpict"
+          GOTO 997
+        CASE "Schliessen"
+        CASE ELSE
+          GOTO 997
+        END SELECT
+      END SELECT
+
+    CASE ".icn"
+      Frame "icon", 400, 100, 510, 190, ""
+      zShowPicture 420, 110, file$
+      Button "icon", "Schliessen", 410, 160
+      GetInp "icon"
+      ClearControls "icon"
+
+    CASE ".lsb"
+      Frame "icon", 400, 100, 510, 190, ""
+      VIEW (430, 110)-(470, 150)
+      zShowPicture 0, 0, file$
+      Button "icon", "Schliessen", 410, 160
+      GetInp "icon"
+      ClearControls "icon"
+
+    CASE ".txt", ".bat", ".ini", ".log", ".lao", ".bas"
+      SaveScreen
+      TxtView file$, 0
+      RestoreScreen
+    CASE ELSE
+      SaveScreen
+      TxtView file$, 1
+      RestoreScreen
+    END SELECT
+
+  CASE "Auswahl"
+    a$ = MenuInt("Kopieren nach...|F5,Verschieben nach...|F7,-,Lîschen|Delete,-,Alle auswÑhlen|Ctrl+A,Auswahl umkehren", ",")
+    i = 0
+    ActiveCtrl = ctlFiles
+    IF a$ = "Alle auswÑhlen" THEN
+      DO
+        i = i + 1
+        zRessourceGet "files", i, text$, Value
+        IF Value = 0 THEN
+          zRessourceSet "files", i, text$, True
+        END IF
+      LOOP UNTIL text$ = ""
+    ELSEIF a$ = "Auswahl umkehren" THEN
+      DO
+        i = i + 1
+        zRessourceGet "files", i, text$, Value
+        zRessourceSet "files", i, text$, AutoVal
+      LOOP UNTIL text$ = ""
+    ELSE
+      counter = 0
+      f = FREEFILE
+      OPEN tempdir + "checked.txt" FOR OUTPUT AS f
+      DO
+        i = i + 1
+        zRessourceGet "files", i, text$, Value
+        IF Value AND text$ <> "" THEN
+          counter = counter + 1
+          PRINT #f, text$
+        END IF
+      LOOP UNTIL text$ = ""
+      CLOSE f
+      IF counter = 0 AND a$ <> "" THEN Dialog "Bitte wÑhlen Sie erst mindestens eine Datei aus!": ActiveCtrl = ctlFiles: GOTO 77
+      SELECT CASE a$
+      CASE "Lîschen"
+        delete counter
+        IF counter = 0 THEN GOTO 20
+      CASE "Kopieren nach..."
+        Verschieben LTRIM$(STR$(counter)) + " Datei(en) kopieren nach:", -1, 0
+      CASE "Verschieben nach..."
+        Verschieben LTRIM$(STR$(counter)) + " Datei(en) verschieben nach:", 0, canceled
+        IF NOT canceled THEN GOTO 20
+      END SELECT
+    END IF
+    ActiveCtrl = ctlFiles
+  CASE "Datei"
+    a$ = MenuInt("Laufwerk wÑhlen|Ctrl+L,Suchen...|Ctrl+F,-,AusfÅhren...|Ctrl+R,-,In LaOS einbinden,-,Shell Command...,-,Beenden|Ctrl+Q", ",")
+    SELECT CASE a$
+    CASE "AusfÅhren..."
+      RunDlg
+    CASE "Shell Command..."
+      SCREEN 0
+      PRINT "Geben Sie 'exit' ein, um zu LaOS zurÅckzukehren."
+      PRINT
+      SHELL
+      RUN
+    CASE "In LaOS einbinden"
+      zRessourceGet "files", Controls(ctlFiles).Value, file$, 0
+      InToLaOS file$
+      GOTO 20
+
+    CASE "Laufwerk wÑhlen"
+chooseLaufwerk:
+      path = Laufwerkswahl
+      GOTO 10
+
+    CASE "Suchen..."
+dlgsuchen:
+      SaveScreen
+      Frame "suchen", 80, 80, 500, 200, "Datei suchen"
+      ctlBegriff = NextCtrl
+      EditBox "suchen", "begriff", 90, 110, 40, 1, 12
+      ctlalles = NextCtrl
+      RadioButton "suchen", "Ganzes Laufwerk", 90, 130, False
+      ctlnursub = NextCtrl
+      RadioButton "suchen", "Nur Unterverzeichnisse", 90, 150, True
+      GetString "begriff", a$
+      DefaultCtrl = NextCtrl
+      Button "suchen", "Suchen!", 360, 150
+30
+      DrawControls "suchen"
+      GetInp "suchen"
+      IF keyb = "enter" THEN
+        GetString "begriff", a$
+        IF a$ = "" THEN ActiveCtrl = ctlBegriff: GOTO 30
+        TimeLock 1
+        LOCATE 12, 35
+        SCREEN 9, , 1, 0
+        IF Controls(ctlalles).Value THEN
+          'Alles:
+          SHELL "dir \" + a$ + " /a:-d /s /b >" + tempdir + "files.tmp"
+        ELSE
+          'Nur Unterverzeichnisse:
+          SHELL "dir " + a$ + " /a:-d /s /b >" + tempdir + "files.tmp"
+        END IF
+        SCREEN 9, , 0, 0
+        'Suchergebnisse anzeigen:
+        ctlergebnis = NextCtrl
+        ListBox "ergebnis", "ergebnis", 85, 107, 480, 190, 0
+        CLOSE f
+        OPEN tempdir + "files.tmp" FOR INPUT AS f
+        i = 0
+        WHILE NOT EOF(f)
+          i = i + 1
+          LINE INPUT #f, a$
+          ListAdd "ergebnis", i, a$, 0
+        WEND
+        IF i = 0 THEN Dialog "Keine Entsprechungen gefunden!": GOTO 20
+        Frame "ergebnis", 80, 80, 500, 200, "Ergebnisse: (" + LTRIM$(STR$(i)) + ")"
+        DrawControls "ergebnis"
+        GetInp "ergebnis"
+        IF keyb = "enter" THEN
+          zRessourceGet "ergebnis", Controls(ctlergebnis).Value, a$, 0
+          IF LEN(a$) <> 0 THEN
+            'neuer Filter setzen:
+            Filter = RIGHT$(a$, 4)
+            'neuer Folder:
+            FOR i = LEN(a$) TO 1 STEP -1
+              IF MID$(a$, i, 1) = "\" THEN
+                path = LEFT$(a$, i)
+                markfile = MID$(a$, i + 1)
+                IF RIGHT$(path, 1) = "\" THEN
+                  path = LEFT$(path, LEN(path) - 1)
+                END IF
+                EXIT FOR
+              END IF
+            NEXT
+            IF LEN(path) > 2 THEN
+              SHELL "cd " + path
+            ELSE
+              SHELL path
+              SHELL "cd \"
+            END IF
+          END IF
+          ClearControls "ergebnis"
+          ClearControls "suchen"
+          GOTO 20
+        ELSE
+          ClearControls "ergebnis"
+          ClearControls "suchen"
+        END IF
+      ELSE
+        ClearControls "ergebnis"
+        ClearControls "suchen"
+      END IF
+      ClearControls "ergebnis"
+      ClearControls "suchen"
+      RestoreScreen
+    CASE "Beenden"
+      f = FREEFILE
+      OPEN tempdir + "filter.ini" FOR OUTPUT AS f
+      PRINT #f, Filter
+      CLOSE f
+      RestoreScreen
+      EXIT SUB
+    END SELECT
+  CASE ELSE
+    'Wohl Pfad eingegeben oder neuer Filter gewÑhlt...
+    'neu laden!
+    GetString "pfad", path
+    IF RIGHT$(path, 1) = "\" THEN path = LEFT$(path, LEN(path) - 1)
+    IF NOT exists(path + "\nul") OR exists(path) THEN
+      Dialog "UngÅltiger Pfad!"
+      ActiveCtrl = ctlPath
+      GOTO 77
+    ELSE
+      IF MID$(path, 2, 1) = ":" THEN SHELL LEFT$(path, 2)
+      IF LEN(path) > 2 THEN
+        SHELL "cd " + path
+      ELSE
+        SHELL LEFT$(path, 2)
+        SHELL path
+        SHELL "cd \"
+      END IF
+    END IF
+    GetString "filter", Filter
+    GOTO 10
+  END SELECT
+  keyb = ""
+  ActiveCtrl = ctlFiles
+  GOTO 66
+END SUB
+
+FUNCTION MB$ (Wert AS LONG)
+'Gibt vom angegebenen Byte-Wert den Wert in KB, MB oder GB-String zurÅck:
+'Achtung: Gibt nicht die genauen Werte zurÅck:
+'Nimmt an, dass 1MB genau 1 Mio Bytes hat...
+'
+IF Wert / 1000 < 1 THEN MB = LTRIM$(STR$(Wert)) + " Bytes"
+IF Wert / 1000 > 1 THEN MB = LTRIM$(STR$(Wert / 1000)) + " KB (" + LTRIM$(STR$(Wert)) + " Bytes)"
+IF Wert / 1000000 > 1 THEN MB = LTRIM$(STR$(Wert / 1000000)) + " MB (" + LTRIM$(STR$(Wert)) + " Bytes)"
+IF Wert / 1000000000 > 1 THEN MB = LTRIM$(STR$(Wert / 1000000000)) + " GB (" + LTRIM$(STR$(Wert)) + " Bytes)"
+
+END FUNCTION
+
+FUNCTION MB2$ (Wert AS LONG)
+'Gibt vom angegebenen Byte-Wert den Wert in KB, MB oder GB-String zurÅck:
+'Achtung: Gibt nicht die genauen Werte zurÅck:
+'Nimmt an, dass 1MB genau 1 Mio Bytes hat...
+'
+IF Wert / 1000 < 1 THEN MB2 = LTRIM$(STR$(Wert)) + " Bytes"
+IF Wert / 1000 > 1 THEN MB2 = LTRIM$(STR$(Wert / 1000)) + " KB"
+IF Wert / 1000000 > 1 THEN MB2 = LTRIM$(STR$(Wert / 1000000)) + " MB"
+IF Wert / 1000000000 > 1 THEN MB2 = LTRIM$(STR$(Wert / 1000000000)) + " GB"
+
+END FUNCTION
+
+'Setzt ein neues Menu hin!
+'group = Die Steuerelement-Gruppe
+'Caption$ = Die Caption des MenÅs
+SUB MenuBox (sGroup$, caption$)
+    IF NextCtrl = 1 THEN
+        oldx = Left
+        oldy = Top
+    ELSE
+        FOR i% = UBOUND(Controls) TO 1 STEP -1
+            IF Controls(i%).CtrlType = zMenuBox AND RTRIM$(Controls(i%).group) = sGroup$ THEN EXIT FOR
+        NEXT
+        IF i% = 0 THEN
+            oldx = Left
+            oldy = Top
+        ELSE
+            oldx = Controls(i%).x + TextLen(RTRIM$(Controls(NextCtrl - 1).caption)) + 16
+            oldy = Controls(i%).y
+        END IF
+        IF oldx + TextLen(caption$) > 639 THEN oldx = 2: oldy = oldy + 14
+    END IF
+    zCreateControl zMenuBox, sGroup$, "", caption$, 0, oldx, oldy, oldx + TextLen(caption$), oldy + 13, 0, 0, "", False
+END SUB
+
+'Zeigt ein DropDown-MenÅ an fÅr das aktivierte Steuerelement
+'Kann auch als PopUp-MenÅ verwendet werden!
+FUNCTION MenuInt$ (items AS STRING, Trennzeichen$)
+
+    ioldCtrl = ActiveCtrl
+    IF Controls(ioldCtrl).CtrlType = zMenuBox THEN
+        x = Controls(ActiveCtrl).x
+        y = Controls(ActiveCtrl).y + 15
+    ELSE
+        x = Mouse.x
+        y = Mouse.y
+    END IF
+
+    l = 0
+    maxwidth = 0
+    ai% = 1
+    FOR i% = 1 TO LEN(items) + 1
+        IF MID$(items, i%, 1) = Trennzeichen$ OR i% > LEN(items) THEN
+            a$ = MID$(items, ai%, i% - ai%)
+            t = INSTR(a$, "|")
+            IF t > 0 THEN
+                a$ = LEFT$(a$, t - 1) + SPACE$(3) + MID$(a$, t + 1)
+            END IF
+            IF LEN(a$) > maxwidth THEN maxwidth = LEN(a$)
+            ai% = i% + 1
+        END IF
+    NEXT
+
+    l = 0
+    ai% = 1
+    FOR i% = 1 TO LEN(items) + 1
+        IF MID$(items, i%, 1) = Trennzeichen$ OR i% > LEN(items) THEN
+            IF i% = LEN(items) THEN i% = i% + 1
+            l = l + 1
+            a$ = MID$(items, ai%, i% - ai%)
+            t = INSTR(a$, "|")
+            IF t > 0 THEN
+                B$ = MID$(a$, t + 1)
+                a$ = LEFT$(a$, t - 1) + CHR$(0) + SPACE$(3)
+                a$ = a$ + SPACE$(maxwidth - LEN(a$) - LEN(B$) + 1) + B$
+            END IF
+            ListAdd "MenuInt", l, a$, 0
+            ai% = i% + 1
+        END IF
+    NEXT
+
+    MouseClicker "MenuInt", "Cancel", 0, 0, 0, 0, "esc", False
+    C = NextCtrl
+    x2 = x + maxwidth * 8 + 5
+    y2 = y + l * 14 + 4
+    IF x2 > 639 THEN x = x - (x2 - 639): x2 = 639
+    IF y2 > 349 THEN y = y - (y2 - 349): y2 = 349
+
+    ListBox "MenuInt", "MenuInt", x, y, x2 - 1, y2, False
+    MID$(Controls(C).tag, 1, 1) = "M"
+    g = 4 + INT(((PMAP(x2, 0) - PMAP(x, 0) + 1) * (1) + 7) / 8) * 2 * (PMAP(y2, 1) - PMAP(y, 1) + 1)
+    DIM bg(g)
+    GET (x, y)-(x2, y2), bg
+    zDrawThisControl C, 0, True
+    GetInp "MenuInt"
+    PUT (x, y), bg, PSET
+    REDIM bg(0)
+
+    GetValue "MenuInt", choice
+    IF keyb = "esc" THEN
+        a$ = "": choice = 0
+    ELSE
+        zRessourceGet "MenuInt", choice, a$, 0
+    END IF
+    ClearControls "MenuInt"
+    zDrawThisControl ioldCtrl, False, 0
+    IF INSTR(a$, CHR$(0)) > 0 THEN
+        MenuInt$ = LTRIM$(LEFT$(a$, INSTR(a$, CHR$(0)) - 1))
+    ELSE
+        MenuInt$ = LTRIM$(a$)
+    END IF
+    ActiveCtrl = ioldCtrl
+
+END FUNCTION
+
+'Erstellt ein MouseClicker-Steuerelement
+'Der Benutzer kann auf den Bereich klicken, der Programmierer bekommt
+'dies per GetInp (Focus) bestÑtigt.
+'sGroup$ = Die Steuerelementgruppe
+'sName$ = Der Name des Clickers
+'x, y, x2, y2 = Die Koordinaten
+'sSimulateKey = Die Taste, die zurÅckgegeben werden soll (keyb),
+'               wenn der Benutzer auf den Bereich klickt.
+'iWithShadow = True = Der Bereich wird schattiert, wenn der Benutzer auf
+'                     diesen klickt.
+SUB MouseClicker (sGroup$, sName$, x, y, x2, y2, sSimulateKey AS STRING, iWithShadow)
+    IF x = 0 THEN x = 0
+    IF y = 0 THEN y = 0
+    IF x2 = 0 THEN x2 = 639
+    IF y2 = 0 THEN y2 = 349
+    zCreateControl zMouseClicker, sGroup$, sName$, "", 0, x, y, x2, y2, iWithShadow, 0, sSimulateKey, False
+END SUB
+
+'Zeigt einen Speichern-Dialog an und gibt den neuen Dateinamen zurÅck.
+'Kommt eine leere Zeichenfolge zurÅck, so hat der Benutzer Abbrechen gedrÅckt.
+FUNCTION PrgSaveDialog$ (file$)
+  DIM zfile AS zFileType, Currentfolder AS LONG, zftt AS zFileType
+
+  f = FREEFILE
+  ClearControls ""
+  OPEN laosdir + "files.bnk" FOR BINARY AS f LEN = LEN(zFileType)
+  Currentfolder = 1
+
+zSvdlg:
+  Frame "zsave", 5, 80, 634, 279, "Speichern"
+  zfolders = NextCtrl
+  ListBox "zsave", "zfolders", Left + 2, Top + 2, 260, 273, 0
+  zWriteTextXY 280, Top + 4, "Dateiname:"
+  zWriteTextXY 280, Top + 32, "Dateiinfo:"
+  EditBox "zsave", "zfile", 367, Top + 2, 32, 1, 40
+  EditBox "zsave", "zinfo", 367, Top + 30, 32, 5, 256
+  Button "zsave", "Neuer Ordner", 280, 252
+  zbtnSave = NextCtrl
+  Button "zsave", "  Speichern  ", 515, 252
+
+DO
+  DefaultCtrl = zbtnSave
+  'zfile steht nun auf dem aktuellen Ordner:
+  GET f, Currentfolder, zfile
+  fid = 0
+  IF Currentfolder > 1 THEN
+    ListAdd "zfolders", 1, "..", zfile.relpos
+    fid = 1
+  END IF
+  zid = 0
+  SEEK f, 1 + LEN(zftt)
+  DO
+    zid = zid + 1
+    GET f, , zftt
+    IF zftt.id = 0 THEN EXIT DO
+    IF zftt.relpos = zfile.id AND zftt.SysType = "D" THEN
+      fid = fid + 1
+      ListAdd "zfolders", fid, zftt.caption, zftt.id
+    END IF
+  LOOP
+  DrawControls "zsave"
+  GetInp "zsave"
+  zRessourceGet "zfolders", Controls(zfolders).Value, zfolder$, fid
+  IF keyb = "esc" THEN EXIT DO
+  SELECT CASE Focus
+  CASE "zfolders"
+    'in folder wechseln...
+    SEEK f, 1
+    DO
+      Currentfolder = SEEK(f)
+      GET f, , zftt
+    LOOP UNTIL zftt.id = fid OR zftt.id = 0
+
+  CASE "Neuer Ordner"
+    Frame "zord", 80, 120, 470, 220, "Neuer Ordner in " + zfile.caption
+    Echo "Ordnername:"
+    PutString "zord", file$
+    EditBox "zord", "zord", 90, 160, 40, 1, 40
+    PutString "zord", file$
+    DefaultCtrl = NextCtrl
+    Button "zord", ">> Weiter", 350, 180
+    DrawControls "zord"
+    GetInp "zord"
+    IF keyb = "enter" THEN
+      'Der neue Ordner wird erstellt:
+      SEEK f, 1
+      zid = 0
+      DO
+       IF zftt.id >= zid THEN zid = zftt.id + 1
+       p& = SEEK(f)
+       GET f, , zftt
+      LOOP UNTIL zftt.id = 0
+      zftt.id = zid
+      zftt.relpos = zfile.id
+      GetString "zord", a$
+      zftt.caption = a$
+      zftt.SysType = "D"
+      zftt.Created = DATE$
+      zftt.time = TIME$
+      PUT f, p&, zftt
+    END IF
+    ClearControls "zsave"
+    ClearControls "zord"
+    GOTO zSvdlg
+  CASE "Speichern"
+      'Die neue Datei wird erstellt:
+      zid = 0
+      SEEK f, 1
+      DO
+       IF zfile.id >= zid THEN zid = zfile.id + 1
+       p& = SEEK(f)
+       GET f, , zfile
+      LOOP UNTIL zfile.id = 0
+
+  'Fragen wegen Unique Program Description:
+  Frame "inlaos", 80, 80, 470, 180, "In LaOS einbinden"
+  Echo "Bitte geben Sie den Firmennamen des Hersteller dieser Anwendung ein:"
+  ctlBegriff = NextCtrl
+  EditBox "inlaos", "begriff", 90, 130, 40, 1, 32
+  PutString "begriff", ""
+  DefaultCtrl = NextCtrl
+  Button "inlaos", ">> Weiter", 350, 150
+  DrawControls "inlaos"
+  GetInp "inlaos"
+  GetString "begriff", firma$
+  ClearControls "inlaos"
+  IF keyb = "enter" THEN
+    Frame "inlaos", 80, 80, 470, 180, "In LaOS einbinden"
+    Echo "Bitte geben Sie die Applikationsbezeichnung ein:"
+    ctlBegriff = NextCtrl
+    ActiveCtrl = NextCtrl
+    EditBox "inlaos", "begriff", 90, 130, 40, 1, 39 - LEN(firma$)
+    PutString "begriff", ""
+    DefaultCtrl = NextCtrl
+    Button "inlaos", ">> Weiter", 350, 150
+    DrawControls "inlaos"
+    GetInp "inlaos"
+    GetString "begriff", appname$
+    ClearControls "inlaos"
+    IF keyb = "enter" THEN
+      uniqueappdescription$ = firma$ + " " + appname$
+      'Unique Application Description wird eingetragen:
+      i% = INSTR(file$, ".") - 1
+      IF i% <= 0 THEN i% = LEN(file$)
+      foldername$ = LEFT$(file$, i%)
+      MKDIR laosdir + "prg\" + foldername$
+      prgfile$ = foldername$ + "\" + file$
+      errorlevel = 0
+      FileCopy "Datei wird kopiert...", file$, laosdir + "prg\" + prgfile$
+      IF errorlevel THEN Dialog "Fehler beim kopieren der Datei!": EXIT DO
+      f2 = FREEFILE
+      OPEN laosdir + "prg.cfg" FOR APPEND AS f2
+      WRITE #f2, uniqueappdescription$, prgfile$
+      CLOSE f2
+      zfile.id = zid
+      'get the active folder:
+      GET f, Currentfolder, zftt
+      zfile.relpos = zftt.id
+      GetString "zfile", a$
+      zfile.caption = a$
+      GetString "zinfo", a$
+      zfile.info = a$
+      zfile.SysType = "A"
+      zfile.PrgStarter = uniqueappdescription$
+      zfile.Created = DATE$
+      zfile.time = TIME$
+      PUT f, p&, zfile
+      PrgSaveDialog$ = laosdir + "prg\" + prgfile$
+      EXIT DO
+    END IF
+  END IF
+  END SELECT
+  ClearList "zfolders"
+LOOP
+  ClearControls "zsave"
+  ClearControls "zord"
+  CLOSE f
+END FUNCTION
+
+SUB ProgressBar (text$, Stat AS SINGLE)
+  IF text$ <> "" THEN
+    Frame "", 160, 120, 480, 215, ""
+    Echo text$
+  END IF
+  IF Stat > 1 THEN Stat = 1
+  LINE (179, 174)-(459, 194), Farbe, B
+  x = 278 * Stat
+  LINE (180, 175)-(180 + x, 193), tcol2, BF
+END SUB
+
+SUB properties
+Frame "prop", 300, 80, 580, 280, "Datei-Eigenschaften"
+DefaultCtrl = NextCtrl
+ActiveCtrl = NextCtrl
+Button "prop", "Schliessen", 480, 250
+Farbe = tcol
+zWriteTextXY 310, 110, "Dateiname:"
+zWriteTextXY 310, 130, "Grîsse:"
+zWriteTextXY 310, 170, "Ort:"
+zWriteTextXY 310, 150, "Typ:"
+Farbe = tcol2
+GetString "files", filename$
+zWriteTextXY 400, 110, filename$
+f = FREEFILE
+OPEN filename$ FOR INPUT AS f
+zWriteTextXY 400, 130, MB2(LOF(f))
+CLOSE f
+zWriteTextXY 400, 150, "Unbekannt"
+IF LEN(path) > 20 THEN
+  TextAlignment = AlignLeft
+  Left = 310: Right = 570: Top = 190: Down = 240
+  CurrentX = 310: CurrentY = 190
+  Echo path
+ELSE
+  zWriteTextXY 400, 170, path
+END IF
+Farbe = tcol
+
+DrawControls "prop"
+DO
+  GetInp "prop"
+
+  SELECT CASE Focus
+  CASE "Schliessen"
+      'Write here Code for a Click on this Button
+      EXIT DO
+  CASE "esc"
+      'Write here Code for Cancel this Dialog:
+      EXIT DO
+  END SELECT
+LOOP UNTIL keyb = "esc"
+
+ClearControls "prop"
+END SUB
+
+'Speichert einen String zu einem beliebigen Objekt (siehe auch ->GetString)
+'objekt = Der Name des Objektes
+'Text = Der Text
+SUB PutString (objekt AS STRING, text AS STRING)
+
+DIM o   AS STRING * 8
+
+    'existiert objekt bereits?
+    FOR i% = 1 TO UBOUND(zStrings)
+        IF RTRIM$(LEFT$(zStrings(i%), 8)) = RTRIM$(objekt) THEN
+            'ja, existiert bereits -> diesen String aktualisieren!
+            o = objekt
+            zStrings(i%) = o + text
+            EXIT SUB
+        END IF
+    NEXT
+
+    'Objekt existiert noch nicht:
+    'suche freien Platz!
+    FOR i% = 1 TO UBOUND(zStrings)
+        IF zStrings(i%) = "" THEN
+            'freien Platz gefunden -> String eintragen!
+            o = objekt
+            zStrings(i%) = o + text
+            EXIT SUB
+        END IF
+    NEXT
+
+END SUB
+
+'Speichert einen Wert zu einem existierenden Steuerelement
+'(siehe auch ->GetValue)
+'objekt = Der Name des Objektes
+'Wert = Der Wert, der dem Objekt zugewiesen werden soll.
+SUB PutValue (objekt AS STRING, Wert)
+
+    'Suche das Objekt?
+    FOR i% = 1 TO UBOUND(Controls)
+        IF RTRIM$(Controls(i%).caption) = RTRIM$(objekt) THEN
+            'ja, Objekt existiert -> diesen Wert aktualisieren!
+            Controls(i%).Value = Wert
+            EXIT SUB
+        END IF
+    NEXT
+
+    'Objekt existiert nicht!:
+    Dialog "Fehler in PutValue: Das Objekt " + objekt + " existiert nicht!"
+
+END SUB
+
+'Erstellt ein RadioButton-Steuerelement
+'sGroup$ = Die Steuerelementgruppe
+'Caption$ = Die Caption
+'x, y = Die Koordinaten
+'value = Der Wert (True oder False)
+SUB RadioButton (sGroup$, caption$, x, y, Value)
+    IF x = 0 THEN
+        x = Controls(NextCtrl - 1).x
+    END IF
+    IF y = 0 THEN
+        y = Controls(NextCtrl - 1).y + 21
+    END IF
+    'Initialisieren mit TRUE?
+    IF Value = True THEN
+        'Alle anderen auf False stellen:
+        FOR i% = 1 TO UBOUND(Controls)
+            IF sGroup$ = "" OR RTRIM$(Controls(i%).group) = sGroup$ THEN
+                IF Controls(i%).Value = True THEN
+                    Controls(i%).Value = False
+                END IF
+            END IF
+        NEXT
+    END IF
+    zCreateControl zRadioButton, sGroup$, "", caption$, Value, x, y, x + TextLen(caption$) + 32, y + 18, 0, 0, "", False
+END SUB
+
+SUB RaiseKeyPress (iCtrl, name$, key$)
+
+END SUB
+
+'Wird ausgefÅhrt, wenn auf einem unterstÅtzten Steuerelement die rechte
+'Maustaste gedrÅckt wurde.
+'Tipp: Mit ->MenuInt kann nun ein PopUpMenÅ angezeigt werden!
+SUB RaisePopUpMenu (iCtrl)
+
+  zRessourceGet "files", Controls(ctlFiles).Value, file$, 0
+  zRessourceGet "folders", Controls(ctlfolders).Value, folder$, 0
+  markfile = file$
+  CLOSE
+  IF RIGHT$(path, 1) = "\" THEN path = LEFT$(path, LEN(path) - 1)
+
+  PutString "begriff", ""
+  SELECT CASE RTRIM$(Controls(iCtrl).caption)
+  CASE "folders"
+    a$ = MenuInt("ôffnen,-,Neues Verzeichnis,Lîschen", ",")
+    SaveScreen
+    SELECT CASE a$
+    CASE "ôffnen"
+      'erÅbrigt sich...
+    CASE "Neues Verzeichnis"
+      Frame "newdir", 80, 80, 470, 180, "Neues Verzeichnis"
+      ctlBegriff = NextCtrl
+      EditBox "newdir", "begriff", 90, 110, 40, 1, 12
+      DefaultCtrl = NextCtrl
+      Button "newdir", "Erstellen!", 350, 150
+      DrawControls "newdir"
+      GetInp "newdir"
+      IF keyb = "enter" THEN
+        GetString "begriff", a$
+        errorlevel = 0
+        MKDIR a$
+        IF errorlevel THEN Dialog "Verzeichnis konnte nicht erstellt werden!"
+      END IF
+    CASE "Lîschen"
+      Frame "delete", 50, 50, 300, 130, folder$ + " lîschen:"
+      Echo "Sind Sie sicher?"
+      Button "delete", "   Ja   ", 60, 100
+      ActiveCtrl = NextCtrl
+      Button "delete", "  Nein  ", 0, 0
+      DrawControls "delete"
+      GetInp "delete"
+      IF Focus = "Ja" THEN
+        errorlevel = 0
+        RMDIR folder$
+        IF errorlevel > 0 THEN Dialog "Verzeichnis konnte nicht gelîscht werden! Stellen Sie sicher, dass das Verzeichnis leer ist!"
+      END IF
+      ClearControls "delete"
+    END SELECT
+    RestoreScreen
+  CASE "files"
+    IF LEN(copy$) > 0 THEN
+      'mit einfÅgen:
+      a$ = MenuInt("Anzeigen,-,Umbenennen,Kopieren,EinfÅgen,Lîschen,-,Eigenschaften...", ",")
+    ELSE
+      'ohne einfÅgen:
+      a$ = MenuInt("Anzeigen,-,Umbenennen,Kopieren,Lîschen,-,Eigenschaften...", ",")
+    END IF
+    SaveScreen
+    SELECT CASE a$
+    CASE "Eigenschaften..."
+      properties
+    CASE "Anzeigen"
+      'erÅbrigt sich - standardauswahl
+    CASE "Umbenennen"
+      Frame "rename", 80, 80, 470, 180, "Umbenennen"
+      ctlBegriff = NextCtrl
+      EditBox "rename", "begriff", 90, 110, 40, 1, 12
+      PutString "begriff", file$
+      DefaultCtrl = NextCtrl
+      Button "rename", "Umbenennen", 350, 150
+      DrawControls "rename"
+      GetInp "rename"
+      IF keyb = "enter" THEN
+        GetString "begriff", a$
+        markfile = a$
+        errorlevel = 0
+        NAME path + "\" + file$ AS a$
+        IF errorlevel > 0 THEN Dialog "Datei konnte nicht unbenannt werden!"
+      END IF
+      ClearControls "rename"
+    CASE "Kopieren"
+      copy$ = path + "\" + file$
+      copyfile$ = file$
+      ActiveCtrl = 0
+    CASE "EinfÅgen"
+copyfilehere:
+      IF exists(path + "\" + copyfile$) THEN
+        Frame "delete", 50, 50, 350, 130, copyfile$ + " hierher kopieren:"
+        Echo "Die Datei existiert bereits! öberschreiben?"
+        ActiveCtrl = NextCtrl
+        Button "delete", "   Ja   ", 60, 100
+        Button "delete", "  Nein  ", 0, 0
+        Button "delete", "Neuer Name", 0, 0
+        DrawControls "delete"
+        GetInp "delete"
+        ClearControls "delete"
+        IF Focus = "Ja" THEN
+          FileCopy "Datei wird kopiert...", copy$, path + "\" + copyfile$
+          markfile = copyfile$
+        ELSEIF Focus = "Neuer Name" THEN
+          Frame "newname", 80, 80, 300, 150, "Neuer Name:"
+          EditBox "newname", "begriff", 100, 120, 12, 1, 12
+          DrawControls "newname"
+          GetInp "newname"
+          IF keyb = "enter" THEN
+            GetString "begriff", copyfile$
+          END IF
+          ClearControls "newname"
+          GOTO copyfilehere
+        END IF
+      ELSE
+        FileCopy "Datei wird kopiert...", copy$, path + "\" + copyfile$
+        markfile = copyfile$
+      END IF
+      ActiveCtrl = 0
+    CASE "Lîschen"
+      Frame "delete", 50, 50, 300, 130, file$ + " lîschen:"
+      Echo "Sind Sie sicher?"
+      Button "delete", "   Ja   ", 60, 100
+      ActiveCtrl = NextCtrl
+      Button "delete", "  Nein  ", 0, 0
+      DrawControls "delete"
+      GetInp "delete"
+      IF Focus = "Ja" THEN
+        errorlevel = 0
+        KILL path + "\" + file$
+        IF errorlevel > 0 THEN
+          Dialog "Datei konnte nicht gelîscht werden!"
+        ELSE
+          zRessourceGet "files", Controls(ctlFiles).Value + 1, markfile, 0
+        END IF
+      END IF
+      ClearControls "delete"
+    END SELECT
+    RestoreScreen
+  END SELECT
+
+  IF keyb = "esc" THEN keyb = ""
+END SUB
+
+'Event: Wird ausgefÅhrt, wenn der Benutzer mit der ScrollBar gescrollt hat.
+'       FÅr die ScrollBar und SliderBar-Controls
+'iCtrl = Die ControlNr der Scroll- oder Sliderbar
+'name$ = Der Name der Scroll- oder Sliderbar
+SUB RaiseScroll (iCtrl, name$)
+STATIC x, y
+
+    SELECT CASE name$
+    CASE "scrollup"
+        'ScrolledPage = Controls(iCtrl).Value
+        ScrolledLine = Controls(iCtrl).Value
+        keyb = "event"
+
+    CASE "scrollri"
+        CurCol = Controls(iCtrl).Value
+        keyb = "event"
+
+    CASE "vpict", "hpict"
+      GetValue "hpict", x
+      GetValue "vpict", y
+      SilentScreen
+      ClearControls "ever"
+      z = NextCtrl
+      CLW "ever"
+      Controls(NextControl).group = "pict"
+      zShowPicture 1600 - x, 1600 - y, file$
+      DrawControls "pict"
+      DrawControls "ever"
+      RestoreScreen
+      LINE (0, 0)-(639, 349), wincol, B
+      LINE (1, 1)-(638, 348), frmcol, B
+
+    END SELECT
+
+END SUB
+
+'Wird ausgefÅhrt, wenn die Maus auf einem Control ruht.
+'Hier kînnen Sie Tooltiptexte fÅr ihre Controls erfassen!
+'iCtrl  Die ControlNr, des Controls, auf dessen die Maus
+'       ruht.
+SUB RaiseToolTipText (iCtrl)
+
+  cap$ = RTRIM$(Controls(iCtrl).caption)
+
+  SELECT CASE cap$
+'Beispiel: (entkommentieren, um auszufÅhren...)
+  CASE "Datei": text$ = "DrÅcken Sie hier um zu starten!" + crlf + "Sie kînnen: " + crlf + "a) eine Datei suchen" + crlf + "b) das Laufwerk wÑhlen" + crlf + "c) die Datei in LaOS aufnehmen"
+'  CASE ELSE: text$ = "Dies ist ein weiteres Control!"
+  END SELECT
+
+  IF text$ <> "" THEN zToolTipText text$
+
+END SUB
+
+'Holt den im ruhigen Bildaufbaumodus aufgebaute Bildschirm in den Vordergrund.
+'Das Bild wird dadurch angezeigt.
+'Verwenden Sie SilentScreen, um den ruhigen Bildaufbaumodus zu aktivieren.
+'->SilentScreen
+SUB RestoreScreen
+    IF zSSMStop THEN zSSMStop = zSSMStop - 1: EXIT SUB
+    SCREEN 9, , 0, 0
+    PCOPY 1, 0
+    SilentScreenMode = False
+    SaveScreenMode = False
+    COLOR tcol
+END SUB
+
+SUB RunDlg
+SaveScreen
+Frame "run", 185, 90, 465, 230, "AusfÅhren..."
+VIEW (200, 125)-(241, 166)
+zShowPicture 0, 0, "AUTOSTRT.LSB"
+VIEW
+EditBox "run", "Edit1", 255, 145, 24, 1, 0
+DefaultCtrl = NextCtrl
+ActiveCtrl = NextCtrl
+Button "run", " AusfÅhren ", 260, 200
+Button "run", " Abbrechen ", 360, 200
+Farbe = tcol
+zWriteTextXY 255, 125, "Datei:"
+
+zRessourceGet "files", Controls(ctlFiles).Value, file$, 0
+PutString "Edit1", file$
+DrawControls "run"
+DO
+  GetInp "run"
+
+  SELECT CASE Focus
+  CASE "AusfÅhren"
+      'Write here Code for a Click on this Button
+      GetString "Edit1", a$
+      RUN a$
+      Dialog "Unbekannter Fehler beim AusfÅhren von " + UCASE$(a$)
+  CASE "Abbrechen"
+      'Write here Code for a Click on this Button
+      EXIT DO
+  CASE "esc"
+      'Write here Code for Cancel this Dialog:
+      EXIT DO
+  END SELECT
+LOOP UNTIL keyb = "esc"
+
+ClearControls "run"
+RestoreScreen
+END SUB
+
+'Liest ein Bild vom Bildschirm ein und speichert es in eine Datei.
+'x,y,x2,y2  Die Koordinaten des Bildes
+'file$      Die Datei (existierende Dateien werden Åberschrieben)
+SUB SavePicture (x, y, x2, y2, file$)
+DIM pic(123) AS DOUBLE
+  f% = FREEFILE
+  OPEN file$ FOR BINARY AS f%
+  t& = CVL("ABMS")
+  PUT f%, 1, t&
+  w% = x2 - x + 1
+  h% = y2 - y + 1
+  PUT f%, , w%
+  PUT f%, , h%
+  PUT f%, , x
+  PUT f%, , y
+  FOR xx = x TO x2 STEP 41
+    rx% = x2 - xx
+    FOR yy = y TO y2 STEP 41
+      ry% = y2 - yy
+      IF rx% < 41 OR ry% < 41 THEN
+        IF rx% >= 41 THEN rx% = 40
+        IF ry% >= 41 THEN ry% = 40
+        g% = ((4 + INT(((PMAP(rx%, 0) - PMAP(0!, 0) + 1) * (1) + 7) / 8) * 4 * (PMAP(ry%, 1) - PMAP(0!, 1) + 1))) / 8
+        REDIM pic(g%) AS DOUBLE
+        GET (xx, yy)-(xx + rx%, yy + ry%), pic
+      ELSE
+        REDIM pic(123) AS DOUBLE
+        GET (xx, yy)-(xx + 40, yy + 40), pic
+      END IF
+      'Speichern:
+      FOR i% = LBOUND(pic) TO UBOUND(pic)
+          PUT f%, , pic(i%)
+      NEXT
+    NEXT
+  NEXT
+  CLOSE f%
+END SUB
+
+'Speichert den aktuellen Bildschirminhalt ab, um ihn danach mit
+'->RestoreScreen wieder anzeigen zu kînnen. Verwenden Sie diesen Befehl,
+'wenn Sie Aufgaben erledigen wollen und spÑter wieder zum ursprÅnglichen
+'Bildschirm zurÅckwechseln wollen.
+SUB SaveScreen
+    IF SilentScreenMode = True THEN zSSMStop = zSSMStop + 1: EXIT SUB
+    SaveScreenMode = True
+    SilentScreenMode = True
+    PCOPY 0, 1
+END SUB
+
+'Erstellt ein Scrollbar-Steuerelement
+'sGroup$ = die Steuerelementgruppe
+'sName$ = Der Name der Scrollbar
+'x,y = Die Koordinaten
+'w = Die Breite der Scrollbar (Width)
+' - oder - h = Die Hîhe der Scrollbar (Height)
+'min = Das Minimum des Scrollbar-Wertes
+'max = Das Maximum des Scrollbar-Wertes
+'stp = Der Schritt: Die Grîsse einer Bewegung der Scrollbar...
+'iCtrl = Die ControlNr des Controls, auf dieses sich die Scrollbar bezieht.
+'Wichtig: Nur entweder w oder h auf einen Wert hîher 0 setzen!
+'         Je nach dem, welcher Wert angegeben ist, so wird die Scrollbar
+'         vertikal oder horizontal angezeigt.
+SUB ScrollBar (sGroup$, sName$, x, y, w, h, Min, Max, stp, iCtrl)
+    IF w > 0 THEN x2 = x + w: y2 = y + 13 ELSE y2 = y + h: x2 = x + 13
+    DIM t AS STRING * 12
+    MID$(t, 2, 2) = MKI$(Min)
+    MID$(t, 4, 2) = MKI$(Max)
+    MID$(t, 6, 2) = MKI$(iCtrl)
+    MID$(t, 10, 2) = MKI$(stp)
+    'Wichtig:
+    'Position 9 des Tag ist reserviert fÅr ein Scrollflag
+    '(fÅr zEventMouseDown/Move)!
+    zCreateControl zScrollBar, sGroup$, sName$, "", Max, x, y, x2, y2, w, h, t, True
+END SUB
+
+'Erstellt einen Shortcut. Wenn der Benutzer diese Kurztaste drÅckt,
+'wird GetInp beendet.
+'sGroup$    Die Steuerelementgruppe
+'skey$      Die Taste
+'iCtrl      Das Control, an dies der Shortcut gebunden ist. (0 = ungebunden)
+SUB Shortcut (sGroup$, skey$, iCtrl)
+  IF iCtrl = NextCtrl THEN i = iCtrl + 1 ELSE i = iCtrl
+  zCreateControl zShortcut, sGroup$, "", skey$, i, 0, 0, 0, 0, 0, 0, "", 0
+END SUB
+
+'Schaltet in den ruhigen Bildaufbaumodus.
+'Kann dazu verwendet werden, den Grafikaufbau im Hintergrund
+'durchzufÅhren. Der Benutzer kann dann dem Aufbau nicht mehr zusehen.
+'Um die aufgebaute Grafik schlussendlich anzuzeigen, verwenden Sie bitte
+'->RestoreScreen
+SUB SilentScreen
+    IF SilentScreenMode = True THEN zSSMStop = zSSMStop + 1: EXIT SUB
+    SilentScreenMode = True
+    PCOPY 0, 1
+    SCREEN 9, , 1, 0
+    COLOR tcol
+END SUB
+
+'Erstellt ein Sliderbar-Steuerelement
+'sGroup$ = die Steuerelementgruppe
+'sName$ = Der Name der Sliderbar
+'x,y = Die Koordinaten
+'w = Die Breite der Sliderbar (Width)
+' - oder - h = Die Hîhe der Sliderbar (Height)
+'min = Das Minimum des Scrollbar-Wertes
+'max = Das Maximum des Scrollbar-Wertes
+'Wichtig: Nur entweder w oder h auf einen Wert hîher 0 setzen!
+'         Je nach dem, welcher Wert angegeben ist, so wird die Sliderbar
+'         vertikal oder horizontal angezeigt.
+SUB SliderBar (sGroup$, sName$, x, y, w, h, Min, Max)
+    IF w > 0 THEN x2 = x + w: y2 = y + 20 ELSE y2 = y + h: x2 = x + 20
+    DIM t AS STRING * 12
+    MID$(t, 2, 2) = MKI$(Min)
+    MID$(t, 4, 2) = MKI$(Max)
+    MID$(t, 10, 2) = MKI$(1) 'Step
+    zCreateControl zSliderBar, sGroup$, sName$, "", Max, x, y, x2, y2, w, h, t, True
+    EXIT SUB
+    'todo ula: zcreatecontrol verwenden!
+    Controls(NextCtrl).caption = sName$
+    Controls(NextCtrl).x = x
+    Controls(NextCtrl).y = y
+    IF w > 0 THEN
+        Controls(NextCtrl).w = w
+        Controls(NextCtrl).x2 = x + w
+        Controls(NextCtrl).y2 = y + 20
+    ELSE
+        Controls(NextCtrl).h = h
+        Controls(NextCtrl).y2 = y + h
+        Controls(NextCtrl).x2 = x + 20
+    END IF
+    MID$(Controls(NextCtrl).tag, 2, 2) = MKI$(Min)
+    MID$(Controls(NextCtrl).tag, 4, 2) = MKI$(Max)
+    MID$(Controls(NextCtrl).tag, 10, 2) = MKI$(1) 'Step
+    Controls(NextCtrl).CtrlType = zSliderBar
+    Controls(NextCtrl).group = sGroup$
+    Controls(NextCtrl).Value = Max
+    Controls(NextCtrl).SelfHandler = True
+    NextCtrl = NextCtrl + 1
+END SUB
+
+'Zeigt ein Statustext in der Statusbar an.
+SUB StatusBar (text$)
+  zGetOriginalValues 0
+  LINE (2, 332)-(637, 347), btscol, BF
+  LINE (2, 332)-(637, 332), Farbe
+  Farbe = bttcol
+  InversFarbe = btscol
+  zWriteTextXY 3, 333, text$
+  zGetOriginalValues 1
+END SUB
+
+'Gibt das Datum im Datumsformat formatiert zurÅck.
+'Wichtig: Nur fÅr Anzeige verwenden, da jeder Benutzer ein anderes
+'         Datumsformat haben kînnte: Niemals als Datum Speichern...
+'
+'d$ = Das Datum, das zurÅckgegeben werden soll
+'
+FUNCTION SysDate$ (d$)
+  SELECT CASE Dateformat
+  CASE 0'TT.MM.JJJJ
+  SysDate$ = MID$(d$, 4, 2) + "." + LEFT$(d$, 2) + "." + RIGHT$(d$, 4)
+  CASE 1'MM-TT-JJJJ
+  SysDate$ = d$
+  CASE 2'JJJJ/MM/TT
+  SysDate$ = RIGHT$(d$, 4) + "/" + LEFT$(d$, 2) + "/" + MID$(d$, 4, 2)
+  END SELECT
+END FUNCTION
+
+'Gibt die Hîhe eines Textes zurÅck.
+'BerÅcksichtigt dabei die durch einen Rahmen gesetzte Bereichsbegrenzung!
+'text = Der Text dessen Hîhe zÅrÅckgegeben wird.
+FUNCTION TextHeight% (text AS STRING)
+
+DIM linie AS STRING, txt AS STRING
+x = 0
+y = 0
+txt = text
+panewidth = Right - Left
+leftpane = 0
+maxy = 0
+
+DO
+    'holt die nÑchste Zeile:
+    aw = 0
+    DO
+        w = INSTR(aw + 1, txt, " ")
+        cr = INSTR(aw + 1, txt, crlf) 'Zeilenvorschub & WagenrÅcklauf?
+
+        IF w = 0 THEN w = LEN(txt)
+
+        IF cr > 0 THEN   'Zeilenvorschub & WagenrÅcklauf!
+            IF NOT (TextLen(LEFT$(txt, cr - 1)) > panewidth) THEN
+                'muss nicht vorher bereits umgebrochen werden?
+                linie = LEFT$(txt, cr - 1)
+                txt = MID$(txt, cr + 2)
+                EXIT DO
+            END IF
+        END IF
+       
+        IF TextLen(LEFT$(txt, w)) > panewidth OR w = LEN(txt) THEN
+            IF aw = 0 THEN aw = LEN(txt)
+            IF w = LEN(txt) AND TextLen(LEFT$(txt, w)) < panewidth THEN aw = LEN(txt)
+            IF aw = LEN(txt) AND TextLen(LEFT$(txt, w)) > panewidth THEN aw = FIX(panewidth / 8)
+            linie = LEFT$(txt, aw)
+            txt = MID$(txt, aw + 1)
+            EXIT DO
+        ELSE
+            aw = w
+        END IF
+    LOOP UNTIL LEN(txt) = 0
+
+    x = TextLen(linie)
+    x = 0
+    y = y + 14
+    IF y > maxy THEN maxy = y
+LOOP UNTIL LEN(txt) = 0
+
+TextHeight% = maxy
+
+END FUNCTION
+
+'Gibt die LÑnge eines Textes zurÅck, berÅcksichtigt dabei nicht die
+'BereichsbeschrÑnkungen eines Begrenzungs-Rahmens
+'text = Der zu prÅfende Text
+'-> Verwenden Sie TextLength%(text), um die effektive Breite eines Textes
+'   zurÅckzugeben, welcher die BereichsbeschrÑnkungen der Begrenzungsrahmen
+'   mitberÅcksichtigt.
+FUNCTION TextLen% (text AS STRING)
+        TextLen% = LEN(text) * 8
+END FUNCTION
+
+'Gibt die Breite eines Textblockes zurÅck, unter BerÅcksichtigung der
+'BereichsbeschrÑnkungen des aktiven Begrenzungs-Rahmens.
+'text = Der zu prÅfende Text
+'-> Verwenden Sie TextLen%(text), um die LÑnge ohne BerÅcksichtigung
+'   der BereichsbeschrÑnkungen zurÅckzugeben.
+FUNCTION TextWidth% (text AS STRING)
+DIM linie AS STRING, txt AS STRING
+
+    x = 0
+    txt = text
+    panewidth = Right - Left
+    leftpane = 0
+    Max = 0
+
+    DO
+        'holt die nÑchste Zeile:
+        aw = 0
+        DO
+            w = INSTR(aw + 1, txt, " ")
+            cr = INSTR(aw + 1, txt, crlf) 'Zeilenvorschub & WagenrÅcklauf?
+
+            IF w = 0 THEN w = LEN(txt)
+
+            IF cr > 0 THEN   'Zeilenvorschub & WagenrÅcklauf!
+                IF NOT (LEN(LEFT$(txt, cr - 1)) * 8 > panewidth) THEN
+                    'muss nicht vorher bereits umgebrochen werden?
+                    linie = LEFT$(txt, cr - 1)
+                    txt = MID$(txt, cr + 2)
+                    EXIT DO
+                END IF
+            END IF
+                      
+            IF TextLen(LEFT$(txt, w)) > panewidth OR w = LEN(txt) THEN
+                IF aw = 0 THEN aw = LEN(txt)
+                IF w = LEN(txt) AND TextLen(LEFT$(txt, w)) < panewidth THEN aw = LEN(txt)
+                IF aw = LEN(txt) AND TextLen(LEFT$(txt, w)) > panewidth THEN aw = FIX(panewidth / 8)
+                linie = LEFT$(txt, aw)
+                txt = MID$(txt, aw + 1)
+                EXIT DO
+            ELSE
+                aw = w
+            END IF
+        LOOP UNTIL LEN(txt) = 0
+
+        x = LEN(linie) * 8
+        IF x > Max THEN Max = x
+        x = 0
+    LOOP UNTIL LEN(txt) = 0
+
+    TextWidth% = Max
+
+END FUNCTION
+
+'Zeigt die Festplatte auf dem Bildschirm an...
+'Modus: 0 = beschÑftigt
+'       1 = unbeschÑftigt
+SUB TimeLock (Modus)
+LINE (300, 164)-(338, 164), 8
+LINE (339, 165)-(339, 183), 8
+LINE (338, 184)-(300, 184), 8
+LINE (299, 183)-(299, 165), 8
+LINE (300, 165)-(338, 183), 7, BF
+LINE (302, 167)-(336, 167), 6
+LINE (336, 169)-(302, 169), 6
+LINE (336, 182)-(302, 182), 3
+IF Modus = 0 THEN
+  LINE (325, 176)-(336, 181), 3, BF
+ELSE
+  LINE (325, 176)-(336, 181), 11, BF
+END IF
+END SUB
+
+'Zeigt eine Datei an
+'Datei$ = Die Datei
+'Hexadezimal = Wenn Hexadezimal auf True (-1) ist, so wird der Text in
+'              Hexform angezeigt.
+SUB TxtView (datei$, Hexadezimal)
+'Version 0.02  GÅnter MÅnster (c) 1989
+'Revision im Jahre 2003
+
+IF Hexadezimal THEN
+  ConvertToHex datei$, tempdir + "hex.tmp"
+  datei$ = tempdir + "hex.tmp"
+
+  Oben = 4: unten = 21
+  Laenge = 66
+  Links = 7
+ELSE
+  Oben = 3: unten = 24
+  Laenge = 77
+  Links = 2
+END IF
+
+ClearControls "txtview"
+CLW "txtview"
+MenuBox "txtview", "ZurÅck"
+DrawControls "txtview"
+CLOSE
+OPEN datei$ FOR INPUT AS #1
+
+'=========================================================================
+'seekel ist die Zeilennummer innerhalb der Textdatei
+'seekel wurde auf Modulebene (global) als Longint dimensioniert
+
+REDIM seeks&(1 TO 16)
+DIM rslen AS INTEGER, ftmp AS INTEGER
+DIM Numlines AS LONG
+DIM SeekEl AS LONG
+
+rslen = LEN(seeks&)
+ftmp = FREEFILE
+'wird Åbersprungen, falls bereits offen:
+OPEN tempdir + "seeks.tmp" FOR BINARY AS ftmp LEN = rslen
+CurSeek& = 1
+IF Hexadezimal THEN
+  LINE (40, 38)-(580, 299), 1, B
+  LINE (40, 318)-(580, 341), 3, B
+END IF
+DO UNTIL EOF(1)
+LINE INPUT #1, text$
+Numlines = Numlines + 1
+IF Numlines > UBOUND(seeks&) THEN
+    lngPos& = CLNG((Numlines - UBOUND(seeks&))) * rslen - rslen + 1
+    PUT ftmp, lngPos&, CurSeek&
+ELSE
+    seeks&(Numlines) = CurSeek&
+END IF
+CurSeek& = CurSeek& + LEN(text$) + 2
+LOOP
+CurCol = 1
+SeekEl = 1
+
+ScrollVertical = NextCtrl
+IF Hexadezimal THEN
+'  ScrollBar "scroll", "scrollup", 582, 40, 0, 259, 1, FIX(Numlines / 18) + 1, 1, 0
+  ScrollBar "txtview", "scrollup", 582, 40, 0, 259, 1, CINT(Numlines), 1, 0
+  ScrollHorizontal = NextCtrl
+  ScrollBar "txtview", "scrollri", 40, 302, 540, 0, 1, 500, 1, 0
+ELSE
+  'ScrollBar "scroll", "scrollup", 625, 28, 0, 308, 1, FIX(Numlines / 18) + 1, 1, 0
+  ScrollBar "txtview", "scrollup", 625, 28, 0, 308, 1, CINT(Numlines), 1, 0
+  ScrollHorizontal = NextCtrl
+  ScrollBar "txtview", "scrollri", 2, 336, 622, 0, 1, 500, 1, 0
+  LINE (2, 28)-(2, 335), sbrcol
+  LINE (2, 27)-(638, 27), sbrcol
+END IF
+Controls(ScrollVertical).Value = 1
+DrawControls "txtview"
+
+DO
+GOSUB LoadAndDisplay
+GOSUB KeyProcess
+LOOP UNTIL Escape
+LoadAndDisplay:
+IF SeekEl > UBOUND(seeks&) THEN
+    lngPos& = CLNG((SeekEl - UBOUND(seeks&))) * rslen - rslen + 1
+    GET ftmp, lngPos&, lngPos&
+    SEEK #1, lngPos&
+ELSE
+    SEEK #1, seeks&(SeekEl)
+END IF
+
+FOR i = Oben TO unten
+IF NOT EOF(1) THEN LINE INPUT #1, text$ ELSE text$ = ""
+COLOR tcol
+DerZauberstab$ = SPACE$(Laenge)
+LSET DerZauberstab$ = MID$(text$, CurCol)
+IF NOT EOF(1) AND INSTR(1, DerZauberstab$, "") THEN LINE INPUT #1, text$
+LSET DerZauberstab$ = MID$(text$, CurCol)
+LOCATE i, Links, 0: PRINT DerZauberstab$;
+
+IF Hexadezimal THEN
+  LOCATE 24, 7: COLOR tcol2: PRINT Numlines;
+  COLOR tcol: PRINT ":";
+  COLOR tcol2: PRINT SeekEl;
+  COLOR tcol: PRINT ":";
+  COLOR tcol2: PRINT CurCol; "                "; : COLOR 8
+ELSE
+  'zWriteTextXY 3, 336, STR$(SeekEl) + " :" + STR$(Numlines) + " :" + STR$(CurCol) + "               "
+  'LINE (1, 348)-(638, 348), frmcol
+  'LINE (0, 349)-(639, 349), wincol
+END IF
+NEXT i
+RETURN
+
+KeyProcess:
+Controls(ScrollHorizontal).Value = CurCol
+'IF ScrolledPage = 0 THEN
+IF ScrolledLine = 0 THEN
+    'Controls(ScrollVertical).Value = FIX(SeekEl / 18) + 1
+    Controls(ScrollVertical).Value = SeekEl
+    IF SeekEl = 0 THEN SeekEl = 1
+END IF
+zDrawThisControl ScrollVertical, 0, 0
+zDrawThisControl ScrollHorizontal, 0, 0
+'RestoreScreen
+'ScrolledPage = 0
+ScrolledLine = 0
+    a$ = GetKey("txtview")
+'IF ScrolledPage > 0 THEN
+IF ScrolledLine > 0 THEN
+    'SeekEl = ((ScrolledPage - 1) * 18)
+    SeekEl = ScrolledLine
+    IF SeekEl = 0 THEN SeekEl = 1
+END IF
+
+KeyProcess2:
+SELECT CASE keyb
+CASE "enter"
+  IF Focus = "ZurÅck" THEN
+    ClearControls "txtview"
+    CLOSE
+    EXIT SUB
+  END IF
+CASE "alt"
+    ActivatedControl = 1
+    GetInp "txtview"
+    GOTO KeyProcess2
+
+CASE "esc"
+ClearControls "txtview"
+CLOSE
+EXIT SUB
+
+CASE "up"             ' Up Arrow
+SeekEl = SeekEl - 1
+IF SeekEl < 1 THEN SeekEl = 1: GOTO KeyProcess
+
+CASE "down"             ' Dn Arrow
+SeekEl = SeekEl + 1
+IF SeekEl > Numlines THEN SeekEl = SeekEl - 1: GOTO KeyProcess
+
+CASE "right"             ' Right Arrow
+CurCol = CurCol + 1
+
+CASE "left"             ' Left Arrow
+CurCol = CurCol - 1
+IF CurCol < 1 THEN CurCol = 1: GOTO KeyProcess
+
+CASE "pageup"           ' Page Up
+SeekEl = SeekEl - 18
+IF SeekEl < 1 THEN SeekEl = 1
+
+CASE "pagedown", "enter", "space"          ' Page Dn
+SeekEl = SeekEl + 18
+IF SeekEl > Numlines THEN
+SeekEl = Numlines - 18: GOTO KeyProcess
+END IF
+
+CASE "home"
+CurCol = 1
+
+CASE "ctrl-home"                       ' Home
+SeekEl = 1
+CurCol = 1
+
+CASE "end"
+CurCol = CurCol + 76
+
+CASE "ctrl-end"                      ' End
+SeekEl = Numlines - 18 '22
+IF SeekEl < 1 THEN SeekEl = 1: GOTO KeyProcess
+
+END SELECT
+RETURN
+'=========================================================================
+
+END SUB
+
+SUB Verschieben (title$, copy AS INTEGER, canceled)
+
+canceled = False
+
+DIM len1 AS LONG
+
+Frame "move", 300, 80, 590, 270, title$
+ActiveCtrl = NextCtrl
+CtlList = NextCtrl
+ListBox "move", "dir", 310, 130, 467, 231, False
+Button "move", "  OK  ", 310, 240
+Button "move", "Laufwerk Ñndern...", 370, 240
+
+Farbe = tcol
+f = FREEFILE
+
+versreload:
+SHELL "cd >" + tempdir + "path.tmp"
+OPEN tempdir + "path.tmp" FOR INPUT AS f
+LINE INPUT #f, dir$
+CLOSE f
+SHELL "dir /a:d /b >" + tempdir + "dir.tmp"
+OPEN tempdir + "dir.tmp" FOR INPUT AS f
+ClearList "dir"
+Controls(CtlList).Value = 0
+IF LEN(dir$) > 3 THEN
+  i = 1
+  ListAdd "dir", i, "..", 0
+ELSE
+  i = 0
+END IF
+errorlevel = 0
+DO WHILE NOT EOF(f)
+  LINE INPUT #f, a$
+  IF errorlevel THEN EXIT DO
+  IF a$ <> "" THEN
+    i = i + 1
+    ListAdd "dir", i, a$, 0
+    errorlevel = 0
+  END IF
+LOOP
+CLOSE f
+Frame "", 300, 80, 590, 270, title$
+zWriteTextXY 310, 110, dir$
+
+DrawControls "move"
+DO
+  GetInp "move"
+
+  IF keyb = "esc" THEN canceled = True: EXIT DO
+
+  SELECT CASE Focus
+  CASE "Laufwerk Ñndern..."
+    SaveScreen
+    dir$ = Laufwerkswahl
+    RestoreScreen
+    GOTO versreload
+  CASE "OK"
+    OPEN tempdir + "checked.txt" FOR INPUT AS f
+    errorlevel = 0
+    WHILE INKEY$ <> "": WEND
+    DO WHILE NOT EOF(f)
+      LINE INPUT #f, a$
+      IF errorlevel THEN EXIT DO
+      IF a$ <> "" THEN
+        from$ = path
+        IF RIGHT$(from$, 1) <> "\" THEN from$ = from$ + "\"
+        to$ = dir$
+        IF RIGHT$(to$, 1) <> "\" THEN to$ = to$ + "\"
+        IF exists(to$ + a$) THEN
+          Dialog "Datei existiert bereits: " + to$ + a$
+        ELSE
+          IF INKEY$ = CHR$(27) THEN Dialog "Abbruch durch Benutzer.": EXIT DO
+          IF copy THEN
+            FileCopy "Kopieren: " + a$ + crlf + "    nach: " + to$ + a$, from$ + a$, to$ + a$
+          ELSE
+            FileCopy "Verschieben: " + a$ + crlf + "       nach: " + to$ + a$, from$ + a$, to$ + a$
+            f2 = FREEFILE
+            OPEN from$ + a$ FOR BINARY AS f2
+            len1 = LOF(f2)
+            CLOSE f2
+            OPEN to$ + a$ FOR BINARY AS f2
+            IF len1 <> LOF(f2) THEN
+              Dialog "Konnte nicht ordentlich verschoben werden: " + a$
+              'Abbruch:
+              CLOSE f2
+              EXIT DO
+            ELSE
+              'Kopieren ok:
+              CLOSE f2
+              KILL from$ + a$
+            END IF
+          END IF
+        END IF
+      END IF
+      errorlevel = 0
+    LOOP
+    CLOSE f
+    EXIT DO
+  CASE "dir"
+      'Write here Code for a Double-Click on this ListBox
+      GetString "dir", dir$
+      IF dir$ = ".." THEN
+        SHELL "cd.."
+      ELSE
+        CHDIR dir$
+      END IF
+      GOTO versreload
+  CASE "esc"
+      'Write here Code for Cancel this Dialog:
+      canceled = True
+      EXIT DO
+  END SELECT
+LOOP
+ClearControls "move"
+SHELL LEFT$(path, 1) + ":"
+CHDIR path
+END SUB
+
+'wird intern verwendet fÅr das Erstellen eines beliebigen Controls
+SUB zCreateControl (iCtrlType, sGroup$, sName$, caption$, Value, x, y, x2, y2, w, h, tag$, iSelfHandler)
+    IF LEN(sGroup$) > 8 THEN
+        Dialog "Gruppenname zu lang! (" + sGroup$ + ") Max. 8 Zeichen"
+        EXIT SUB
+    ELSEIF LEN(sName$) > 8 THEN
+        Dialog "Controlname zu lang! (" + sName$ + ") Max. 8 Zeichen"
+        EXIT SUB
+    ELSEIF NextCtrl > UBOUND(Controls) THEN
+      PRINT "Maximale Anzahl an Controls Åberschritten!"
+    END IF
+    IF LEN(sName$) > 0 THEN
+        Controls(NextCtrl).caption = sName$
+    ELSE
+        Controls(NextCtrl).caption = caption$
+    END IF
+    Controls(NextCtrl).x = x
+    Controls(NextCtrl).y = y
+    Controls(NextCtrl).x2 = x2
+    Controls(NextCtrl).y2 = y2
+    Controls(NextCtrl).w = w
+    Controls(NextCtrl).h = h
+    Controls(NextCtrl).tag = tag$
+    Controls(NextCtrl).SelfHandler = iSelfHandler
+    Controls(NextCtrl).CtrlType = iCtrlType
+    Controls(NextCtrl).group = sGroup$
+    Controls(NextCtrl).Value = Value
+    NextCtrl = NextCtrl + 1
+END SUB
+
+'Stellt sicher, dass Doppelklick-Ereignisse erfasst werden.
+'Kann in Schleifen aufgerufen werden, die nach einzelnen Mausklicks
+'stattfinden.
+SUB zDoEvents
+    IF MouseOn THEN
+      DEF SEG = VARSEG(iMS(0))
+      POKE VARPTR(iMS(0)) + 26, &H33
+      CALL ABSOLUTE(3, B, x, y, VARPTR(iMS(0)))
+      'PrÅfe auf Doppelklick:
+      IF Mouse.time > 0 AND B = 1 THEN
+        IF TIMER - Mouse.time < .8 THEN
+          IF x > Mouse.ClickX - 2 AND x < Mouse.ClickX + 2 THEN
+            IF y > Mouse.ClickY - 2 AND y < Mouse.ClickY + 2 THEN
+              MouseOn = 2
+              WHILE B > 0
+                CALL ABSOLUTE(3, B, x, y, VARPTR(iMS(0)))
+              WEND
+            END IF
+          END IF
+        END IF
+      END IF
+    END IF
+END SUB
+
+'Zeichnet ein Rahmen ohne dabei den Bereich darauf einzuschrÑnken.
+SUB zDrawBox (x1, y1, x2, y2)
+    LINE (x1, y1)-(x2, y2), wincol, B
+    LINE (x1 + 1, y1 + 1)-(x2 - 1, y2 - 1), frmcol, B
+    LINE (x1 + 2, y1 + 2)-(x2 - 2, y2 - 2), 0, BF
+END SUB
+
+'Zeichnet ein beliebiges Control
+'iCtrl = Die Nr. des Controls
+'MouseDown = True = Wird als angeklickt dargestellt
+'iRefresh = True = Das Control soll vollstÑndig neu gezeichnet werden
+SUB zDrawThisControl (iCtrl, MouseDown, iRefresh)
+
+DIM text AS STRING
+
+    i% = iCtrl
+    IF i% = 0 THEN EXIT SUB
+    x = Controls(i%).x
+    y = Controls(i%).y
+    x2 = Controls(i%).x2
+    y2 = Controls(i%).y2
+    w = Controls(i%).w
+    h = Controls(i%).h
+    cap$ = RTRIM$(Controls(i%).caption)
+    Activated = (ActiveCtrl = i%)
+    Value = Controls(i%).Value
+    am = InversFarbe
+    InversFarbe = 0
+    tag$ = Controls(i%).tag
+    Farbe = tcol
+
+        SELECT CASE Controls(i%).CtrlType
+        CASE zIconList
+            IF NOT MouseDown THEN
+                zIconListHandler sGroup$, i%, True
+            END IF
+
+        CASE zScrollBar
+            Min = CVI(MID$(tag$, 2, 2))
+            Max = CVI(MID$(tag$, 4, 2))
+            IF Max - Min = 0 THEN Max = Max + 1
+            IF Value > Max THEN Controls(iCtrl).Value = Max: Value = Max
+            IF Value < Min THEN Controls(iCtrl).Value = Min: Value = Min
+            IF iRefresh THEN
+              'Knîpfe oben und unten:
+              LINE (x + 1, y + 1)-(x2 - 1, y + 10), sbbcol, BF
+              LINE (x + 1, y2 - 1)-(x2 - 1, y2 - 10), sbbcol, BF
+            END IF
+            IF w > 0 THEN
+              'horizontal:
+              'FÅllung innen:
+              LINE (x + 12, y + 1)-(x2 - 12, y2 - 1), sbfcol, BF
+              IF iRefresh THEN
+                'Rahmen:
+                LINE (x + 11, y)-(x2 - 11, y2), sbrcol, B
+                LINE (x, y)-(x2, y2), sbrcol, B
+
+                COLOR bttcol
+                LINE (x + 8, y + 2)-(x + 8, y + 10)
+                LINE (x + 8, y + 10)-(x + 4, y + 6)
+                LINE (x + 4, y + 6)-(x + 8, y + 2)
+                PAINT (x + 7, y + 6), bttcol
+
+                LINE (x2 - 8, y + 2)-(x2 - 8, y + 10)
+                LINE (x2 - 8, y + 10)-(x2 - 4, y + 6)
+                LINE (x2 - 4, y + 6)-(x2 - 8, y + 2)
+                PAINT (x2 - 6, y + 6), bttcol
+              END IF
+              x = x + 12
+              x2 = x2 - 12
+              x = (x + ((Value - Min) * CLNG((x2 - x - 10)) / (Max - Min)))
+              x2 = x + 10
+              y = y + 1
+              y2 = y2 - 1
+            ELSE
+              'vertikal:
+              'FÅllung innen:
+              LINE (x + 1, y + 12)-(x2 - 1, y2 - 12), sbfcol, BF
+              IF iRefresh THEN
+                'Rahmen:
+                LINE (x, y + 11)-(x2, y2 - 11), sbrcol, B
+                LINE (x, y)-(x2, y2), sbrcol, B
+                'Pfeil rauf
+                COLOR tcol
+                LINE (x + 7, y + 4)-(x + 10, y + 7)
+                LINE (x + 7, y + 4)-(x + 3, y + 7)
+                LINE (x + 3, y + 7)-(x + 10, y + 7)
+                PAINT (x + 6, y + 5)
+
+                'Pfeil runter
+                LINE (x + 7, y2 - 4)-(x + 10, y2 - 7)
+                LINE (x + 7, y2 - 4)-(x + 3, y2 - 7)
+                LINE (x + 3, y2 - 7)-(x + 10, y2 - 7)
+                PAINT (x + 6, y2 - 5)
+              END IF
+              y = y + 12
+              y2 = y2 - 12
+              y = (y + ((Value - Min) * CLNG((y2 - y - 10)) / (Max - Min)))
+              y2 = y + 10
+              x = x + 1
+              x2 = x2 - 1
+            END IF
+            'Button:
+            IF sbscol < 0 THEN
+              LINE (x, y)-(x2, y2), btfcol, BF
+              LINE (x, y)-(x2, y2), btlcol, B
+              LINE (x, y2)-(x2, y2), btrcol
+              LINE (x2, y2)-(x2, y), btrcol
+              LINE (x + 1, y2 - 1)-(x2 - 1, y2 - 1), btscol
+              LINE (x2 - 1, y2 - 1)-(x2 - 1, y + 1), btscol
+            ELSE
+              LINE (x + 1, y + 1)-(x2 - 1, y2 - 1), sbscol, BF
+            END IF
+        CASE zSliderBar
+            Min = CVI(MID$(tag$, 2, 2))
+            Max = CVI(MID$(tag$, 4, 2))
+            IF Value > Max THEN Controls(iCtrl).Value = Max: Value = Max
+            IF Value < Min THEN Controls(iCtrl).Value = Min: Value = Min
+            IF w > 0 THEN
+                'horizontal:
+                LINE (x, y + 1)-(x2, y2 - 1), 0, BF
+                LINE (x, y + 5)-(x2, y + 14), 7, B
+                bx = x + (Value * CLNG((x2 - x - 10)) / (Max - Min))
+                x = bx
+                y = y + 1
+                x2 = bx + 10
+                y2 = y + 18
+
+                LINE (x, y)-(x2, y2), btfcol, BF
+                IF MouseDown THEN
+                    LINE (x, y)-(x2, y2), btrcol, B
+                    LINE (x, y2)-(x2, y2), btlcol
+                    LINE (x2, y2)-(x2, y), btlcol
+
+                ELSE
+                    LINE (x, y)-(x2, y2), btlcol, B
+                    LINE (x, y2)-(x2, y2), btrcol
+                    LINE (x2, y2)-(x2, y), btrcol
+                    LINE (x + 1, y2 - 1)-(x2 - 1, y2 - 1), btscol
+                    LINE (x2 - 1, y2 - 1)-(x2 - 1, y + 1), btscol
+                END IF
+            ELSE
+                'vertikal:
+                LINE (x + 1, y)-(x2 - 1, y2), 0, BF
+                LINE (x + 5, y)-(x + 14, y2), 7, B
+                by = (y + ((Value - Min) * CLNG((y2 - y - 10)) / (Max - Min)))
+                x = x + 1
+                y = by
+                x2 = x + 18
+                y2 = by + 10
+
+                LINE (x, y)-(x2, y2), btfcol, BF
+                IF MouseDown THEN
+                    LINE (x, y)-(x2, y2), btrcol, B
+                    LINE (x, y2)-(x2, y2), btlcol
+                    LINE (x2, y2)-(x2, y), btlcol
+
+                ELSE
+                    LINE (x, y)-(x2, y2), btlcol, B
+                    LINE (x, y2)-(x2, y2), btrcol
+                    LINE (x2, y2)-(x2, y), btrcol
+                    LINE (x + 1, y2 - 1)-(x2 - 1, y2 - 1), btscol
+                    LINE (x2 - 1, y2 - 1)-(x2 - 1, y + 1), btscol
+                END IF
+            END IF
+
+        CASE zMenuBox
+          IF Activated THEN
+            InversFarbe = mfcol
+            Farbe = mtcol
+          END IF
+          zWriteTextXY x, y, cap$
+
+        CASE zButton
+            LINE (x, y)-(x2, y2), btfcol, BF
+            IF MouseDown THEN
+                LINE (x, y)-(x2, y2), btrcol, B
+                LINE (x, y2)-(x2, y2), btlcol
+                LINE (x2, y2)-(x2, y), btlcol
+            ELSE
+                LINE (x, y)-(x2, y2), btlcol, B
+                LINE (x, y2)-(x2, y2), btrcol
+                LINE (x2, y2)-(x2, y), btrcol
+            END IF
+            LINE (x + 1, y2 - 1)-(x2 - 1, y2 - 1), btscol
+            LINE (x2 - 1, y2 - 1)-(x2 - 1, y + 1), btscol
+            Farbe = bttcol
+            InversFarbe = btfcol
+            IF MouseDown THEN
+                zWriteTextXY x + 6, y + 5, cap$
+                LINE (x + 3, y + 3)-(x2 - 3, y2 - 3), focol, B, PunkteLinie
+            ELSE
+                IF Activated = True THEN
+                    LINE (x + 3, y + 3)-(x2 - 3, y2 - 3), focol, B, PunkteLinie
+                END IF
+                zWriteTextXY x + 5, y + 4, cap$
+            END IF
+            Farbe = tcol
+            IF DefaultCtrl = iCtrl THEN
+                LINE (x, y2 + 1)-(x2 + 1, y2 + 1), btrcol
+                LINE (x2 + 1, y2 + 1)-(x2 + 1, y), btrcol
+            END IF
+       
+        CASE zRadioButton
+            CIRCLE (x + 7, y + 9), 8, tcol
+            zWriteTextXY x + 24, y + 3, cap$
+            IF Value = True THEN
+                CIRCLE (x + 7, y + 9), 5, tcol
+                PAINT (x + 7, y + 9), tcol
+            ELSE
+                PAINT (x + 7, y + 9), 0, 0
+            END IF
+            IF Activated = True THEN
+                LINE (x + 22, y + 2)-(x2 - 3, y2 - 1), focol, B, PunkteLinie
+            ELSE
+                LINE (x + 22, y + 2)-(x2 - 3, y2 - 1), 0, B
+            END IF
+
+        CASE zCheckBox
+            LINE (x, y + 3)-(x + 15, y + 15), 0, BF
+            LINE (x, y + 3)-(x + 15, y + 15), tcol, B
+            zWriteTextXY x + 24, y + 3, cap$
+            IF Value = True THEN
+                LINE (x, y + 3)-(x + 15, y + 15), tcol
+                LINE (x + 15, y + 3)-(x, y + 15), tcol
+            END IF
+            IF Activated = True THEN
+                LINE (x + 22, y + 2)-(x2 - 3, y2 - 1), focol, B, PunkteLinie
+            ELSE
+                LINE (x + 22, y + 2)-(x2 - 3, y2 - 1), 0, B
+            END IF
+
+        CASE zEditBox
+            IF NOT MouseDown THEN 'keine VerÑnderung bei MouseDown!!!
+                LINE (x, y)-(x2, y2), tbfcol, BF
+                LINE (x, y)-(x2, y2), tbbcol, B
+                zEditBoxHandler "", cap$, iCtrl, x + 3, y + 1, x2, y2, w, h, text, True
+            END IF
+
+        CASE zListBox
+            IF NOT MouseDown THEN
+                IF iRefresh THEN
+                  'MaxItems auf 0 setzen damit wieder erneut gezÑhlt wird...
+                  MID$(Controls(CVI(MID$(Controls(iCtrl).tag, 3, 2))).tag, 4, 2) = MKI$(0)
+                    IF MID$(tag$, 1, 1) = "M" THEN
+                        'Menustyle:
+                        LINE (x, y)-(x2, y2), 0, BF
+                        LINE (x, y)-(x2, y2), tcol, B
+                        LINE (x2 + 1, y + 1)-(x2 + 1, y2 + 1), shdcol
+                        LINE (x2, y2 + 1)-(x + 1, y2 + 1), shdcol
+                    ELSE
+                        'normal:
+                        zDrawBox x, y, x2, y2
+                    END IF
+                END IF
+                zListboxHandler "", iCtrl, x, y, x2, y2, w, h, True
+            END IF
+
+        CASE zMouseClicker
+            'w = WithShadow!
+            IF cap$ = "exit" THEN
+              LINE (x, y)-(x + 15, y + 13), btscol, BF
+              LINE (x, y)-(x + 15, y + 13), btrcol, B
+              LINE (x + 7, y + 6)-STEP(3, 3), 1, BF
+              LINE (x + 5, y + 5)-STEP(3, 3), btrcol, BF
+            ELSEIF w THEN
+                IF MouseDown THEN
+                    LINE (x, y)-(x2, y2), btrcol, B
+                    LINE (x, y2)-(x2, y2), btlcol
+                    LINE (x2, y2)-(x2, y), btlcol
+                ELSE
+                    LINE (x, y)-(x2, y2), btlcol, B
+                    LINE (x, y2)-(x2, y2), btrcol
+                    LINE (x2, y2)-(x2, y), btrcol
+                END IF
+                LINE (x + 1, y2 - 1)-(x2 - 1, y2 - 1), btscol
+                LINE (x2 - 1, y2 - 1)-(x2 - 1, y + 1), btscol
+            END IF
+        END SELECT
+
+    COLOR Farbe
+    InversFarbe = am
+
+END SUB
+
+'Handler fÅr das Editbox-Steuerelement
+SUB zEditBoxHandler (sGroup$, sName$, iCtrl, x1, y1, x2, y2, iAnzSpalten, iAnzZeilen, text AS STRING, iRefresh)
+
+DIM oldText         AS STRING 'behÑlt den alten Text (vor der Eingabe)
+DIM linie           AS STRING
+DIM txt             AS STRING
+DIM txt2            AS STRING
+DIM linie2          AS STRING
+DIM echoLineNr      AS INTEGER 'Die Liniennummer der Ausgabe!
+DIM topperLine      AS INTEGER 'Die Linie, die die erste sichtbare ist (im Fenster)
+DIM visibleLines    AS INTEGER
+DIM markerStart     AS INTEGER 'Das Startzeichen der Markierung innerhalb des Textes
+DIM outerVisible    AS INTEGER 'True = es ist der Bereich Åberschritten!
+DIM topperVPos      AS INTEGER 'Die Position im String, bei der das Sichtfenster beginnt!
+DIM bottomVPos      AS INTEGER 'Die Position im String, bei der das Sichtgfenster aufhîrt!
+DIM iAnzZeichen     AS INTEGER
+DIM CurrentLine     AS INTEGER 'Linie, in der sich der Cursor befindet
+DIM actualizeLines  AS INTEGER 'Anzahl Linien, nach CurrentLine, die aktualisiert werden mÅssen!
+DIM InsertMode      AS INTEGER
+DIM CurrentLineLen  AS INTEGER 'LÑnge der aktuellen Linie
+DIM CurrentLineStart AS INTEGER 'Startposition der aktuellen Linie im String
+DIM iMaxZeichen
+
+'0. Initialisierungen
+zEditboxInitialize:
+    GetString sName$, text
+    InsertMode = False
+    oldText = ""
+    topperLine = 1
+    visibleLines = iAnzZeilen
+    markerStart = Controls(iCtrl).Value
+    iMaxZeichen = CVI(MID$(Controls(iCtrl).tag, 1, 2))
+    wishedTopper = CVI(MID$(Controls(iCtrl).tag, 3, 2))
+
+IF Mouse.Clicked = 2 THEN
+    'KontextmenÅ:
+    a$ = MenuInt(" Text einfÅgen , Text kopieren,-, Text lîschen", ",")
+    Mouse.Clicked = 0
+    f = FREEFILE
+    SELECT CASE choice
+    CASE 1: OPEN tempdir + "zwa.txt" FOR INPUT AS f
+            LINE INPUT #f, a$: text = LEFT$(text, markerStart - 1) + a$ + MID$(text, markerStart)
+    CASE 2: OPEN tempdir + "zwa.txt" FOR OUTPUT AS f
+            PRINT #f, text
+    CASE 4: text = ""
+            LINE (x1, y1)-(x2 - 1, y2 - 1), tbfcol, BF
+    END SELECT
+    CLOSE f
+    ActiveCtrl = iCtrl
+ELSEIF Mouse.Clicked = 1 AND NOT iRefresh THEN
+    markerStart = LEN(text) + 1
+END IF
+
+zEditBoxCalculateCursor:
+'1. Es muss geprÅft werden, welchen Bereich angezeigt werden muss:
+'   (Der Bereich, wo markerStart drin ist!)
+
+'Fragestellung: Welches ist die Zeile des Cursors (markerStart)?
+
+    IF iMaxZeichen > 0 AND LEN(text) > iMaxZeichen THEN text = LEFT$(text, iMaxZeichen)
+    txt = text
+    panewidth = TextLen(SPACE$(iAnzSpalten))
+    echoLineNr = 0
+    iAnzZeichen = 0
+    CurrentLine = 0
+    IF markerStart < 0 THEN markerStart = 1
+
+    DO
+        'holt die nÑchste Zeile:
+        aw = 0
+        echoLineNr = echoLineNr + 1
+        DO
+            w = INSTR(aw + 1, txt, " ")
+            cr = INSTR(aw + 1, txt, crlf) 'Zeilenvorschub & WagenrÅcklauf?
+
+            IF w = 0 THEN w = LEN(txt)
+
+            IF cr > 0 THEN   'Zeilenvorschub & WagenrÅcklauf!
+                IF NOT (TextLen(LEFT$(txt, cr - 1)) > panewidth) THEN
+                    'muss nicht vorher bereits umgebrochen werden?
+                    linie = LEFT$(txt, cr - 1)
+                    txt = MID$(txt, cr + LEN(crlf))
+                    EXIT DO
+                END IF
+            END IF
+
+            IF TextLen(LEFT$(txt, w)) > panewidth OR w = LEN(txt) THEN
+                IF w = LEN(txt) AND w < iAnzSpalten THEN aw = LEN(txt)
+                IF aw = 0 THEN aw = w
+                IF aw > iAnzSpalten THEN aw = iAnzSpalten
+                linie = LEFT$(txt, aw)
+                txt = MID$(txt, aw + 1)
+                EXIT DO
+            ELSE
+                aw = w
+            END IF
+        LOOP UNTIL LEN(txt) = 0
+
+        'Linie auslesen:
+        FOR i% = 1 TO LEN(linie)
+            iAnzZeichen = iAnzZeichen + 1
+            IF iAnzZeichen = markerStart THEN
+                CurrentLine = echoLineNr
+            END IF
+        NEXT
+
+    'Exit Loop bei:
+    ' - Der Textbuffer 'txt' ist leer!
+    LOOP UNTIL LEN(txt) = 0
+
+    'Cursor ist nach dem Text:
+    IF CurrentLine = 0 THEN
+        CurrentLine = echoLineNr
+    END IF
+
+    IF wishedTopper > 0 THEN
+        topperLine = wishedTopper: wishedTopper = 0
+    ELSE
+        IF topperLine > CurrentLine THEN
+            topperLine = CurrentLine
+            actualizeLines = iAnzZeilen
+            IF iAnzZeilen > 1 THEN
+                zMoveScreen x1, y1, x1 + (iAnzSpalten * 8) - 1, y1 + (iAnzZeilen * 14) - 15, x1, y1 + 14
+            END IF
+        ELSEIF CurrentLine + 1 > topperLine + iAnzZeilen THEN
+            topperLine = CurrentLine - iAnzZeilen + 1
+            actualizeLines = iAnzZeilen
+            IF iAnzZeilen > 1 THEN
+                zMoveScreen x1, y1 + 14, x1 + (iAnzSpalten * 8) - 1, y1 + (iAnzZeilen * 14) - 1, x1, y1
+            END IF
+        END IF
+    END IF
+
+zEditboxWriteText:
+'2. Schreibe alles, was in den sichtbaren Bereich passt:
+
+    'SilentScreen 'ruhiger Bildschirm
+    x = x1
+    y = y1
+    txt = text
+    panewidth = TextLen(SPACE$(iAnzSpalten))
+    leftpane = x
+    txt2 = oldText
+    echoLineNr = 0
+    topperVPos = 1
+    bottomVPos = 0
+    CurrentX = 0
+    iCurOverEnd = True
+    iAnzZeichen = 0
+    IF CurrentLine < topperLine THEN
+        'Alle Zeilen in der aktuellen Ansicht werden aktualisiert
+        topperLine = CurrentLine
+        actualizeLines = iAnzZeilen
+    ELSE
+        actualizeLines = 0
+    END IF
+    InversFarbe = tbfcol
+    Farbe = tbtcol
+
+    DO
+        'holt die nÑchste Zeile:
+        aw = 0
+        echoLineNr = echoLineNr + 1
+        DO
+            w = INSTR(aw + 1, txt, " ")
+            cr = INSTR(aw + 1, txt, crlf) 'Zeilenvorschub & WagenrÅcklauf?
+
+            IF w = 0 THEN w = LEN(txt)
+
+            IF cr > 0 THEN   'Zeilenvorschub & WagenrÅcklauf!
+                IF NOT (TextLen(LEFT$(txt, cr - 1)) > panewidth) THEN
+                    'muss nicht vorher bereits umgebrochen werden?
+                    linie = LEFT$(txt, cr - 1)
+                    txt = MID$(txt, cr + LEN(crlf))
+                    EXIT DO
+                END IF
+            END IF
+
+            IF TextLen(LEFT$(txt, w)) > panewidth OR w = LEN(txt) THEN
+                IF w = LEN(txt) AND w < iAnzSpalten THEN aw = LEN(txt)
+                IF aw = 0 THEN aw = w
+                IF aw > iAnzSpalten THEN aw = iAnzSpalten
+                linie = LEFT$(txt, aw)
+                txt = MID$(txt, aw + 1)
+                EXIT DO
+            ELSE
+                aw = w
+            END IF
+        LOOP UNTIL LEN(txt) = 0
+
+        'holt die nÑchste Zeile von oldtext:
+        aw = 0
+        DO
+            w = INSTR(aw + 1, txt2, " ")
+            cr = INSTR(aw + 1, txt2, crlf) 'Zeilenvorschub & WagenrÅcklauf?
+
+            IF w = 0 THEN w = LEN(txt2)
+
+            IF cr > 0 THEN   'Zeilenvorschub & WagenrÅcklauf!
+                IF NOT (TextLen(LEFT$(txt2, cr - 1)) > panewidth) THEN
+                    'muss nicht vorher bereits umgebrochen werden?
+                    linie2 = LEFT$(txt2, cr - 1)
+                    txt2 = MID$(txt2, cr + LEN(crlf))
+                    EXIT DO
+                END IF
+            END IF
+
+            IF TextLen(LEFT$(txt2, w)) > panewidth OR w = LEN(txt2) THEN
+                IF w = LEN(txt2) AND w < iAnzSpalten THEN aw = LEN(txt2)
+                IF aw = 0 THEN aw = w
+                IF aw > iAnzSpalten THEN aw = iAnzSpalten
+                linie2 = LEFT$(txt2, aw)
+                txt2 = MID$(txt2, aw + 1)
+                EXIT DO
+            ELSE
+                aw = w
+            END IF
+        LOOP UNTIL LEN(txt2) = 0
+
+        'Nur, Linien, die sich im Sichtfenster befinden!
+        IF echoLineNr >= topperLine AND echoLineNr <= topperLine + visibleLines - 1 THEN
+
+            'Hat Linie gewechselt?, oder ist explizit gewÅnscht, diese Linie
+            'neu zu zeichnen!
+            IF linie2 <> linie OR echoLineNr = CurrentLine OR echoLineNr >= CurrentLine AND echoLineNr <= CurrentLine + actualizeLines THEN
+                IF echoLineNr = CurrentLine THEN
+                    CurrentLineLen = LEN(linie)
+                    CurrentLineStart = iAnzZeichen + 1
+                END IF
+                'leeren Text entfernen auf dieser Zeile!
+                LINE (x + TextLen(linie), y)-(x + TextLen(linie) + TextLen(SPACE$(iAnzSpalten - LEN(linie))), y + 13), tbfcol, BF
+                'Text schreiben:
+                zWriteTextXY x, y, linie
+                FOR i% = 1 TO LEN(linie)
+                    iAnzZeichen = iAnzZeichen + 1
+                    IF Mouse.Clicked THEN
+                        IF Mouse.x + 4 <= x + 8 THEN
+                            IF Mouse.x + 4 >= x THEN
+                                IF (Mouse.y + 7) <= y + 14 THEN
+                                    IF (Mouse.y + 7) + 2 >= y THEN
+                                        'Hier ist der Cursor!
+                                        markerStart = iAnzZeichen
+                                    END IF
+                                END IF
+                            END IF
+                        END IF
+                    END IF
+
+                    IF iAnzZeichen = markerStart THEN
+                        CurrentX = x
+                        CurrentY = y
+                        CurrentLine = echoLineNr
+                        iCurOverEnd = False
+                    END IF
+                    x = x + 8
+                NEXT
+
+                'Cursor ist nach dem Text:
+                IF iCurOverEnd THEN
+                    CurrentX = leftpane + TextLen(linie)
+                    CurrentY = y
+                    CurrentLine = echoLineNr
+                    IF echoLineNr = CurrentLine AND iAnzZeichen + 1 < markerStart THEN
+                        CurrentLineLen = LEN(linie)
+                        CurrentLineStart = iAnzZeichen + 1
+                    END IF
+                END IF
+
+            ELSE
+                'linie nicht erneut zeichnen! - Zeichen doch zÑhlen...
+                iAnzZeichen = iAnzZeichen + LEN(linie)
+            END IF
+          
+            x = leftpane
+            y = y + 14
+
+        ELSE
+            'Linie ist nicht im aktuellen Sichtfenster!
+            iAnzZeichen = iAnzZeichen + LEN(linie)
+            'schlÑgt oben an:
+            IF echoLineNr < topperLine THEN
+                topperVPos = topperVPos + LEN(linie)
+            ELSE
+                'schlÑgt unten an!
+                IF bottomVPos = 0 THEN bottomVPos = iAnzZeichen
+            END IF
+        END IF
+   
+    'Exit Loop bei:
+    ' - Linie lÑuft Åber das Sichtfenster hinaus!
+    ' - Der Textbuffer 'txt' ist leer!
+    LOOP UNTIL (LEN(txt) = 0 AND LEN(txt2) = 0)
+   
+    IF bottomVPos = 0 THEN bottomVPos = LEN(text)
+    'text war leer - Cursor jetzt positionieren:
+    IF CurrentX = 0 THEN
+        CurrentX = leftpane
+        CurrentY = y - 14
+    END IF
+
+    IF RIGHT$(text, LEN(crlf)) = crlf AND markerStart > LEN(text) THEN
+        CurrentY = CurrentY + 14
+        CurrentX = leftpane
+    END IF
+
+    'RestoreScreen
+
+    'wenn nur Anzeige aktualisieren gew. -> hier beenden!
+    IF iRefresh THEN GOTO zEditBoxTerminate
+
+    'Cursor zeichnen:
+    FOR y = CurrentY TO CurrentY + 13
+        IF POINT(CurrentX, y) = tbfcol THEN
+            PSET (CurrentX, y), tbtcol
+        ELSE
+            PSET (CurrentX, y), tbfcol
+        END IF
+    NEXT
+    
+    a$ = GetKey(sGroup$)
+    'Cursor lîschen:
+    FOR y = CurrentY TO CurrentY + 13
+        IF POINT(CurrentX, y) = tbfcol THEN
+            PSET (CurrentX, y), tbtcol
+        ELSE
+            PSET (CurrentX, y), tbfcol
+        END IF
+    NEXT
+    IF Mouse.Clicked THEN GOTO zEditBoxTerminate
+
+    oldText = text
+
+    'IF keyb = "enter" THEN keyb = "tab"
+
+    SELECT CASE keyb
+    CASE "event"
+    CASE "tab", "alt", "esc", "enter", "passfocus": GOTO zEditBoxTerminate
+    CASE "pagedown"
+        markerStart = bottomVPos + 1
+        IF markerStart > LEN(text) + 1 THEN markerStart = LEN(text) + 1
+        oldText = ""
+        
+    CASE "pageup"
+        markerStart = topperVPos - 1
+        IF markerStart < 1 THEN markerStart = 1
+        oldText = ""
+
+    CASE "ctrl-right"
+        'Wort nach rechts:
+        FOR i% = markerStart + 1 TO LEN(text) + 1
+            IF MID$(text, i%, 1) = " " THEN EXIT FOR
+        NEXT
+        IF i% > LEN(text) THEN i% = LEN(text) + 1
+        markerStart = i%
+   
+    CASE "ctrl-end"
+        markerStart = LEN(text) + 1
+        oldText = ""
+
+    CASE "ctrl-home"
+        markerStart = 1
+        oldText = ""
+   
+    CASE "ctrl-left"
+        'Wort nach links:
+        FOR i% = markerStart - 1 TO 1 STEP -1
+            IF i% <= 1 OR MID$(text, i%, 1) = " " THEN EXIT FOR
+        NEXT
+        IF i% < 1 THEN i% = 1
+        markerStart = i%
+
+    CASE "home"
+        markerStart = CurrentLineStart
+        merkerEnd = markerStart
+        
+
+    CASE "right"
+        markerStart = markerStart + 1
+        IF markerStart > LEN(text) + 1 THEN
+            markerStart = LEN(text) + 1
+        END IF
+
+    CASE "end"
+        'Line-End:
+        markerStart = CurrentLineStart + CurrentLineLen - 1
+        IF markerStart = LEN(text) THEN
+            markerStart = markerStart + 1
+        END IF
+
+    CASE "up"
+        'Durchschnittliche Linie aufwÑrts:
+        IF markerStart - iAnzSpalten > 1 THEN
+            markerStart = CurrentLineStart - FIX(iAnzSpalten / 2)
+        ELSE
+            markerStart = 1
+        END IF
+
+    CASE "down"
+        'Durchschnittliche Linie runter:
+        IF markerStart + iAnzSpalten <= LEN(text) THEN
+            markerStart = CurrentLineStart + FIX(iAnzSpalten / 2) + CurrentLineLen
+        ELSE
+            markerStart = LEN(text) + 1
+        END IF
+
+    CASE "left"
+        markerStart = markerStart - 1
+        IF markerStart < 1 THEN markerStart = 1
+
+    CASE "insert"
+        InsertMode = True - InsertMode
+
+    CASE "delete"
+        text = LEFT$(text, markerStart - 1) + MID$(text, markerStart + 1)
+
+    CASE "backspace"
+        IF markerStart > 1 THEN
+            text = LEFT$(text, markerStart - 2) + MID$(text, markerStart)
+            markerStart = markerStart - 1
+        END IF
+    CASE ELSE
+        'Anderer Tastendruck:
+        ' -> Buchstaben hinzu! (Die Markierung wird durch Buchstaben ersetzt)
+        IF NOT (iMaxZeichen > 0 AND LEN(text) + LEN(a$) > iMaxZeichen) THEN
+            IF InsertMode THEN
+                text = LEFT$(text, markerStart - 1) + a$ + MID$(text, markerStart + LEN(a$))
+            ELSE
+                text = LEFT$(text, markerStart - 1) + a$ + MID$(text, markerStart)
+            END IF
+            'Die Markierung erlischt!
+            markerStart = markerStart + LEN(a$)
+        END IF
+
+    END SELECT
+
+    GOTO zEditBoxCalculateCursor
+
+zEditBoxTerminate:
+    InversFarbe = 0
+    PutString sName$, text
+    Controls(iCtrl).Value = markerStart
+    MID$(Controls(iCtrl).tag, 3, 2) = MKI$(topperLine)
+END SUB
+
+'Wird ausgefÅhrt, wenn auf ein Steuerelement geklickt wird
+'(Die Maustaste wurde losgelassen...)
+'iCtrl = Die ControlNr
+'iButton = Die Maustaste (1 = links, 2 = rechts, -1 = Doppelclick links)
+SUB zEventClick (iCtrl, iButton)
+
+    tag$ = RTRIM$(Controls(iCtrl).tag)
+
+    SELECT CASE Controls(iCtrl).CtrlType
+    CASE zScrollBar
+        ActiveCtrl = CVI(MID$(tag$, 6, 2))
+
+    CASE zSliderBar, zButton
+        zDrawThisControl iCtrl, False, 0
+
+    CASE zExitFocus
+        keyb = "passfocus"
+
+    CASE zMouseClicker
+        keyb = tag$
+        zDrawThisControl iCtrl, False, 0
+
+    END SELECT
+
+END SUB
+
+'Wird ausgefÅhrt, wenn auf ein Objekt doppelgeklickt wurde.
+SUB zEventDblClick (iCtrl)
+
+    SELECT CASE Controls(iCtrl).CtrlType
+    CASE zListBox, zIconList
+        keyb = "enter"
+    END SELECT
+END SUB
+
+'Wird ausgefÅhrt, wenn ein Mausbutton auf einem Steuerelement
+'heruntergedrÅckt wird.
+'iCtrl = Die ControlNr
+'iButton = Taste 1 = links, 2 = Rechts
+SUB zEventMouseDown (iCtrl, iButton)
+ActiveCtrl = iCtrl
+    x = Controls(iCtrl).x
+    y = Controls(iCtrl).y
+    x2 = Controls(iCtrl).x2
+    y2 = Controls(iCtrl).y2
+    w = Controls(iCtrl).w
+    h = Controls(iCtrl).h
+    Value = Controls(iCtrl).Value
+    tag$ = RTRIM$(Controls(iCtrl).tag)
+
+    SELECT CASE Controls(iCtrl).CtrlType
+    CASE zListBox
+        IF MID$(tag$, 1, 1) = "M" THEN
+            IF iButton = 2 THEN
+                keyb = "esc"
+            ELSE
+                Mouse.Clicked = iButton
+                zDrawThisControl iCtrl, False, 0
+                Mouse.Clicked = 0
+            END IF
+        END IF
+
+    CASE zScrollBar
+      MID$(Controls(iCtrl).tag, 9, 1) = "1"
+      IF (w > 0 AND Mouse.x < x + 12) OR (w = 0 AND Mouse.y < y + 12) THEN
+        Controls(iCtrl).Value = Value - CVI(MID$(tag$, 10, 2))
+        zDrawThisControl iCtrl, False, 0
+        iCtrlParent = CVI(MID$(tag$, 6, 2))
+        RaiseScroll iCtrl, RTRIM$(Controls(iCtrl).caption)
+      ELSEIF (w > 0 AND Mouse.x > x2 - 12) OR (w = 0 AND Mouse.y > y2 - 12) THEN
+        Controls(iCtrl).Value = Value + CVI(MID$(tag$, 10, 2))
+        zDrawThisControl iCtrl, False, 0
+        iCtrlParent = CVI(MID$(tag$, 6, 2))
+        RaiseScroll iCtrl, RTRIM$(Controls(iCtrl).caption)
+      ELSE
+        MID$(Controls(iCtrl).tag, 9, 1) = "0"
+        zEventMouseMove iCtrl, iButton
+        EXIT SUB
+      END IF
+      IF iCtrlParent > 0 THEN
+        ActiveCtrl = iCtrlParent
+        keyb = "passfocus"
+        Controls(iCtrlParent).Value = Controls(iCtrl).Value
+        zDrawThisControl iCtrlParent, 1, 0
+      END IF
+
+    CASE zSliderBar
+      zEventMouseMove iCtrl, iButton
+
+    END SELECT
+
+END SUB
+
+'Wird ausgefÅhrt, wenn mit der Maus Åber ein Steuerelement gefahren wird.
+'iCtrl = die ContrlNr des Steuerelementes
+'iButton = Die gedrÅckte Maustaste (0 = keine, 1 = links, 2 = rechts)
+SUB zEventMouseMove (iCtrl, iButton)
+
+    Mouse.Cursor = 1 'Standard-Cursor!
+
+    x = Controls(iCtrl).x
+    y = Controls(iCtrl).y
+    x2 = Controls(iCtrl).x2
+    y2 = Controls(iCtrl).y2
+    w = Controls(iCtrl).w
+    h = Controls(iCtrl).h
+    Value = Controls(iCtrl).Value
+    tag$ = Controls(iCtrl).tag
+    Typ = Controls(iCtrl).CtrlType
+
+    SELECT CASE Typ
+    CASE zListBox
+        IF MID$(tag$, 1, 1) = "M" AND iButton THEN
+            Mouse.Clicked = True
+            zDrawThisControl iCtrl, False, 0
+            Mouse.Clicked = False
+        END IF
+
+    CASE zSliderBar, zScrollBar
+        IF zMouseDown = iCtrl AND iButton = 1 THEN
+            Min = CVI(MID$(tag$, 2, 2))
+            stp = CVI(MID$(tag$, 10, 2))
+            Max = INT(((CVI(MID$(tag$, 4, 2)) - Min + 1) / stp) * -1) * -1 + 1
+            'Keine Bewegungen akzeptieren, wenn zuvor auf einen der Pfeile
+            'gedrÅckt wurde:
+            IF MID$(Controls(iCtrl).tag, 9, 1) = "1" THEN EXIT SUB
+            IF w > 0 THEN
+                'horizontal:
+                IF Typ = zScrollBar THEN x = x + 12: x2 = x2 - 12
+                nv = (Mouse.x - x)
+                IF nv > x2 - x THEN nv = x2 - x
+                IF nv > 0 THEN
+                    nv = Min + (nv * CLNG((Max - Min)) / (x2 - x))
+                    nv = (nv * stp) - stp + (Value MOD stp)
+                ELSE
+                    nv = Min
+                END IF
+            ELSE
+                'vertikal:
+                IF Typ = zScrollBar THEN y = y + 12: y2 = y2 - 12
+                nv = (Mouse.y - y)
+                IF nv > y2 - y THEN nv = y2 - y
+                IF nv > 0 THEN
+                    nv = Min + (nv * CLNG((Max - Min)) / (y2 - y))
+                    nv = (nv * stp) - stp + (Value MOD stp)
+                ELSE
+                    nv = Min
+                END IF
+            END IF
+            Max = CVI(MID$(tag$, 4, 2))
+            IF nv > Max THEN nv = Max
+            Controls(iCtrl).Value = nv
+            iCtrlParent = CVI(MID$(tag$, 6, 2))
+            IF Typ = zSliderBar THEN
+                zDrawThisControl iCtrl, True, 0
+            END IF
+            IF Value <> nv THEN
+                RaiseScroll iCtrl, RTRIM$(Controls(iCtrl).caption)
+                IF iCtrlParent > 0 THEN
+                    ActiveCtrl = iCtrlParent
+                    keyb = "passfocus"
+                    Controls(iCtrlParent).Value = nv
+                    RaiseScroll iCtrlParent, RTRIM$(Controls(iCtrlParent).caption)
+                END IF
+            END IF
+        END IF
+
+    CASE zEditBox
+        Mouse.Cursor = 2
+
+    END SELECT
+
+END SUB
+
+'Liest die Mauskoordinaten aus
+'b = Status des Mausbuttons
+'x,y = Die Koordinaten der Maus
+SUB zGetMouse (B, x, y)
+IF MouseOn THEN
+  DEF SEG = VARSEG(iMS(0))
+  POKE VARPTR(iMS(0)) + 26, &H33
+  CALL ABSOLUTE(3, B, x, y, VARPTR(iMS(0)))
+ELSE
+  x = Mouse.x
+  y = Mouse.y
+END IF
+END SUB
+
+'Sichert die wichtigsten Variablen, oder setzt sie zurÅck. Beim setzen
+'werden die originalen Variablen auf einen Standardwert gesetzt.
+'iRestore:  False = Die Variablen werden gesichert
+'           True = Die ursprÅnglichen Variablenwerte werden wieder zurÅckgeholt
+'
+SUB zGetOriginalValues (iRestore)
+    SHARED l, t, r, d, TA, cx, cy, im
+    IF iRestore THEN
+        Left = l
+        Top = t
+        Right = r
+        Down = d
+        TextAlignment = TA
+        CurrentX = cx
+        CurrentY = cy
+        InversFarbe = im
+    ELSE
+        l = Left
+        t = Top
+        r = Right
+        d = Down
+        TA = TextAlignment
+        cx = CurrentX
+        cy = CurrentY
+        im = InversFarbe
+        'Standardwerte werden gesetzt:
+        InversFarbe = 0
+        TextAlignment = AlignLeft
+        Left = 2
+        Top = 2
+        Right = 637
+        Down = 347
+        CurrentX = 3
+        CurrentY = 3
+    END IF
+END SUB
+
+'Handelt Klick-Ereignisse des aktiven Standard-Steuerelementes
+'sGroup$ = Die Steuerelemente-Gruppe
+'iChanges = RÅckgabewert: TRUE = Es wurden énderungen vorgenommen.
+SUB zHandleControls (sGroup$, iChanges)
+iChanges = False
+    SELECT CASE Controls(ActiveCtrl).CtrlType
+    CASE zCheckBox
+        'Wert wechselt:
+        Controls(ActiveCtrl).Value = True - Controls(ActiveCtrl).Value
+        zDrawThisControl ActiveCtrl, False, 0
+        iChanges = True
+
+    CASE zRadioButton
+        'alle deaktivieren:
+        FOR i% = 1 TO UBOUND(Controls)
+            IF sGroup$ = "" OR RTRIM$(Controls(i%).group) = sGroup$ THEN
+                IF Controls(i%).CtrlType = zRadioButton THEN
+                    IF Controls(i%).Value = True AND ActiveCtrl <> i% THEN
+                        Controls(i%).Value = False
+                        zDrawThisControl i%, False, 0
+                    ELSEIF ActiveCtrl = i% THEN
+                        Controls(i%).Value = True
+                        zDrawThisControl i%, False, 0
+                        iChanges = True
+                    END IF
+                END IF
+            END IF
+        NEXT
+    END SELECT
+END SUB
+
+'Handler fÅr die Symbolliste
+SUB zIconListHandler (sGroup$, iCtrl, iRefresh)
+DIM Hintergrund(505)
+
+l = Controls(iCtrl).x
+t = Controls(iCtrl).y
+r = Controls(iCtrl).x2
+d = Controls(iCtrl).y2
+
+sName$ = Controls(iCtrl).caption
+
+'aktiviertes Symbol:
+sv = Controls(iCtrl).Value
+
+'altes Sichtfenster:
+otopper = CVI(MID$(Controls(iCtrl).tag, 1, 2))
+
+topperIcon = 1
+bottomIcon = 0
+nr = 0
+
+DO
+IF Value > MaxItems AND MaxItems > 0 THEN Value = MaxItems
+IF Value < 1 THEN Value = 1
+cntMode = False
+IF Value < topperIcon THEN
+    zRessourceGet sName$, topperIcon, "", Wert
+    IF Wert = 0 THEN NoRefresh = True
+    topperIcon = Wert
+    bottomIcon = Wert - 1
+END IF
+
+IF Value > bottomIcon THEN
+    nr = bottomIcon + 1
+    topperIcon = nr
+    IF sv = 0 THEN LINE (l, t)-(r, d), 0, BF
+ELSE
+    nr = topperIcon
+END IF
+Refresh = False
+mc = False
+zIcListAct:
+'x = l + 5
+x = l
+y = t + 45
+
+DO
+IF NoRefresh THEN NoRefresh = False: EXIT DO
+IF nr > MaxItems AND MaxItems > 0 THEN bottomIcon = MaxItems: EXIT DO
+zRessourceGet sName$, nr, a$, 0
+zDoEvents
+IF a$ = "" THEN
+    IF cntMode THEN MaxItems = nr - 1: EXIT DO
+END IF
+name$ = RTRIM$(LEFT$(a$, 12))
+Kennung$ = MID$(a$, 13)
+IF LEN(Kennung$) < 5 THEN x = x + (5 - LEN(Kennung$)) * 8' Kennung$ = Kennung$ + SPACE$(6 - LEN(Kennung$))
+IF x + LEN(Kennung$) * 8 > r THEN x = l: y = y + 65
+sx = x + INT((LEN(Kennung$) * 8 - 41) / 2)
+IF sv = 0 THEN
+    VIEW
+    IF Value = nr AND iCtrl = ActiveCtrl THEN
+        LINE (sx - 2, y - 44)-(sx + 42, y + 1), focol, B, PunkteLinie
+        lx = sx - 2
+        ly = y - 44
+    ELSEIF y < d THEN
+        LINE (sx - 2, y - 44)-(sx + 42, y + 1), 0, B
+    END IF
+END IF
+IF y + 14 > d THEN
+    IF NOT cntMode THEN
+        zRessourceSet sName$, nr, "", topperIcon
+        bottomIcon = nr - 1
+        cntMode = True
+    END IF
+    IF MaxItems > 0 THEN EXIT DO
+ELSE
+IF mc THEN
+  IF Mouse.Clicked AND iCtrl = ActiveCtrl THEN
+    IF Mouse.x >= x AND Mouse.x <= x + LEN(Kennung$) * 8 THEN
+        IF Mouse.y > y - 43 AND Mouse.y <= y + 16 THEN
+            sv = nr
+            Mouse.Clicked = 0
+            mc = 0
+            Value = nr
+            GOTO zIcListAct
+        END IF
+    END IF
+  END IF
+END IF
+  IF (Value < topperIcon OR Value > bottomIcon AND sv = 0) OR Refresh THEN
+    zWriteTextXY x, y + 2, Kennung$
+    IF oldicon$ <> name$ THEN
+    IF RIGHT$(name$, 3) = "ico" THEN
+        VIEW (sx + 3, y - 38)-(sx + 40, y - 1), icbcol, icbcol
+    ELSE
+        VIEW (sx, y - 42)-(sx + 40, y - 1), icbcol, icbcol
+    END IF
+    oldicon$ = name$
+    zShowPicture 0, 0, name$
+
+    i = 0
+        GET (sx, y - 42)-(sx + 40, y - 1), Hintergrund
+    ELSE
+        PUT (sx, y - 42), Hintergrund, PSET
+    END IF
+  END IF
+END IF
+x = x + LEN(Kennung$) * 8 + 16
+nr = nr + 1
+LOOP
+IF sv <> 0 THEN
+    IF sv <> Value AND Value < MaxItems THEN
+        Value = Value + 1
+    ELSE
+        sv = 0
+        nr = topperIcon
+        IF otopper <> topperIcon THEN
+            Refresh = True
+            LINE (l, t)-(r, d), 0, BF
+        END IF
+        mc = True
+        GOTO zIcListAct
+    END IF
+END IF
+IF sv = 0 THEN
+
+'Scrollbar zeichnen:
+sb = CVI(MID$(Controls(iCtrl).tag, 3, 2))
+MID$(Controls(sb).tag, 4, 2) = MKI$(MaxItems)
+Controls(sb).Value = Value
+zDrawThisControl sb, 0, 0
+'Die Scrollbar hat die Schrittweite der aktuellen Seite:
+MID$(Controls(sb).tag, 10, 2) = MKI$(bottomIcon - topperIcon + 1)
+
+Controls(iCtrl).Value = Value
+MID$(Controls(iCtrl).tag, 1, 2) = MKI$(topperIcon)
+
+IF iRefresh THEN GOTO zIcListTerminate
+
+a$ = GetKey(sGroup$)
+
+IF Value <> Controls(iCtrl).Value THEN
+    Value = Controls(iCtrl).Value
+    topperIcon = CVI(MID$(Controls(iCtrl).tag, 1, 2))
+    bottomIcon = MaxItems
+END IF
+
+IF Mouse.Clicked THEN GOTO zIcListTerminate
+
+SELECT CASE a$
+CASE "end"
+    sv = MaxItems
+    kb$ = ""
+CASE "home"
+    sv = 1
+    kb$ = ""
+CASE "pageup"
+    sv = topperIcon - 1
+    IF sv = 0 THEN sv = 1
+CASE "pagedown"
+    sv = bottomIcon + 1
+CASE "left", "up"
+    Value = Value - 1
+    kb$ = ""
+CASE "right", "down"
+    sv = Value + 1
+    kb$ = ""
+CASE "backspace"
+    kb$ = ""
+CASE "event"
+CASE "esc", "enter", "tab", "passfocus", "alt"
+    LINE (lx, ly)-(lx + 44, ly + 45), 0, B
+    EXIT SUB
+CASE ELSE
+    kb$ = kb$ + LCASE$(a$)
+    found = 0
+    FOR i% = Value TO MaxItems
+        zRessourceGet sName$, i%, a$, 0
+        IF LCASE$(MID$(a$, 13, LEN(kb$))) = kb$ THEN found = i%: EXIT FOR
+    NEXT
+    IF found = 0 THEN
+        FOR i% = 1 TO Value - 1
+            zRessourceGet sName$, i%, a$, 0
+            IF LCASE$(MID$(a$, 13, LEN(kb$))) = kb$ THEN found = i%: EXIT FOR
+        NEXT
+    END IF
+    sv = found
+END SELECT
+IF sv > 0 THEN otopper = topperIcon
+IF sv > 0 AND sv < Value THEN
+    topperIcon = 1
+    bottomIcon = 0
+    Value = 1
+    nr = 0
+END IF
+END IF
+LOOP
+
+zIcListTerminate:
+'IF iCtrl <> ActiveCtrl THEN LINE (lx, ly)-(lx + 44, ly + 45), 0, B
+END SUB
+
+'Aktiviert das vorherige Control
+'Es werden dabei nur Controls mit demselben Typ wie das aktive Control
+'beinflusst.
+SUB zLastControl (sGroup$)
+    iOld = ActiveCtrl
+    'Suche nÑchstes Control:
+    FOR z% = ActiveCtrl - 1 TO 1 STEP -1
+        IF RTRIM$(Controls(z%).group) = sGroup$ OR sGroup$ = "" THEN
+            IF Controls(z%).CtrlType = Controls(iOld).CtrlType THEN
+                ActiveCtrl = z%
+                zDrawThisControl iOld, False, 0
+                zDrawThisControl z%, False, 0
+                EXIT FOR
+            END IF
+        END IF
+    NEXT
+END SUB
+
+'Lauscht auf Maus-Events
+'- Setzt den Fokus auf die Caption des Steuerelementes, auf dieses geklickt wurde!
+'- Gibt True zurÅck, falls auf ein Steuerelement geklickt wurde!
+'sGroup$ = Die Steuerelement-Gruppe, deren Mausereignisse abgefragt werden
+'         ("" = alle)
+FUNCTION zLauscheEvents% (sGroup$)
+    IF MouseOn = 0 THEN EXIT FUNCTION
+
+    zLauscheEvents% = False
+    iOverControl = False
+
+    DEF SEG = VARSEG(iMS(0))
+    POKE VARPTR(iMS(0)) + 26, &H33
+    CALL ABSOLUTE(3, B, x, y, VARPTR(iMS(0)))
+
+    IF x + 14 > 639 THEN x2 = x + (639 - x) ELSE x2 = x + 14
+    IF y + 24 > 349 THEN y2 = y + (349 - y) ELSE y2 = y + 24
+
+    IF (Mouse.oldx <> x OR Mouse.oldy <> y AND zMHG(0) > 0) OR Mouse.Cursor < 0 THEN
+        IF Mouse.Cursor < 0 THEN Mouse.Cursor = Mouse.Cursor * -1
+        PUT (Mouse.oldx, Mouse.oldy), zMHG, PSET
+        GET (x, y)-(x2, y2), zMHG
+
+        SELECT CASE Mouse.Cursor
+        CASE 1: DRAW "BM" + STR$(x) + "," + STR$(y) + zMCS
+        CASE 2: DRAW "BM" + STR$(x) + "," + STR$(y) + "c" + STR$(tbtcol) + "r2l1d13l1r2"
+        END SELECT
+    END IF
+
+    Mouse.x = x
+    Mouse.y = y
+
+    IF x <> Mouse.oldx AND y <> Mouse.oldy THEN Mouse.time = TIMER
+
+    IF MouseOn = 2 THEN PUT (x, y), zMHG, PSET: MouseOn = -1: i% = ActiveCtrl: GOTO zLEClick
+
+    'Gehe alle Controls durch, und schaue auf Events:
+    FOR i% = UBOUND(Controls) TO 1 STEP -1
+      IF Controls(i%).CtrlType > 0 THEN
+            IF RTRIM$(Controls(i%).group) = sGroup$ OR sGroup$ = "" THEN
+                IF x >= Controls(i%).x AND x <= Controls(i%).x2 THEN
+                    IF y >= Controls(i%).y AND y <= Controls(i%).y2 THEN
+                        'Maus ist Åber einem Control positioniert!
+                        iOverControl = True
+                        IF zMouseDown = i% AND B = 0 THEN
+                          'Maustaste wurde auf dem Objekt losgelassen!
+                          ' - Click-Ereignis!
+                            PUT (x, y), zMHG, PSET
+                            zMouseDown = 0
+                            ActiveCtrl = i%
+                            Focus = RTRIM$(Controls(i%).caption)
+                            IF Controls(i%).CtrlType > zControlTypeCount THEN
+                                keyb = "nofocus"
+                            END IF
+                            Mouse.Clicked = Mouse.Down
+                            Mouse.Down = 0
+                            zEventClick i%, Mouse.Clicked
+                            'PrÅfe auf Doppelklick:
+                            IF Mouse.time > 0 AND Mouse.Clicked = 1 THEN
+                              IF TIMER - Mouse.time < .8 THEN
+                                IF x > Mouse.ClickX - 2 AND x < Mouse.ClickX + 2 THEN
+                                  IF y > Mouse.ClickY - 2 AND y < Mouse.ClickY + 2 THEN
+zLEClick:
+                                    IF x >= Controls(ActiveCtrl).x AND x <= Controls(ActiveCtrl).x2 THEN
+                                      IF y >= Controls(ActiveCtrl).y AND y <= Controls(ActiveCtrl).y2 THEN
+                                        Mouse.Clicked = -1
+                                        zEventDblClick i%
+                                      END IF
+                                    END IF
+                                  END IF
+                                END IF
+                              END IF
+                            END IF
+                            Mouse.time = TIMER
+                            x = Mouse.x
+                            y = Mouse.y
+                            GET (x, y)-(x2, y2), zMHG
+                            SELECT CASE Mouse.Cursor
+                            CASE 1: DRAW "BM" + STR$(x) + "," + STR$(y) + zMCS
+                            CASE 2: DRAW "BM" + STR$(x) + "," + STR$(y) + "c" + STR$(tbtcol) + "r2l1d13l1r2"
+                            END SELECT
+                            IF Mouse.Clicked THEN zLauscheEvents% = True
+                            Mouse.ClickX = x
+                            Mouse.ClickY = y
+                            GOTO zLEventsTerminate
+                        ELSEIF B > 0 THEN
+                            'Maustaste zum ersten mal auf diesem Objekt
+                            'gedrÅckt!
+                            IF zMouseDown = 0 THEN
+zLEMd:
+                                'Altes Control deaktivieren:
+                                ' -> neues aktivieren!
+                                iOld = ActiveCtrl
+                                IF Controls(i%).CtrlType <= zControlTypeCount THEN
+                                    ActiveCtrl = i%
+                                END IF
+                                PUT (x, y), zMHG, PSET
+                                zMouseDown = i%
+                                Mouse.Down = B
+                                IF NOT Controls(i%).SelfHandler THEN zDrawThisControl i%, True, 0
+                                IF NOT Controls(iOld).SelfHandler AND iOld <> i% THEN zDrawThisControl iOld, False, 0
+                                zEventMouseDown i%, B
+                                x = Mouse.x
+                                y = Mouse.y
+                                GET (x, y)-(x2, y2), zMHG
+                                SELECT CASE Mouse.Cursor
+                                CASE 1: DRAW "BM" + STR$(x) + "," + STR$(y) + zMCS
+                                CASE 2: DRAW "BM" + STR$(x) + "," + STR$(y) + "c" + STR$(tbtcol) + "r2l1d13l1r2"
+                                END SELECT
+                                IF keyb <> "" THEN zLauscheEvents% = True
+                            'Mousedown wiederholen nach .25 Sekunden...
+                            ELSEIF TIMER - Mouse.time > .25 AND Controls(i%).CtrlType = zScrollBar THEN
+                              Mouse.time = TIMER
+                              GOTO zLEMd
+                            END IF
+                            GOTO zLEventsTerminate
+
+                        ELSEIF B = 0 THEN
+                            Mouse.Clicked = 0
+                            'Taste ist nicht gedrÅckt!
+                            IF Mouse.x <> Mouse.oldx OR Mouse.y <> Mouse.oldy THEN
+                                PUT (x, y), zMHG, PSET
+                                zEventMouseMove i%, B
+                                x = Mouse.x
+                                y = Mouse.y
+                                GET (x, y)-(x2, y2), zMHG
+                                SELECT CASE Mouse.Cursor
+                                CASE 1: DRAW "BM" + STR$(x) + "," + STR$(y) + zMCS
+                                CASE 2: DRAW "BM" + STR$(x) + "," + STR$(y) + "c" + STR$(tbtcol) + "r2l1d13l1r2"
+                                END SELECT
+                            ELSE
+                              IF TIMER - Mouse.time > 1 THEN
+                                RaiseToolTipText i%
+                              END IF
+                            END IF
+                        END IF
+                        'Nur das oberste Control wird berÅcksichtigt!
+                        EXIT FOR
+                    END IF
+                END IF
+            END IF
+        END IF
+    NEXT
+
+zLEventsTerminate:
+    IF NOT iOverControl THEN Mouse.Cursor = 1 'Standard
+    IF B = 0 THEN
+        Mouse.Down = 0
+        IF zMouseDown > 0 THEN
+            'Control war angeklickt! -> wieder un-angeklickt anzeigen:
+            PUT (x, y), zMHG, PSET
+            zDrawThisControl zMouseDown, False, 0
+            GET (x, y)-(x2, y2), zMHG
+            SELECT CASE Mouse.Cursor
+            CASE 1: DRAW "BM" + STR$(x) + "," + STR$(y) + zMCS
+            CASE 2: DRAW "BM" + STR$(x) + "," + STR$(y) + "c" + STR$(tbtcol) + "r2l1d13l1r2"
+            END SELECT
+            zMouseDown = 0
+        END IF
+    ELSE
+        'Control ziehen und ablegen... (Mousemove mit gedrÅckter Taste)
+        IF (x <> Mouse.oldx OR y <> Mouse.oldy) AND zMouseDown > 0 THEN
+            PUT (x, y), zMHG, PSET
+            zEventMouseMove zMouseDown, B
+            GET (x, y)-(x2, y2), zMHG
+            SELECT CASE Mouse.Cursor
+            CASE 1: DRAW "BM" + STR$(x) + "," + STR$(y) + zMCS
+            CASE 2: DRAW "BM" + STR$(x) + "," + STR$(y) + "c" + STR$(tbtcol) + "r2l1d13l1r2"
+            END SELECT
+            IF keyb <> "" THEN zLauscheEvents% = True
+        END IF
+    END IF
+    Mouse.oldx = x
+    Mouse.oldy = y
+END FUNCTION
+
+SUB zListboxHandler (sGroup$, iCtrl, x, y, x2, y2, iAnzSpalten, iAnzZeilen, iRefreshOnly)
+
+DIM sName$, Value
+
+'Der markierte Eintrag:
+Value = Controls(iCtrl).Value
+
+'Der Controlname:
+sName$ = Controls(iCtrl).caption
+
+'Checked:
+IF MID$(Controls(iCtrl).tag, 2, 1) = "C" THEN iCheckBoxes = True
+
+'MenuStyle:
+MenuStyle = MID$(Controls(iCtrl).tag, 1, 1) = "M"
+
+sb = CVI(MID$(Controls(iCtrl).tag, 3, 2))
+MaxItems = CVI(MID$(Controls(sb).tag, 4, 2))
+
+zListBoxReDraw:
+
+IF Value <= 0 THEN Value = 1
+IF Value > MaxItems AND MaxItems > 0 THEN Value = MaxItems
+
+iTopvisible = (FIX((Value - 1) / iAnzZeilen) * iAnzZeilen) + 1
+iDownVisible = iTopvisible + iAnzZeilen - 1
+
+IF iCtrl = ActiveCtrl AND Mouse.Clicked THEN vstop = True ELSE vstop = False
+
+'SilentScreen
+
+ytop = 2
+z% = 0
+a$ = CHR$(0)
+DO
+    z% = z% + 1
+    zDoEvents
+    IF z% >= iTopvisible AND z% <= iDownVisible THEN
+        zRessourceGet sName$, z%, a$, checked
+        IF a$ <> "" THEN
+        IF a$ <> "-" THEN a$ = a$ + SPACE$(iAnzSpalten - LEN(a$))
+            IF INSTR(a$, crlf) > 0 THEN zReplace a$, crlf, "  "
+            'Ist Eintrag markiert?
+zListBoxHandlerZeigeDiesen:
+            IF iCtrl = ActiveCtrl AND Mouse.Clicked THEN
+                IF Mouse.y >= y + ytop AND Mouse.y <= y + ytop + 13 THEN
+                    IF Mouse.x > x AND Mouse.x <= x2 THEN
+                        Value = z%
+                        vstop = False
+                        IF NOT iRefreshOnly AND iCheckBoxes AND Mouse.x < x + 17 THEN
+                            'CheckBox wurde angeklickt
+                            zRessourceSet sName$, z%, "", AutoVal
+                            checked = True - checked
+                        END IF
+                    END IF
+                END IF
+            END IF
+            IF z% = Value AND a$ <> "-" AND NOT vstop THEN
+                Farbe = mtcol
+                IF (NOT iRefreshOnly AND NOT MenuStyle) OR iCtrl = ActiveCtrl THEN
+                    InversFarbe = lbacol
+                    LINE (x + iAnzSpalten * 8, y + ytop)-(x2 - 2, y + ytop + 13), InversFarbe, BF
+                ELSE
+                    InversFarbe = lbicol
+                    LINE (x + iAnzSpalten * 8, y + ytop)-(x2 - 2, y + ytop + 13), InversFarbe, BF
+                END IF
+            ELSE
+                InversFarbe = 0
+                Farbe = tcol
+                LINE (x + iAnzSpalten * 8, y + ytop)-(x2 - 2, y + ytop + 13), 0, BF
+            END IF
+            IF INSTR(a$, CHR$(0)) > 0 THEN
+                a$ = LEFT$(a$, INSTR(a$, CHR$(0)) - 1) + MID$(a$, INSTR(a$, CHR$(0)) + 1)
+            END IF
+            IF iCheckBoxes THEN a$ = "  " + a$
+            IF a$ <> "-" THEN
+              zWriteTextXY x + 2, y + ytop, LEFT$(a$, iAnzSpalten)
+            ELSE
+              LINE (x + 2, y + ytop + 7)-(x2 - 2, y + ytop + 7), Farbe
+            END IF
+            COLOR Farbe
+            IF iCheckBoxes THEN
+                IF checked = True THEN
+                    LINE (x + 3, y + ytop + 1)-STEP(11, 11), , B
+                    LINE (x + 3, y + ytop + 1)-STEP(11, 11)
+                    LINE (x + 3, y + ytop + 12)-STEP(11, -11)
+                ELSEIF checked = False THEN
+                    LINE (x + 3, y + ytop + 1)-STEP(11, 11), , B
+                END IF
+            END IF
+            ytop = ytop + 14
+            InversFarbe = 0
+        END IF
+    ELSEIF MaxItems = 0 THEN
+        zRessourceGet sName$, z%, a$, checked
+    END IF
+LOOP UNTIL (z% > iDownVisible AND MaxItems > 0) OR (MaxItems = 0 AND a$ = "")
+IF MaxItems = 0 THEN MaxItems = z% - 1
+
+IF y2 - (y + ytop) > 1 THEN
+  LINE (x + 2, y + ytop)-(x2 - 2, y2 - 2), lbfcol, BF
+END IF
+
+'Scrollbar zeichnen:
+MID$(Controls(sb).tag, 4, 2) = MKI$(MaxItems)
+Controls(sb).Value = Value
+zDrawThisControl sb, 0, 0
+
+'RestoreScreen
+IF iRefreshOnly THEN
+    'Value zurÅckspeichern:
+    Controls(iCtrl).Value = Value
+    EXIT SUB
+END IF
+
+Controls(iCtrl).Value = Value
+
+DateiStatus
+
+a$ = GetKey(sGroup$)
+
+'Doppelclick bei Checkboxen nicht zulassen:
+IF Mouse.Clicked = -1 AND iCheckBoxes THEN a$ = "insert"
+
+Value = Controls(iCtrl).Value
+
+IF Mouse.Clicked = 2 AND ActiveCtrl = iCtrl THEN RaisePopUpMenu iCtrl
+
+IF Mouse.Clicked > 0 THEN
+    IF ActiveCtrl = iCtrl AND MenuStyle THEN
+        IF keyb <> "esc" THEN keyb = "enter"
+        zRessourceGet sName$, Value, a$, 0
+        IF a$ <> "-" THEN GOTO zListBoxTerminate
+    ELSE
+        GOTO zListBoxTerminate
+    END IF
+END IF
+
+IF a$ = "up" AND MenuStyle AND Value = 1 THEN keyb = "end"
+
+dir = 1
+SELECT CASE keyb
+CASE "pageup"
+    keybuffer$ = ""
+    Value = Value - iAnzZeilen
+    dir = 0
+CASE "pagedown"
+    keybuffer$ = ""
+    Value = Value + iAnzZeilen
+CASE "home"
+    keybuffer$ = ""
+    Value = 0
+CASE "end"
+    keybuffer$ = ""
+    Value = MaxItems
+CASE "up"
+    keybuffer$ = ""
+    Value = Value - 1
+    dir = 0
+CASE "down"
+    keybuffer$ = ""
+    Value = Value + 1
+CASE "tab", "alt", "esc", "enter", "passfocus"
+    IF ActiveCtrl = iCtrl THEN EXIT SUB
+    GOTO zListBoxTerminate
+CASE "backspace"
+    keybuffer$ = ""
+CASE "insert"
+    zRessourceSet sName$, Value, "", AutoVal
+    Value = Value + 1
+CASE "event"
+CASE ELSE
+    IF keybuffer$ = "" AND keyb = " " AND iCheckBoxes THEN
+        zRessourceSet sName$, Value, "", AutoVal
+    ELSE
+        keybuffer$ = keybuffer$ + LCASE$(a$)
+        found = False
+        FOR i% = Value TO MaxItems
+            zRessourceGet sName$, i%, a$, 0
+            IF LCASE$(LEFT$(a$, LEN(keybuffer$))) = keybuffer$ THEN Value = i%: found = True: EXIT FOR
+        NEXT
+        IF NOT found THEN
+            FOR i% = 1 TO Value - 1
+                zRessourceGet sName$, i%, a$, 0
+                IF LCASE$(LEFT$(a$, LEN(keybuffer$))) = keybuffer$ THEN Value = i%: found = True: EXIT FOR
+            NEXT
+        END IF
+        IF keyb = " " AND NOT found AND iCheckBoxes THEN keybuffer$ = "": zRessourceSet sName$, Value, "", AutoVal
+    END IF
+END SELECT
+
+zRessourceGet sName$, Value, a$, checked
+IF a$ = "-" THEN
+    IF dir = 1 THEN Value = Value + 1 ELSE Value = Value - 1
+END IF
+
+GOTO zListBoxReDraw
+
+zListBoxTerminate:
+iRefreshOnly = True
+iCtrl = 0
+GOTO zListBoxReDraw
+
+END SUB
+
+'Bewegt einen Bildbereich von einem Ort an den anderen
+'x1,y1,x2,y2 = Die Koordinaten des zu verschiebenden Bildbereiches
+'toX,toY = Die Koordinaten, wo der Bildbereich hinkommen soll.
+SUB zMoveScreen (x1, y1, x2, y2, ToX, ToY)
+
+DIM Groesse AS LONG
+    IF y1 > y2 THEN SWAP y1, y2
+    IF x1 > x2 THEN SWAP x1, y2
+    Groesse = 4 + INT(((PMAP(x2, 0) - PMAP(x1, 0) + 1) * (1) + 7) / 8) * 2 * (PMAP(y2, 1) - PMAP(y1, 1) + 1)
+    DIM background(Groesse)
+    GET (x1, y1)-(x2, y2), background
+    PUT (ToX, ToY), background, PSET
+    REDIM background(0)
+
+END SUB
+
+'Aktiviert das nÑchste Control
+'Es werden dabei nur Controls mit demselben Typ wie das aktive Control
+'beinflusst.
+SUB zNextCtrl (sGroup$)
+    iOld = ActiveCtrl
+    'Suche nÑchstes Control:
+    FOR z% = ActiveCtrl + 1 TO UBOUND(Controls)
+        IF RTRIM$(Controls(z%).group) = sGroup$ OR sGroup$ = "" THEN
+            IF Controls(z%).CtrlType = Controls(iOld).CtrlType THEN
+                ActiveCtrl = z%
+                zDrawThisControl iOld, False, 0
+                zDrawThisControl z%, False, 0
+                EXIT FOR
+            END IF
+        END IF
+    NEXT
+END SUB
+
+DEFSNG A-Z
+'Ersetzt im text$ den Ausdruck find$ durch den Ausdruck replce$
+SUB zReplace (text$, find$, replce$)
+    DO
+        i = i + 1
+        IF MID$(text$, i, LEN(find$)) = find$ THEN
+            text$ = LEFT$(text$, i - 1) + replce$ + MID$(text$, i + LEN(find$))
+            i = i + LEN(find$)
+        END IF
+    LOOP UNTIL i > LEN(text$)
+END SUB
+
+DEFINT A-Z
+'Liest den Text und den Wert einer Ressource aus
+'sGroup$ = Die Ressourcengruppe
+'index = Der Index der Ressource, die abgerufen werden soll
+'text$ = RÅckgabewert fÅr den Text
+'value = RÅckgabewert fÅr den Wert
+SUB zRessourceGet (sGroup$, Index, text$, Value)
+SHARED zoldsgroup AS STRING * 8
+    text$ = ""
+    Value = 0
+    DIM rsc AS zRessourceType
+    IF RTRIM$(zoldsgroup) <> RTRIM$(sGroup$) OR LOC(RscFile) < 0 THEN
+        CLOSE RscFile
+        OPEN tempdir + RTRIM$(sGroup$) + ".rs~" FOR BINARY AS RscFile LEN = LEN(rsc)
+        zoldsgroup = sGroup$
+    END IF
+    GET RscFile, (Index - 1) * LEN(rsc) + 1, rsc
+    IF ASC(MID$(rsc.text, 1, 1)) > 0 THEN text$ = RTRIM$(rsc.text)
+    Value = rsc.Value
+END SUB
+
+'fÅgt eine Ressource hinzu. Siehe auch: ->zRessourceGet
+'sGroup$ = Die Ressourcengruppe, zu der der Eintrag gehîrt. (max 8 Zeichen)
+'index = Der Index, an dessen Position der Eintrag gespeichert werden soll (>0)
+'sText = Der Text, der hinzugefÅgt werden soll. (max 80 Zeichen)
+'value = Der Wert, der der Ressource zugewiesen werden soll.
+'Wichtig:
+'-Falls Value auf AutoVal gesetzt wird, so wird Value von False (0) auf True
+' (-1) gesetzt und umgekehrt.
+'-Falls text$ = "", dann wird der alte Text belassen, und nur der Value auf
+' den neuen Wert gesetzt.
+SUB zRessourceSet (sGroup$, Index, text$, Value)
+SHARED zoldsgroup AS STRING * 8
+    IF Index < 1 THEN Dialog "UngÅltiger Index: " + STR$(Index)
+    'Ressourcen in File speichern:
+    DIM rsc AS zRessourceType
+    IF RTRIM$(zoldsgroup) <> RTRIM$(sGroup$) OR LOC(RscFile) < 0 THEN
+        CLOSE RscFile
+        OPEN tempdir + RTRIM$(sGroup$) + ".rs~" FOR BINARY AS RscFile LEN = LEN(rsc)
+        zoldsgroup = sGroup$
+    END IF
+    IF LEN(text$) = 0 OR Value = AutoVal THEN
+      GET RscFile, (Index - 1) * LEN(rsc) + 1, rsc
+    END IF
+    IF Value = AutoVal THEN Value = True - rsc.Value
+    rsc.Value = Value
+    IF LEN(text$) > 0 THEN rsc.text = text$
+    PUT RscFile, (Index - 1) * LEN(rsc) + 1, rsc
+END SUB
+
+'Setzt einen Farbwert der Farbpalette auf einen bestimmten RGB-Wert.
+'slot% = Ein Farbwert von 0 - 15
+'r%, g%, b% = Der Farbwert in RGB
+SUB zRGBPalette (slot%, r%, g%, B%)
+
+SELECT CASE slot%
+    CASE IS <= 5: s% = slot%
+    CASE 6: s% = 20
+    CASE 7: s% = 7
+    CASE IS >= 8: s% = 48 + slot%
+END SELECT
+
+'Farben hineinschreiben:
+    OUT &H3C8, s%
+    OUT &H3C9, r%
+    OUT &H3C9, g%
+    OUT &H3C9, B%
+
+END SUB
+
+SUB zScreenSaver
+'Sternenfeld Bildschirmschoner
+'Geschrieben von Urs Langmeier
+PCOPY 0, 1
+
+zGetMouse B, x, y
+IF B <> 0 THEN EXIT SUB
+
+DIM stars(100) AS startype
+'Sterne setzen:
+FOR i% = 1 TO UBOUND(stars)
+    x% = INT(RND * 639)
+    y% = INT(RND * 349)
+    col% = 15
+    stars(i%).x = x%
+    stars(i%).y = y%
+    stars(i%).col = col%
+NEXT
+CLS
+COLOR , 0
+DO
+    nz! = TIMER + .1
+    'Sterne zeichnen:
+    FOR i% = 1 TO UBOUND(stars)
+        IF stars(i%).col <> 0 THEN
+            WHILE stars(i%).x > 315 AND stars(i%).x < 325 AND stars(i%).y > 170 AND stars(i%).y < 180
+                stars(i%).x = INT(RND * 639)
+                stars(i%).y = INT(RND * 349)
+            WEND
+
+            'alte Position Åbermalen:
+            LINE ((stars(i%).x - 320) / 1.1 + 320 - stars(i%).float - 1, (stars(i%).y - 175) / 1.1 + 175 - stars(i%).float - 1)-((stars(i%).x - 320) / 1.1 + 320 + stars(i%).float + 1, (stars(i%).y - 175) / 1.1 + 175 + stars(i%).float + 1), 0, BF
+
+            LINE (stars(i%).x, stars(i%).y - stars(i%).float)-(stars(i%).x, stars(i%).y + stars(i%).float), stars(i%).col
+            LINE (stars(i%).x - stars(i%).float, stars(i%).y)-(stars(i%).x + stars(i%).float, stars(i%).y), stars(i%).col
+
+            LINE (stars(i%).x + (stars(i%).float / 1.5), stars(i%).y + stars(i%).float / 1.5)-(stars(i%).x - stars(i%).float / 1.5, stars(i%).y - stars(i%).float / 1.5), stars(i%).col
+            LINE (stars(i%).x - stars(i%).float / 1.5, stars(i%).y + stars(i%).float / 1.5)-(stars(i%).x + stars(i%).float / 1.5, stars(i%).y - stars(i%).float / 1.5), stars(i%).col
+        END IF
+    NEXT
+
+    'Sterne verschieben:
+    FOR i% = 1 TO UBOUND(stars)
+        IF stars(i%).col <> 0 THEN
+            stars(i%).x = (stars(i%).x - 320) * 1.1 + 320
+            stars(i%).y = (stars(i%).y - 175) * 1.1 + 175
+            stars(i%).float = stars(i%).float + .1
+            SELECT CASE stars(i%).x
+            CASE IS > 639, IS < 0
+                'alte Position Åbermalen:
+                LINE ((stars(i%).x - 320) / 1.1 + 320 - stars(i%).float - 1, (stars(i%).y - 175) / 1.1 + 175 - stars(i%).float - 1)-((stars(i%).x - 320) / 1.1 + 320 + stars(i%).float + 1, (stars(i%).y - 175) / 1.1 + 175 + stars(i%).float + 1), 0, BF
+
+                x% = INT(RND * 639)
+                y% = INT(RND * 349)
+                col% = 15
+                stars(i%).x = x%
+                stars(i%).y = y%
+                stars(i%).col = col%
+                stars(i%).float = 0
+            END SELECT
+            SELECT CASE stars(i%).y
+            CASE IS > 349, IS < 0
+                'alte Position Åbermalen:
+                LINE ((stars(i%).x - 320) / 1.1 + 320 - stars(i%).float - 1, (stars(i%).y - 175) / 1.1 + 175 - stars(i%).float - 1)-((stars(i%).x - 320) / 1.1 + 320 + stars(i%).float + 1, (stars(i%).y - 175) / 1.1 + 175 + stars(i%).float + 1), 0, BF
+
+                x% = INT(RND * 639)
+                y% = INT(RND * 349)
+                col% = 15
+                stars(i%).x = x%
+                stars(i%).y = y%
+                stars(i%).col = col%
+                stars(i%).float = 0
+            END SELECT
+
+        END IF
+    NEXT
+    DO WHILE TIMER < nz!: LOOP
+
+    zGetMouse B, nx, ny
+LOOP UNTIL INKEY$ <> "" OR (nx <> Mouse.x) OR B <> 0 OR (ny <> Mouse.y)
+
+PCOPY 1, 0
+COLOR Farbe, bcol
+END SUB
+
+'öbergibt das Handeln eines Controls an eine externe Prozedur
+'FÅr aufwÑndige Controls...
+'sGroup$ = Die aktive Steuerelement-Gruppe
+'iCtrlType = Der Typ des Steuerelementes
+FUNCTION zSelfHandleControl (sGroup$, iCtrlType)
+
+DIM text AS STRING
+
+    i% = ActiveCtrl
+    x = Controls(i%).x
+    y = Controls(i%).y
+    x2 = Controls(i%).x2
+    y2 = Controls(i%).y2
+    w = Controls(i%).w
+    h = Controls(i%).h
+    cap$ = Controls(i%).caption
+    Value = Controls(i%).Value
+    zSelfHandleControl = False
+
+    SELECT CASE iCtrlType
+    CASE zIconList
+        zIconListHandler sGroup$, i%, False
+        zSelfHandleControl = True
+
+    CASE zListBox
+        zListboxHandler sGroup$, i%, x, y, x2, y2, w, h, False
+        zSelfHandleControl = True
+
+    CASE zEditBox
+        zEditBoxHandler sGroup$, cap$, i%, x + 3, y + 1, x2, y2, w, h, text, False
+        zSelfHandleControl = True
+
+    END SELECT
+
+END FUNCTION
+
+'Legt die Datei fÅr den zukÅnftigen Mousecursor fest.
+'sCursor$ = Der Cursor der Maus (*.cur-Datei im LaOS-Hauptverzeichnis)
+'Wichtig:
+'Ein Mauscursor hat folgende Abmessung: Maximal 15*24 Pixels
+SUB zSetMouseCursor (sCursor$)
+DIM l
+
+    'Weg hier, falls Maus deaktiviert ist!
+    IF NOT MouseOn THEN EXIT SUB
+
+    Mouse.oldx = Mouse.x
+    Mouse.oldy = Mouse.y
+    Mouse.Cursor = 1
+
+    IF LEN(sCursor$) > 0 THEN
+        'lade Mousecursor:
+        f% = FREEFILE
+        OPEN laosdir + sCursor$ + ".cur" FOR BINARY AS f%
+        GET f%, 1, l
+        zMCS = SPACE$(l)
+        GET f%, , zMCS
+        CLOSE f%
+    END IF
+
+    'Muss Maschinenprogramm erst geladen werden?
+    IF iMS(0) = 0 THEN
+        RESTORE zMouseData
+        DEF SEG = VARSEG(iMS(0))
+
+        FOR i% = 0 TO 99
+         READ Byte$
+         IF Byte$ = "-" THEN EXIT FOR
+         POKE VARPTR(iMS(0)) + i%, VAL("&H" + Byte$)
+        NEXT i%
+    END IF
+
+    DEF SEG = VARSEG(iMS(0))
+
+    'Maustreiber initialisieren:
+    POKE VARPTR(iMS(0)) + 26, &H33
+    CALL ABSOLUTE(0, 0, 0, 0, VARPTR(iMS(0)))
+
+
+    'Mauszeiger unsichtbar:
+    POKE VARPTR(iMS(0)) + 26, &H33
+    CALL ABSOLUTE(2, 0, 0, 0, VARPTR(iMS(0)))
+
+    'Maustempo setzen:
+    POKE VARPTR(iMS(0)) + 26, &H33
+    CALL ABSOLUTE(4, 0, Mouse.Speed, Mouse.Speed * 2, VARPTR(iMS(0)))
+
+    'Mauscursor setzen:
+    POKE VARPTR(iMS(0)) + 26, &H33
+    CALL ABSOLUTE(4, 0, Mouse.x, Mouse.y, VARPTR(iMS(0)))
+
+END SUB
+
+'setzt die Originalpalette
+SUB zSetOrigPalette
+    RESTORE zColors
+    FOR i% = 0 TO 15
+        READ r, g, B
+        zRGBPalette i%, r, g, B
+    NEXT
+END SUB
+
+'Zeigt ein beliebiges Bild an.
+'UnterstÅtzt werden die folgenden Formate:
+'- *.ICO (Windows Symbole)
+'- *.LDS (LaOS Draw Script)
+'- *.LSB (LaOS LDS Symbole)
+'xx,yy = Die Koordinaten geben an, wo das Bild gezeichnet wird.
+'sFileName = Der Dateiname der Grafik
+SUB zShowPicture (xx, yy, sFileName AS STRING)
+
+    f% = FREEFILE
+    sFileName = RTRIM$(sFileName)
+
+    SELECT CASE LCASE$(RIGHT$(sFileName, 4))
+    CASE ".icn"
+      IF NOT exists(sFileName) THEN GOTO zSpnf
+      DIM ico(0 TO 505)
+      DEF SEG = VARSEG(ico(0))
+      BLOAD sFileName, VARPTR(ico(0))
+      LINE (xx, yy)-STEP(40, 41), 0, BF
+      PUT (xx, yy), ico, XOR
+
+    CASE ".lds", ".lsb"
+zSpnf:
+        DIM Befehle(5) AS SINGLE
+
+        OPEN sFileName FOR BINARY AS f%: GET f%, 1, Befehle(0)
+        IF Befehle(0) = 0 THEN CLOSE f%: OPEN laosdir + "icons\" + "sys.lsb" FOR BINARY AS f%
+        SEEK f%, 1
+        DO
+        FOR nr = 0 TO 5
+        GET f%, , Befehle(nr)
+        NEXT
+        SELECT CASE CHR$(Befehle(0))
+        CASE "p": PSET (Befehle(1) + xx, Befehle(2) + yy), Befehle(3)
+        CASE "m": PAINT (Befehle(1) + xx, Befehle(2) + yy), Befehle(3), Befehle(4)
+        CASE "l": LINE (Befehle(1) + xx, Befehle(2) + yy)-(Befehle(3) + xx, Befehle(4) + yy), Befehle(5)
+        CASE "r": LINE (Befehle(1) + xx, Befehle(2) + yy)-(Befehle(3) + xx, Befehle(4) + yy), Befehle(5), B
+        CASE "b": LINE (Befehle(1) + xx, Befehle(2) + yy)-(Befehle(3) + xx, Befehle(4) + yy), Befehle(5), BF
+        CASE "k": CIRCLE (Befehle(1) + xx, Befehle(2) + yy), Befehle(3), Befehle(4), , , Befehle(5)
+        END SELECT
+        LOOP WHILE Befehle(0) <> 0
+
+    CASE ".ico"
+        OPEN sFileName FOR BINARY AS f%
+
+        SEEK #f%, 127
+        B$ = " "
+        GET #f%, , B$
+        IF ASC(B$) <> 0 THEN
+            'Neue Windows-Icons
+            SEEK #f%, 143
+        ELSE
+            'Alte Windows-Icons
+            SEEK #f%, 127
+        END IF
+        FOR y = 1 TO 32
+            FOR x = 1 TO 32 STEP 2
+                B$ = " "
+                GET #f%, , B$
+                col2 = ASC(B$) MOD 16
+                col1 = (ASC(B$) - col2) / 16
+                SELECT CASE col1
+                CASE 11: col1 = 14
+                CASE 10: col1 = 12
+                CASE 14: col1 = 11
+                CASE 12: col1 = 9
+                CASE 8: col1 = 6 '0 8
+                CASE 3: col1 = 4
+                CASE 1: col1 = 4
+                CASE 6: col1 = 3
+                CASE 4: col1 = 1
+                CASE 0: col1 = 8 '0
+                END SELECT
+                SELECT CASE col2
+                CASE 11: col2 = 14
+                CASE 10: col2 = 12
+                CASE 14: col2 = 11
+                CASE 12: col2 = 9
+                CASE 8: col2 = 6 '0 '8
+                CASE 3: col2 = 4
+                CASE 1: col2 = 4
+                CASE 6: col2 = 3
+                CASE 4: col2 = 1
+                CASE 0: col2 = 8 '0
+                END SELECT
+
+                IF NOT ((ASC(B$) - col2) / 16 = -.5 AND ASC(B$) MOD 16 = 0) THEN
+                    PSET (x + 1, 32 - y), col2
+                    PSET (x, 32 - y), col1
+                END IF
+            NEXT x
+        NEXT y
+    CASE ELSE
+        GOTO zSpnf
+    END SELECT
+
+zShowPictureTerminate:
+    CLOSE f%
+    VIEW
+
+END SUB
+
+'Handler fÅr das Zeitereignis
+'Nr = die Nr. des Ereignisses
+SUB zTimeEreignisHandler (nr)
+
+    of = Farbe
+    om = InversFarbe
+
+    SELECT CASE nr
+    CASE 0  'Bildschirmschoner
+        zScreenSaver
+
+    CASE 1  'Zeit aktualisieren
+        IF SilentScreenMode THEN EXIT SUB
+        IF zDebugMode THEN
+            LINE (2, 332)-(637, 347), btscol, BF
+            LINE (2, 332)-(637, 332), Farbe
+            Farbe = bttcol
+            InversFarbe = btscol
+            
+            zWriteTextXY 3, 333, "Maximale Datenfeldgrîsse:" + STR$(FRE(-1)) + " Stack:" + STR$(FRE(-2)) + " Zeichenfolgen:" + STR$(FRE(0))
+        END IF
+        IF zShowTimeExitBox THEN
+          InversFarbe = 0
+          y = 2 + 2
+          x = 573
+          IF Mouse.x >= x AND Mouse.x <= x + 43 THEN
+            IF Mouse.y >= y AND Mouse.y < y + 14 THEN
+              zToolTipText SysDate(DATE$)
+              EXIT SUB
+            END IF
+          END IF
+          Farbe = tcol
+          LINE (x + 1, y + 1)-STEP(41, y + 8), 0, B
+          zWriteTextXY x + 2, y, LEFT$(TIME$, 5)
+          LINE (x, y)-STEP(43, y + 9), btrcol, B
+        END IF
+    END SELECT
+
+    Farbe = of
+    InversFarbe = om
+
+END SUB
+
+'Ruft ein Tooltiptext auf
+'Text$  Der Text, der erscheinen soll...
+'Tipp:
+'In der SUB RaiseToolTipText kann fÅr ihre Controls ein Tooltiptext
+'hinzugefÅgt werden.
+SUB zToolTipText (text$)
+
+  zGetOriginalValues False
+  x = Mouse.x + 5
+  y = Mouse.y + 5
+  x2 = x + TextWidth(text$) + 4
+  y2 = y + TextHeight(text$) + 2
+  zGetOriginalValues True
+
+  IF x2 > 637 THEN x = x + (637 - x2): x2 = x2 + (637 - x2)
+  IF y2 > 347 THEN y = y + (347 - y2): y2 = y2 + (347 - y2)
+
+  g = 4 + INT(((PMAP(x2, 0) - PMAP(x, 0) + 1) * (1) + 7) / 8) * 2 * (PMAP(y2, 1) - PMAP(y, 1) + 1)
+  DIM bg(g)
+  GET (x, y)-(x2, y2), bg
+ 
+  Farbe = tttcol
+  LINE (x, y)-(x2, y2), ttfcol, BF
+  LINE (x, y)-(x2, y2), ttrcol, B
+  Label x + 1, y + 1, x2, y2, text$, 0, ttfcol
+
+  ax = Mouse.x
+  ay = Mouse.y
+ 
+  DO
+  LOOP UNTIL INKEY$ = ""
+  DEF SEG = VARSEG(iMS(0))
+  DO
+    zGetMouse B, nx, ny
+    k = INP(&H60)
+  LOOP UNTIL nx <> ax OR B <> 0 OR ny <> ay OR (k < 128 AND k > 0)
+
+  PUT (x, y), bg, PSET
+  Mouse.time = TIMER
+
+END SUB
+
+'Schreibt einen Text ohne BerÅcksichtigung der Bereichsbegrenzungen und ohne
+'Zeilenumbruch! Siehe auch ->Echo und ->EchoXY
+'text = Text
+'x, y = Die Position
+SUB zWriteTextXY (x, y, text AS STRING)
+
+IF LEN(text) = 0 THEN EXIT SUB
+
+DIM g AS LONG
+
+    IF x + TextLen(text) > 639 THEN x2 = 639 ELSE x2 = x + TextLen(text) - 1
+    g = 4 + INT(((PMAP(x2, 0) - PMAP(x, 0) + 1) * (1) + 7) / 8) * 2 * (PMAP(y + 14, 1) - PMAP(y, 1) + 1)
+    DIM fontchar(g)
+    SCREEN 9, , 1, 0
+    IF SilentScreenMode THEN
+        DIM oldchar(g)
+        GET (0, 0)-(x2 - x, 14), oldchar
+    END IF
+    LOCATE 1, 1
+    IF InversFarbe THEN
+        COLOR Farbe XOR InversFarbe
+    ELSE
+        COLOR Farbe
+    END IF
+    PRINT text
+    GET (0, 0)-(x2 - x, 13), fontchar
+    
+    IF SilentScreenMode THEN
+       PUT (0, 0), oldchar, PSET
+       IF SaveScreenMode THEN SCREEN 9, , 0, 0
+    ELSE
+        SCREEN 9, , 0, 0
+    END IF
+
+    IF InversFarbe THEN
+      LINE (x, y)-(x2, y + 13), InversFarbe, BF
+      PUT (x, y), fontchar, XOR
+    ELSE
+      PUT (x, y), fontchar, PSET
+    END IF
+    COLOR tcol
+
+END SUB
+
